@@ -932,7 +932,7 @@ do
   esac
   # Be sure to have absolute directory names.
   case $ac_val in
-    [[\\/$]]* | ?:[[\\/]]* )  continue;;
+    [[\\/$]]* | ?:[[\\/]]* | ?: )  continue;;
     NONE | '' ) case $ac_var in *prefix ) continue;; esac;;
   esac
   AC_MSG_ERROR([expected an absolute directory name for --$ac_var: $ac_val])
