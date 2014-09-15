@@ -1901,6 +1901,34 @@ do
       || AC_MSG_FAILURE([failed to load site script $ac_site_file])
   fi
 done
+
+if test -n "$OS2_SHELL"; then
+  # Backslashes into forward slashes:
+  # The following OS/2 specific code is performed AFTER config.site
+  # has been loaded to allow users to change their environment there.
+  # This strange code is necessary to deal with handling of backslashes by
+  # ksh.
+  ac_save_IFS="$IFS"
+  IFS="\\"
+  ac_TEMP_PATH=
+  for ac_dir in $PATH; do
+    IFS=$ac_save_IFS
+    if test -z "$ac_TEMP_PATH"; then
+      ac_TEMP_PATH="$ac_dir"
+    else
+      ac_TEMP_PATH="$ac_TEMP_PATH/$ac_dir"
+    fi
+  done
+  export PATH="$ac_TEMP_PATH"
+  unset ac_TEMP_PATH
+
+  # add .exe to ac_executable_extensions
+  if test -z "$ac_executable_extensions"; then
+    AC_MSG_WARN([ac_executable_extensions not set, assuming .exe])
+  fi
+  ac_executable_extensions="$ac_executable_extensions .exe"
+  export ac_executable_extensions
+fi
 ])
 
 
