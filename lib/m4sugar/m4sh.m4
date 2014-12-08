@@ -1231,13 +1231,12 @@ fi
 if (echo >conf$$.file) 2>/dev/null; then
   if ln -s conf$$.file conf$$ 2>/dev/null; then
     as_ln_s='ln -s'
-    # ... but there are three gotchas:
+    # ... but there are two gotchas:
     # 1) On MSYS, both `ln -s file dir' and `ln file dir' fail.
     # 2) DJGPP < 2.04 has no symlinks; `ln -s' creates a wrapper executable.
-    # 3) On OS/2, any others than kLIBC has no symlinks.
-    # In three cases, we have to default to `cp -pR'.
-    ln -s conf$$.file conf$$.dir 2>/dev/null && test ! -f conf$$.exe &&
-      test -z "$OS2_SHELL" || as_ln_s='cp -pR'
+    # In both cases, we have to default to `cp -pR'.
+    ln -s conf$$.file conf$$.dir 2>/dev/null && test ! -f conf$$.exe ||
+      as_ln_s='cp -pR'
   elif ln conf$$.file conf$$ 2>/dev/null; then
     as_ln_s=ln
   else
