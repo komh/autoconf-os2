@@ -1,6 +1,6 @@
 ## Make Autoconf tests.
 
-# Copyright (C) 2000-2012 Free Software Foundation, Inc.
+# Copyright (C) 2000-2017, 2020-2021 Free Software Foundation, Inc.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -13,30 +13,25 @@
 # GNU General Public License for more details.
 
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 # We don't actually distribute the built testsuite or package.m4, since one
 # only needs m4 to build them, and m4 is required to install Autoconf.
 # But if you are borrowing from this file for setting up autotest in your
 # project, remember to distribute both testsuite and package.m4.
-EXTRA_DIST = $(TESTSUITE_AT) local.at mktests.sh \
-	     atlocal.in wrapper.as statesave.m4
+EXTRA_DIST += \
+  tests/local.at \
+  tests/mktests.pl \
+  tests/atlocal.in \
+  tests/wrapper.as \
+  tests/statesave.m4
 
-# Running the uninstalled scripts.  Build them upon `all', for the manpages.
+# Running the uninstalled scripts.  Build them upon 'all', for the manpages.
 noinst_SCRIPTS = $(wrappers)
-DISTCLEANFILES = atconfig atlocal $(TESTSUITE)
-MAINTAINERCLEANFILES = Makefile.in
+DISTCLEANFILES += tests/atconfig tests/atlocal $(TESTSUITE)
 
-# Import the dependencies on Autotest and M4sh.
-include ../lib/freeze.mk
-
-
-## ------------ ##
-## package.m4.  ##
-## ------------ ##
-
-# The `:;' works around a redirected compound command bash exit status bug.
-package.m4: Makefile
+# The ':;' works around a redirected compound command bash exit status bug.
+tests/package.m4: Makefile
 	:;{ \
 	  echo '# Signature of the current package.' && \
 	  echo 'm4_define([AT_PACKAGE_NAME],      [$(PACKAGE_NAME)])' && \
@@ -54,22 +49,33 @@ package.m4: Makefile
 ## Wrappers.  ##
 ## ---------- ##
 
-wrappers = autoconf autoheader autom4te autoreconf autoscan autoupdate ifnames
-CLEANFILES = wrapper.in $(wrappers) package.m4
+wrappers = \
+  tests/autoconf \
+  tests/autoheader \
+  tests/autom4te \
+  tests/autoreconf \
+  tests/autoscan \
+  tests/autoupdate \
+  tests/ifnames
 
-wrapper.in: $(srcdir)/wrapper.as $(m4sh_m4f_dependencies)
-	$(MY_AUTOM4TE) --language=M4sh $(srcdir)/wrapper.as -o $@
+CLEANFILES += \
+  tests/package.m4 \
+  tests/wrapper.in \
+  $(wrappers)
 
-edit = sed \
-	-e 's|@wrap_program[@]|$@|g' \
-	-e 's|@abs_top_srcdir[@]|@abs_top_srcdir@|g' \
-	-e 's|@abs_top_builddir[@]|@abs_top_builddir@|g' \
+tests/wrapper.in: $(srcdir)/tests/wrapper.as $(m4sh_m4f_dependencies)
+	$(MY_AUTOM4TE) --language=M4sh $(srcdir)/tests/wrapper.as -o $@
+
+edit_wrapper = sed \
+	-e 's|@wrap_program[@]|$(@F)|g' \
+	-e 's|@abs_top_srcdir[@]|$(abs_top_srcdir)|g' \
+	-e 's|@abs_top_builddir[@]|$(abs_top_builddir)|g' \
 	-e "s|@configure_input[@]|Generated from $$input.|g"
 
-$(wrappers): wrapper.in
+$(wrappers): tests/wrapper.in
 	rm -f $@ $@.tmp
-	input=wrapper.in; \
-	$(edit) wrapper.in >$@.tmp
+	input=tests/wrapper.in \
+	  && $(edit_wrapper) tests/wrapper.in >$@.tmp
 	chmod +x $@.tmp
 	chmod a-w $@.tmp
 	mv -f $@.tmp $@
@@ -81,47 +87,64 @@ $(wrappers): wrapper.in
 ## ------------ ##
 
 TESTSUITE_GENERATED_AT = \
-	$(srcdir)/aclang.at \
-	$(srcdir)/acc.at \
-	$(srcdir)/acfortran.at \
-	$(srcdir)/acgo.at \
-	$(srcdir)/acgeneral.at \
-	$(srcdir)/acstatus.at \
-	$(srcdir)/acautoheader.at \
-	$(srcdir)/acautoupdate.at \
-	$(srcdir)/acspecific.at \
-	$(srcdir)/acfunctions.at \
-	$(srcdir)/acheaders.at \
-	$(srcdir)/actypes.at \
-	$(srcdir)/aclibs.at \
-	$(srcdir)/acprograms.at
+  tests/aclang.at \
+  tests/acc.at \
+  tests/acerlang.at \
+  tests/acfortran.at \
+  tests/acgo.at \
+  tests/acgeneral.at \
+  tests/acstatus.at \
+  tests/acautoheader.at \
+  tests/acautoupdate.at \
+  tests/acspecific.at \
+  tests/acfunctions.at \
+  tests/acheaders.at \
+  tests/actypes.at \
+  tests/aclibs.at \
+  tests/acprograms.at
 
 TESTSUITE_HAND_AT = \
-	suite.at \
-	m4sugar.at m4sh.at autotest.at \
-	base.at tools.at torture.at \
-	compile.at c.at erlang.at fortran.at go.at \
-	semantics.at \
-	autoscan.at \
-	foreign.at
+  tests/suite.at \
+  tests/m4sugar.at \
+  tests/m4sh.at \
+  tests/autotest.at \
+  tests/base.at \
+  tests/tools.at \
+  tests/torture.at \
+  tests/compile.at \
+  tests/c.at \
+  tests/erlang.at \
+  tests/fortran.at \
+  tests/go.at \
+  tests/semantics.at \
+  tests/autoscan.at \
+  tests/foreign.at
+
+TESTSUITE_EXTRA = \
+  tests/data/ax_prog_cc_for_build_v18.m4 \
+  tests/data/ax_prog_cxx_for_build_v3.m4 \
+  tests/data/gnulib_std_gnu11_2020_08_17.m4
+
+CLEANFILES += $(TESTSUITE_GENERATED_AT)
+EXTRA_DIST += $(TESTSUITE_HAND_AT) $(TESTSUITE_EXTRA)
 
 TESTSUITE_AT = $(TESTSUITE_GENERATED_AT) $(TESTSUITE_HAND_AT)
-TESTSUITE = ./testsuite
+TESTSUITE = tests/testsuite
 
 # Run the non installed autom4te.
-# Don't use AUTOM4TE since `make alpha' makes it unavailable although
+# Don't use AUTOM4TE since 'make alpha' makes it unavailable although
 # we are allowed to use it (since we ship it).
+AUTOTESTFLAGS = -I tests -I $(srcdir)/tests
 AUTOTEST = $(MY_AUTOM4TE) --language=autotest
-$(TESTSUITE): package.m4 \
-	      local.at \
+$(TESTSUITE): tests/package.m4 \
+	      tests/local.at \
 	      $(TESTSUITE_AT) \
-	      $(autotest_m4f_dependencies)
-	cd $(top_builddir)/lib/autotest && $(MAKE) $(AM_MAKEFLAGS) autotest.m4f
-	$(AUTOTEST) -I . -I $(srcdir) suite.at -o $@.tmp
+	      lib/autotest/autotest.m4f
+	$(AUTOTEST) $(AUTOTESTFLAGS) suite.at -o $@.tmp
 	mv $@.tmp $@
 
-atconfig: $(top_builddir)/config.status
-	cd $(top_builddir) && ./config.status tests/$@
+# Factor out invocation of the testsuite script.
+run_testsuite = $(SHELL) $(TESTSUITE) -C tests MAKE=$(MAKE)
 
 # Avoid a race condition that would make parallel "distclean" fail.
 # The rule in clean-local tests for existence of $(TESTSUITE), and
@@ -135,16 +158,21 @@ distclean_generic = distclean-generic
 $(distclean_generic): clean-local
 
 clean-local:
-	test ! -f $(TESTSUITE) || $(SHELL) $(TESTSUITE) --clean
+	test ! -f $(TESTSUITE) || $(run_testsuite)  --clean
 	rm -f *.tmp
 	rm -f -r autom4te.cache
 
-check-local: atconfig atlocal $(TESTSUITE)
-	$(SHELL) $(TESTSUITE) $(TESTSUITEFLAGS)
+check-local: tests/atconfig tests/atlocal $(TESTSUITE)
+	+$(run_testsuite) $(TESTSUITEFLAGS)
+
+# Automake doesn't know how to regenerate this file because
+# it's created via AC_CONFIG_COMMANDS.
+tests/atconfig: $(top_builddir)/config.status
+	cd $(top_builddir) && $(SHELL) ./config.status $@
 
 # Run the test suite on the *installed* tree.
-installcheck-local: atconfig atlocal $(TESTSUITE)
-	$(SHELL) $(TESTSUITE) AUTOTEST_PATH="$(bindir)" $(TESTSUITEFLAGS)
+installcheck-local: tests/atconfig tests/atlocal $(TESTSUITE)
+	+$(run_testsuite) AUTOTEST_PATH="$(bindir)" $(TESTSUITEFLAGS)
 
 
 
@@ -156,10 +184,9 @@ MAINTAINERCLEANFILES += $(TESTSUITE_GENERATED_AT)
 
 ## Producing the test files.
 
-# The files which contain macros we check for syntax.  Use $(top_srcdir)
-# for the benefit of non-GNU make.  Fix the names in the rule below
-# where we `cd' to $srcdir.
-autoconfdir = $(top_srcdir)/lib/autoconf
+# The files which contain macros we check for syntax.  Use $(srcdir)
+# for the benefit of non-GNU make.
+autoconfdir = $(srcdir)/lib/autoconf
 AUTOCONF_FILES = $(autoconfdir)/general.m4 \
 		 $(autoconfdir)/status.m4 \
 		 $(autoconfdir)/autoheader.m4 \
@@ -176,31 +203,27 @@ AUTOCONF_FILES = $(autoconfdir)/general.m4 \
 		 $(autoconfdir)/types.m4 \
 		 $(autoconfdir)/programs.m4
 
-$(TESTSUITE_GENERATED_AT): mktests.stamp
+$(TESTSUITE_GENERATED_AT): tests/mktests.stamp
 ## Recover from the removal of $@
 	@if test -f $@; then :; else \
-	  rm -f mktests.stamp; \
-	  $(MAKE) $(AM_MAKEFLAGS) mktests.stamp; \
+	  rm -f tests/mktests.stamp; \
+	  $(MAKE) $(AM_MAKEFLAGS) tests/mktests.stamp; \
 	fi
 
-mktests.stamp : mktests.sh $(AUTOCONF_FILES)
-	@rm -f mktests.tmp
-	@touch mktests.tmp
-	cd $(srcdir) && ./mktests.sh \
-	  `echo " "$(AUTOCONF_FILES) | sed 's, [^ ]*/, ../lib/autoconf/,g'`
-	@mv -f mktests.tmp $@
+tests/mktests.stamp : tests/mktests.pl $(AUTOCONF_FILES)
+	@rm -f tests/mktests.tmp
+	@touch tests/mktests.tmp
+	$(PERL) $(srcdir)/tests/mktests.pl tests $(AUTOCONF_FILES)
+	@mv -f tests/mktests.tmp $@
 
-## Distribute the stamp file, since we distribute the generated files.
-EXTRA_DIST += mktests.stamp
-CLEANFILES += mktests.tmp
-MAINTAINERCLEANFILES += mktests.stamp
+CLEANFILES += tests/mktests.tmp tests/mktests.stamp
 
 ## maintainer-check ##
 
-# These cannot be run in parallel.
+# The test suite cannot be run in parallel with itself.
 maintainer-check:
+	$(MAKE) $(AM_MAKEFLAGS) check
 	$(MAKE) $(AM_MAKEFLAGS) maintainer-check-posix
-	$(MAKE) $(AM_MAKEFLAGS) maintainer-check-c++
 
 # The hairy heredoc is more robust than using echo.
 CLEANFILES += expr
@@ -221,7 +244,3 @@ expr:
 maintainer-check-posix: expr
 	POSIXLY_CORRECT=yes $(MAKE) $(AM_MAKEFLAGS) check
 	rm expr
-
-# Try using G++ as a C compiler.
-maintainer-check-c++:
-	CC=g++ $(MAKE) $(AM_MAKEFLAGS) check
