@@ -571,7 +571,8 @@ sub handle_output ($$)
 
       # File::Temp doesn't give us access to 3-arg open(2), unfortunately.
       chmod (oct ($mode) & ~(umask), $scratchfile)
-        or fatal "setting mode of " . $scratchfile . ": $!";
+        or fatal "setting mode of " . $scratchfile . ": $!"
+             unless $^O eq 'os2';
     }
 
   my $in = new Autom4te::XFile ($ocache . $req->id, "<");
