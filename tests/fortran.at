@@ -2,7 +2,7 @@
 
 AT_BANNER([Fortran low level compiling/preprocessing macros.])
 
-# Copyright (C) 2000-2001, 2003, 2008-2017, 2020-2021 Free Software
+# Copyright (C) 2000-2001, 2003, 2008-2017, 2020-2023 Free Software
 # Foundation, Inc.
 #
 # This program is free software: you can redistribute it and/or modify
@@ -109,12 +109,7 @@ AT_DATA([foo.f],
       end
 ]])
 
-# Prevent autoreconf from running aclocal, which might not exist,
-# or could barf over warnings in third-party macro files.
-AT_DATA([aclocal.m4])
-ACLOCAL=true
-export ACLOCAL
-
+AT_SUPPRESS_ACLOCAL
 AT_CHECK([autoreconf -vi], [], [ignore], [ignore])
 AT_CHECK_CONFIGURE
 AT_CHECK_MAKE
@@ -154,12 +149,7 @@ AT_DATA([foo.f],
       end
 ]])
 
-# Prevent autoreconf from running aclocal, which might not exist,
-# or could barf over warnings in third-party macro files.
-AT_DATA([aclocal.m4])
-ACLOCAL=true
-export ACLOCAL
-
+AT_SUPPRESS_ACLOCAL
 AT_CHECK([autoreconf -vi], [], [ignore], [ignore])
 AT_CHECK_CONFIGURE
 AT_CHECK_MAKE
@@ -169,8 +159,8 @@ AT_CLEANUP
 
 # We don't test the AC_F77_LIBRARY_LDFLAGS macro on its own because of
 # (autoconf.info)Fortran Compiler:
-#      The macros `AC_F77_DUMMY_MAIN' and `AC_FC_DUMMY_MAIN' or
-#    `AC_F77_MAIN' and `AC_FC_MAIN' are probably also necessary to link
+#      The macros 'AC_F77_DUMMY_MAIN' and 'AC_FC_DUMMY_MAIN' or
+#    'AC_F77_MAIN' and 'AC_FC_MAIN' are probably also necessary to link
 #    C/C++ with Fortran; see below.
 #
 # and we would need libtool to create shared libraries.
@@ -233,7 +223,7 @@ void FOOBAR_F77 (double *x, double *y);
 #  ifdef __cplusplus
      extern "C"
 #  endif
-   int F77_DUMMY_MAIN () { return 1; }
+   int F77_DUMMY_MAIN (void) { return 1; }
 #endif
 
 int main(int argc, char *argv[])
@@ -315,7 +305,7 @@ void FOOBAR_FC(double *x, double *y);
 #  ifdef __cplusplus
      extern "C"
 #  endif
-   int FC_DUMMY_MAIN () { return 1; }
+   int FC_DUMMY_MAIN (void) { return 1; }
 #endif
 
 int main (int argc, char *argv[])
@@ -561,7 +551,7 @@ void @foobar@ (int *x);
 #  ifdef __cplusplus
      extern "C"
 #  endif
-   int F77_DUMMY_MAIN () { return 1; }
+   int F77_DUMMY_MAIN (void) { return 1; }
 #endif
 
 int main(int argc, char *argv[])
@@ -637,7 +627,7 @@ void @foobar@ (int *x);
 #  ifdef __cplusplus
      extern "C"
 #  endif
-   int FC_DUMMY_MAIN () { return 1; }
+   int FC_DUMMY_MAIN (void) { return 1; }
 #endif
 
 int main(int argc, char *argv[])
@@ -1009,7 +999,7 @@ AT_DATA([Makefile.in],
 	@FC@ @FCFLAGS@ -c @FCFLAGS_f@ $<
 
 clean:
-	rm -f *.@OBJEXT@ prog@EEXEXT@
+	rm -f *.@OBJEXT@ prog@EXEEXT@
 ]])
 
 # When preceded by 7 spaces and followed by newline, line_80 generates
@@ -1081,7 +1071,7 @@ AT_DATA([Makefile.in],
 	@FC@ @FCFLAGS@ -c @FCFLAGS_f@ $<
 
 clean:
-	rm -f *.@OBJEXT@ prog@EEXEXT@
+	rm -f *.@OBJEXT@ prog@EXEEXT@
 ]])
 
 cat >configure.ac <<EOF
@@ -1189,6 +1179,91 @@ AT_CHECK_MAKE([], [], [], [stdout], [stderr])
 # should add to the module search path.
 AT_CHECK([grep 'sub .*sub ' stdout stderr], [], [ignore])
 AT_CHECK([./prog], [], [ignore], [ignore])
+AT_CHECK_MAKE([clean])
+
+AT_CLEANUP
+
+
+## --------------------- ##
+## AC_F77_CRAY_POINTERS. ##
+## --------------------- ##
+
+AT_SETUP([AC_F77_CRAY_POINTERS])
+
+AT_DATA([configure.ac],
+[[AC_INIT
+AC_PROG_F77
+AC_F77_CRAY_POINTERS
+AC_CONFIG_FILES([Makefile])
+AC_OUTPUT
+]])
+
+AT_DATA([Makefile.in],
+[[prog@EXEEXT@: prog.@OBJEXT@
+	@F77@ @FFLAGS@ -o $@ prog.@OBJEXT@ @LIBS@
+
+.SUFFIXES: .f .@OBJEXT@
+.f.@OBJEXT@:
+	@F77@ @FFLAGS@ -c $<
+
+clean:
+	rm -f *.@OBJEXT@ prog@EXEEXT@
+]])
+
+AT_DATA([prog.f],
+[[      program main
+      integer aptr(2)
+      pointer (iptr, aptr)
+      end
+]])
+
+AT_CHECK_AUTOCONF
+AT_CHECK_CONFIGURE
+AT_CHECK_MAKE
+AT_CHECK([./prog])
+AT_CHECK_MAKE([clean])
+
+AT_CLEANUP
+
+
+## -------------------- ##
+## AC_FC_CRAY_POINTERS. ##
+## -------------------- ##
+
+AT_SETUP([AC_FC_CRAY_POINTERS])
+
+AT_DATA([configure.ac],
+[[AC_INIT
+AC_PROG_FC
+AC_FC_SRCEXT([f])
+AC_FC_CRAY_POINTERS
+AC_CONFIG_FILES([Makefile])
+AC_OUTPUT
+]])
+
+AT_DATA([Makefile.in],
+[[prog@EXEEXT@: prog.@OBJEXT@
+	@FC@ @FCFLAGS@ -o $@ prog.@OBJEXT@ @LIBS@
+
+.SUFFIXES: .f .@OBJEXT@
+.f.@OBJEXT@:
+	@FC@ @FCFLAGS@ -c @FCFLAGS_f@ $<
+
+clean:
+	rm -f *.@OBJEXT@ prog@EXEEXT@
+]])
+
+AT_DATA([prog.f],
+[[      program main
+      integer aptr(2)
+      pointer (iptr, aptr)
+      end
+]])
+
+AT_CHECK_AUTOCONF
+AT_CHECK_CONFIGURE
+AT_CHECK_MAKE
+AT_CHECK([./prog])
 AT_CHECK_MAKE([clean])
 
 AT_CLEANUP

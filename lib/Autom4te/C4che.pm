@@ -1,5 +1,5 @@
-# autoconf -- create `configure' using m4 macros
-# Copyright (C) 2003, 2006, 2009-2017, 2020-2021 Free Software
+# autoconf -- create 'configure' using m4 macros
+# Copyright (C) 2003, 2006, 2009-2017, 2020-2023 Free Software
 # Foundation, Inc.
 
 # This program is free software: you can redistribute it and/or modify
@@ -155,13 +155,16 @@ Serialize all the current requests.
 sub marshall ($)
 {
   my ($caller) = @_;
-  my $res = '';
 
   my $marshall = Data::Dumper->new ([\@request], [qw (*request)]);
   $marshall->Indent(2)->Terse(0);
-  $res = $marshall->Dump . "\n";
 
-  return $res;
+  # The Sortkeys method was added in Data::Dumper 2.12_01, so it is
+  # available in 5.8.x and 5.6.2 but not in 5.6.1 or earlier.
+  # Ignore failure of method lookup.
+  eval { $marshall->Sortkeys(1); };
+
+  return $marshall->Dump . "\n";
 }
 
 

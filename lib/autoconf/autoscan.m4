@@ -1,7 +1,7 @@
 # This file is part of Autoconf.                       -*- Autoconf -*-
 # Interface with autoscan.
 
-# Copyright (C) 2002, 2009-2017, 2020-2021 Free Software Foundation,
+# Copyright (C) 2002, 2009-2017, 2020-2023 Free Software Foundation,
 # Inc.
 
 # This file is part of Autoconf.  This program is free
@@ -26,7 +26,7 @@
 
 # Written by Akim Demaille.
 
-# The prefix `AN' is chosen after `AutoscaN'.
+# The prefix 'AN' is chosen after 'AutoscaN'.
 
 # AN_OUTPUT(KIND, WORD, MACROS)
 # -----------------------------

@@ -3,7 +3,7 @@
 This file lists the bugs you must be aware of.  Be sure to check this
 file before using Autoconf, and especially git versions of Autoconf.
 
-	Copyright (C) 2000-2002, 2006-2017, 2020-2021 Free Software
+	Copyright (C) 2000-2002, 2006-2017, 2020-2023 Free Software
 	Foundation, Inc.
 
 	Copying and distribution of this file, with or without
@@ -11,8 +11,8 @@ file before using Autoconf, and especially git versions of Autoconf.
 	the copyright notice and this notice are preserved.  This file is
 	offered as-is, without warranty of any kind.
 
-Autoconf must not be used in production if there are ``Serious'' bugs,
-and use with caution an Autoconf with ``Important bugs''.
+Autoconf must not be used in production if there are "Serious" bugs,
+and use with caution an Autoconf with "Important bugs".
 
 * Status
 

@@ -1,5 +1,5 @@
 # Customize maint.mk for Autoconf.            -*- Makefile -*-
-# Copyright (C) 2003-2004, 2006, 2008-2017, 2020-2021 Free Software
+# Copyright (C) 2003-2004, 2006, 2008-2017, 2020-2023 Free Software
 # Foundation, Inc.
 
 # This program is free software: you can redistribute it and/or modify
@@ -18,7 +18,7 @@
 # This file is '-include'd into GNUmakefile.
 
 # Build with our own versions of these tools, when possible.
-export PATH = $(shell echo "`pwd`/tests:$$PATH")
+export PATH := $(or $(PWD),$(shell pwd))/tests:$(PATH)
 
 # Remove the autoreconf-provided INSTALL, so that we regenerate it.
 _autoreconf = autoreconf -i -v && rm -f INSTALL
@@ -63,8 +63,8 @@ local-checks-to-skip ?= \
   sc_prohibit_always_true_header_tests	\
   sc_prohibit_magic_number_exit		\
   sc_prohibit_stat_st_blocks		\
-  sc_unmarked_diagnostics
-
+  sc_unmarked_diagnostics		\
+  sc_unportable_grep_q
 
 # Always use shorthand copyrights.
 update-copyright-env = \
@@ -84,7 +84,10 @@ update-release-year:
 .PHONY: update-release-year
 
 # Prevent incorrect NEWS edits.
-old_NEWS_hash = 152f03614545887231fddaf67821b4d4
+old_NEWS_hash = 18aef204e16f6fe9487ab79ca2556ab4
+
+# Update autoconf-latest.tar.* symlinks during 'make stable/beta'.
+GNUPLOADFLAGS = --symlink-regex
 
 exclude_file_name_regexp--sc_prohibit_undesirable_word_seq = \
   ^(maint\.mk|build-aux/texinfo\.tex)$$

@@ -1,6 +1,6 @@
 # This file is part of Autoconf.                       -*- Autoconf -*-
 # Checking for libraries.
-# Copyright (C) 1992-1996, 1998-2006, 2008-2017, 2020-2021 Free Software
+# Copyright (C) 1992-1996, 1998-2006, 2008-2017, 2020-2023 Free Software
 # Foundation, Inc.
 
 # This file is part of Autoconf.  This program is free
@@ -24,7 +24,7 @@
 # respectively.  If not, see <https://www.gnu.org/licenses/>.
 
 # Written by David MacKenzie, with help from
-# Franc,ois Pinard, Karl Berry, Richard Pixley, Ian Lance Taylor,
+# François Pinard, Karl Berry, Richard Pixley, Ian Lance Taylor,
 # Roland McGrath, Noah Friedman, david d zuhn, and many others.
 
 # Table of contents
@@ -92,10 +92,10 @@ AS_VAR_POPDEF([ac_Search])dnl
 # whatever the FUNCTION, in addition to not being a *S macro.  Note
 # that the cache does depend upon the function we are looking for.
 #
-# It is on purpose we used `ac_check_lib_save_LIBS' and not just
-# `ac_save_LIBS': there are many macros which don't want to see `LIBS'
-# changed but still want to use AC_CHECK_LIB, so they save `LIBS'.
-# And ``ac_save_LIBS' is too tempting a name, so let's leave them some
+# It is on purpose we used 'ac_check_lib_save_LIBS' and not just
+# 'ac_save_LIBS': there are many macros which don't want to see 'LIBS'
+# changed but still want to use AC_CHECK_LIB, so they save 'LIBS'.
+# And 'ac_save_LIBS' is too tempting a name, so let's leave them some
 # freedom.
 AC_DEFUN([AC_CHECK_LIB],
 [m4_ifval([$3], , [AH_CHECK_LIB([$1])])dnl
@@ -122,7 +122,7 @@ AS_VAR_POPDEF([ac_Lib])dnl
 # ---------------------
 m4_define([AH_CHECK_LIB],
 [AH_TEMPLATE(AS_TR_CPP([HAVE_LIB$1]),
-	     [Define to 1 if you have the `$1' library (-l$1).])])
+	     [Define to 1 if you have the '$1' library (-l$1).])])
 
 
 # AC_HAVE_LIBRARY(LIBRARY,
@@ -130,10 +130,10 @@ m4_define([AH_CHECK_LIB],
 #                 [OTHER-LIBRARIES])
 # ---------------------------------------------------------
 #
-# This macro is equivalent to calling `AC_CHECK_LIB' with a FUNCTION
-# argument of `main'.  In addition, LIBRARY can be written as any of
-# `foo', `-lfoo', or `libfoo.a'.  In all of those cases, the compiler
-# is passed `-lfoo'.  However, LIBRARY cannot be a shell variable;
+# This macro is equivalent to calling 'AC_CHECK_LIB' with a FUNCTION
+# argument of 'main'.  In addition, LIBRARY can be written as any of
+# 'foo', '-lfoo', or 'libfoo.a'.  In all of those cases, the compiler
+# is passed '-lfoo'.  However, LIBRARY cannot be a shell variable;
 # it must be a literal name.
 AU_DEFUN([AC_HAVE_LIBRARY],
 [m4_pushdef([AC_Lib_Name],
@@ -344,7 +344,7 @@ X features:
 AC_MSG_CHECKING([for X])
 
 AC_ARG_WITH(x, [  --with-x                use the X Window System])
-# $have_x is `yes', `no', `disabled', or empty when we do not yet know.
+# $have_x is 'yes', 'no', 'disabled', or empty when we do not yet know.
 if test "x$with_x" = xno; then
   # The user explicitly disabled X.
   have_x=disabled

@@ -1,7 +1,7 @@
 # This file is part of Autoconf.                       -*- Autoconf -*-
 # Interface with autoheader.
 
-# Copyright (C) 1992-1996, 1998-2002, 2008-2017, 2020-2021 Free Software
+# Copyright (C) 1992-1996, 1998-2002, 2008-2017, 2020-2023 Free Software
 # Foundation, Inc.
 
 # This file is part of Autoconf.  This program is free
@@ -25,14 +25,14 @@
 # respectively.  If not, see <https://www.gnu.org/licenses/>.
 
 # Written by David MacKenzie, with help from
-# Franc,ois Pinard, Karl Berry, Richard Pixley, Ian Lance Taylor,
+# François Pinard, Karl Berry, Richard Pixley, Ian Lance Taylor,
 # Roland McGrath, Noah Friedman, david d zuhn, and many others.
 
 
 # AH_OUTPUT(KEY, TEXT)
 # --------------------
 # Pass TEXT to autoheader.
-# This macro is `read' only via `autoconf --trace', it outputs nothing.
+# This macro is 'read' only via 'autoconf --trace', it outputs nothing.
 m4_define([AH_OUTPUT], [])
 
 
@@ -61,7 +61,7 @@ m4_define([AH_TEMPLATE],
 
 # AH_TOP(TEXT)
 # ------------
-# Output TEXT at the top of `config.h.in'.
+# Output TEXT at the top of 'config.h.in'.
 m4_define([AH_TOP],
 [m4_define([_AH_COUNTER], m4_incr(_AH_COUNTER))dnl
 AH_VERBATIM([0000]_AH_COUNTER, [$1])])
@@ -69,7 +69,7 @@ AH_VERBATIM([0000]_AH_COUNTER, [$1])])
 
 # AH_BOTTOM(TEXT)
 # ---------------
-# Output TEXT at the bottom of `config.h.in'.
+# Output TEXT at the bottom of 'config.h.in'.
 m4_define([AH_BOTTOM],
 [m4_define([_AH_COUNTER], m4_incr(_AH_COUNTER))dnl
 AH_VERBATIM([zzzz]_AH_COUNTER, [$1])])

@@ -1,5 +1,5 @@
 # help-extract -- extract --help and --version output from a script.
-# Copyright (C) 2020-2021 Free Software Foundation, Inc.
+# Copyright (C) 2020-2023 Free Software Foundation, Inc.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,12 +16,10 @@
 
 # Written by Zack Weinberg.
 
+use 5.010;
 use strict;
 use warnings;
-
-# File::Spec itself was added in 5.005.
-# File::Spec::Functions was added in 5.6.1 which is just barely too new.
-use File::Spec;
+use File::Spec::Functions qw(catfile);
 
 # This script is not intended to be used directly.  It's run by
 # help2man via wrappers in man/, e.g.  man/autoconf.w, as if it were
@@ -50,11 +48,17 @@ sub eval_qq_no_interpolation ($)
   # The argument is expected to be a "double quoted string" including the
   # leading and trailing delimiters.  Returns the text of this string after
   # processing backslash escapes but NOT interpolation.
-  # / (?<!\\) (?>\\\\)* blah /x means match blah preceded by an
-  # *even* number of backslashes.  It would be nice if we could use \K
-  # to exclude the backslashes from the matched text, but that was only
-  # added in Perl 5.10 and we still support back to 5.006.
-  return eval $_[0] =~ s/ (?<!\\) (?>\\\\)* [\$\@] /\\$&/xrg;
+  my $s = $_[0];
+
+  # Escape $ and @ inside the string, if they are not already escaped.
+  # The regex matches the empty string, but only if it is preceded by an
+  # even number of backslashes (including zero) and followed by either a
+  # literal $ or a literal @. Then we insert a backslash at the position
+  # of the match.
+  $s =~ s/ (?:\A|[^\\]) (?:\\\\)* \K (?=[\$\@]) /\\/xg;
+
+  # It is now safe to feed the string to 'eval'.
+  return eval $s;
 }
 
 sub extract_channeldefs_usage ($)
@@ -135,48 +139,9 @@ sub extract_perl_assignment (*$$$)
 }
 
 
-## ------------------------------ ##
-## Extraction from shell scripts. ##
-## ------------------------------ ##
-
-sub extract_shell_assignment (*$$)
-{
-  my ($fh, $source, $what) = @_;
-  my $value = "";
-  my $parse_state = 0;
-  local $_;
-
-  while (<$fh>)
-    {
-      if ($parse_state == 0)
-	{
-	  if (/^\Q${what}\E=\[\"\\$/)
-	    {
-	      $parse_state = 1;
-	    }
-	}
-      elsif ($parse_state == 1)
-	{
-	  my $done = s/"\]$//;
-	  $value .= $_;
-	  if ($done)
-	    {
-	      # This is not strictly correct but it works acceptably
-	      # for the escapes that actually occur in the strings
-	      # we're extracting.
-	      return eval_qq_no_interpolation ('"'.$value.'"');
-	    }
-	}
-    }
-
-  die "$source: unexpected EOF in state $parse_state\n";
-}
-
-
 ## -------------- ##
 ## Main program.  ##
 ## -------------- ##
-
 
 sub extract_assignment ($$$)
 {
@@ -188,12 +153,6 @@ sub extract_assignment ($$$)
   if ($firstline =~ /\@PERL\@/ || $firstline =~ /-\*-\s*perl\s*-\*-/i)
     {
       return extract_perl_assignment ($fh, $source, $channeldefs_pm, $what);
-    }
-  elsif ($firstline =~ /\bAS_INIT\b/
-	 || $firstline =~ /bin\/[a-z0-9]*sh\b/
-	 || $firstline =~ /-\*-\s*shell-script\s*-\*-/i)
-    {
-      return extract_shell_assignment ($fh, $source, $what);
     }
   else
     {
@@ -209,7 +168,7 @@ sub main ()
   # to not mess with the command line.
   my $usage = "Usage: $0 script-source (--help | --version)
 
-Extract help and version information from a perl or shell script.
+Extract help and version information from a perl script.
 Required environment variables:
 
   top_srcdir       relative path from cwd to the top of the source tree
@@ -242,9 +201,10 @@ The script-source argument should also be relative to top_srcdir.
       die $usage;
     }
 
-  my $cmd_name    = $source =~ s{^.*/([^./]+)\.(?:as|in)$}{$1}r;
-  $source         = File::Spec->catfile($top_srcdir, $source);
-  $channeldefs_pm = File::Spec->catfile($top_srcdir, $channeldefs_pm);
+  my $cmd_name    = $source;
+  $cmd_name       =~ s{^.*/([^./]+)\.in$}{$1};
+  $source         = catfile($top_srcdir, $source);
+  $channeldefs_pm = catfile($top_srcdir, $channeldefs_pm);
 
   my $text = extract_assignment ($source, $channeldefs_pm, $what);
   $text =~ s/\$0\b/$cmd_name/g;

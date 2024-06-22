@@ -1,6 +1,6 @@
 # Freeze M4 files.
 
-# Copyright (C) 2002, 2004, 2006-2017, 2020-2021 Free Software
+# Copyright (C) 2002, 2004, 2006-2017, 2020-2023 Free Software
 # Foundation, Inc.
 
 # This program is free software: you can redistribute it and/or modify
@@ -27,16 +27,16 @@ AUTOM4TE_CFG = lib/autom4te.cfg
 
 # Do not use AUTOM4TE here, since maint.mk (my-distcheck)
 # checks if we are independent of Autoconf by defining AUTOM4TE (and
-# others) to `false'.  Autoconf provides autom4te, so that doesn't
+# others) to 'false'.  Autoconf provides autom4te, so that doesn't
 # apply to us.
 MY_AUTOM4TE =									\
 	autom4te_perllibdir='$(top_srcdir)'/lib					\
 	AUTOM4TE_CFG='$(AUTOM4TE_CFG)'         $(top_build_prefix)bin/autom4te	\
-		-B '$(top_build_prefix)'lib -B '$(top_srcdir)'/lib        # keep ` '
+		-B '$(top_build_prefix)'lib -B '$(top_srcdir)'/lib        # keep ' '
 
 # When processing the file with diversion disabled, there must be no
 # output but comments and empty lines.
-# If freezing produces output, something went wrong: a bad `divert',
+# If freezing produces output, something went wrong: a bad 'divert',
 # or an improper paren etc.
 # It may happen that the output does not end with an end of line, hence
 # force an end of line when reporting errors.
@@ -62,7 +62,7 @@ m4f_dependencies = $(top_build_prefix)bin/autom4te $(AUTOM4TE_CFG)
 m4sugar_m4f_dependencies =			\
 	$(m4f_dependencies)			\
 	$(src_libdir)/m4sugar/m4sugar.m4	\
-	$(build_libdir)/m4sugar/version.m4
+	$(build_libdir)/version.m4
 
 m4sh_m4f_dependencies =				\
 	$(m4sugar_m4f_dependencies)		\

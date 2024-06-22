@@ -2,7 +2,7 @@
 # Interface with autoupdate.
 
 # Copyright (C) 1992-1996, 1998-2001, 2003-2004, 2006, 2009-2017,
-# 2020-2021 Free Software Foundation, Inc.
+# 2020-2023 Free Software Foundation, Inc.
 
 # This file is part of Autoconf.  This program is free
 # software; you can redistribute it and/or modify it under the
@@ -25,7 +25,7 @@
 # respectively.  If not, see <https://www.gnu.org/licenses/>.
 
 # Written by David MacKenzie, with help from
-# Franc,ois Pinard, Karl Berry, Richard Pixley, Ian Lance Taylor,
+# François Pinard, Karl Berry, Richard Pixley, Ian Lance Taylor,
 # Roland McGrath, Noah Friedman, david d zuhn, and many others.
 
 
@@ -60,7 +60,7 @@ m4_define([AU_DEFINE], [])
 #
 # This allows sharing the same code for both supporting obsoleted macros,
 # and to update a configure.ac.
-# See the end of `autoupdate.in' for a longer description.
+# See the end of 'autoupdate.in' for a longer description.
 m4_define([AU_DEFUN],
 [# This is what autoupdate's m4 run will expand.  It fires the warning
 # (with _au_warn_XXX), outputs it into the updated configure.ac (with
@@ -91,10 +91,10 @@ m4_define([_au_warn_$1], [])])
 m4_case([$4],
   [silent], [AC_DEFUN([$1], [$2])],
   [],       [AC_DEFUN([$1],
-	 [m4_warn([obsolete], [The macro `$1' is obsolete.
+	 [m4_warn([obsolete], [The macro '$1' is obsolete.
 You should run autoupdate.])dnl
 $2])],
-  [m4_fatal([SILENT argument to `$0' must be either empty or `silent'])]dnl
+  [m4_fatal([SILENT argument to '$0' must be either empty or 'silent'])]dnl
 )])
 
 
@@ -106,7 +106,7 @@ $2])],
 # This macro makes it possible to distinguish such cases.
 # The SILENT argument works the same as for AU_DEFUN.
 #
-# Do not use `defn' since then autoupdate would replace an old macro
+# Do not use 'defn' since then autoupdate would replace an old macro
 # call with the new macro body instead of the new macro call.
 #
 # Moreover, we have to take care that calls without parameters are

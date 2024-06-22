@@ -1,7 +1,7 @@
 #                                                       -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-# Copyright (C) 1992-1995, 1999-2017, 2020-2021 Free Software
+# Copyright (C) 1992-1995, 1999-2017, 2020-2023 Free Software
 # Foundation, Inc.
 
 # This program is free software: you can redistribute it and/or modify
@@ -17,11 +17,19 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-AC_PREREQ([2.62])
+AC_PREREQ([2.69])
 
-AC_INIT([GNU Autoconf],
-	m4_esyscmd([build-aux/git-version-gen .tarball-version]),
-	[bug-autoconf@gnu.org])
+# Keep both of these on a single line, and do not use quadrigraphs
+# or nested quotes in their values, since the bootstrap script needs
+# to be able to extract their values with sed.
+m4_define([autoconf_PACKAGE_NAME], [GNU Autoconf])
+m4_define([autoconf_PACKAGE_BUGREPORT], [bug-autoconf@gnu.org])
+
+AC_INIT(
+  m4_defn([autoconf_PACKAGE_NAME]),
+  [m4_esyscmd([build-aux/git-version-gen .tarball-version])],
+  m4_defn([autoconf_PACKAGE_BUGREPORT])
+)
 AC_CONFIG_SRCDIR([lib/autoconf/autoconf.m4])
 
 AC_CONFIG_AUX_DIR([build-aux])
@@ -30,7 +38,7 @@ AM_INIT_AUTOMAKE([1.11 dist-xz readme-alpha no-texinfo.tex std-options])
 
 # Keep this on a line of its own, since it must be found and processed
 # by the 'update-release-year' rule in our Makefile.
-RELEASE_YEAR=2021
+RELEASE_YEAR=2023
 AC_SUBST([RELEASE_YEAR])
 
 AB_INIT
@@ -227,6 +235,7 @@ dnl Allow maintainer rules under GNU make even in VPATH builds.
 AC_CONFIG_LINKS([GNUmakefile:GNUmakefile])
 
 AC_CONFIG_FILES([Makefile])
+AC_CONFIG_FILES([lib/version.m4:lib/version.in])
 
 AC_OUTPUT
 # Report the state of this version of Autoconf if this is a beta.
