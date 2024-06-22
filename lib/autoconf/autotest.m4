@@ -1,6 +1,6 @@
 # This file is part of Autoconf.                       -*- Autoconf -*-
 # Interface with Autotest.
-# Copyright (C) 1992-1996, 1998-2005, 2009-2017, 2020-2021 Free Software
+# Copyright (C) 1992-1996, 1998-2005, 2009-2017, 2020-2023 Free Software
 # Foundation, Inc.
 
 # This file is part of Autoconf.  This program is free
@@ -24,7 +24,7 @@
 # respectively.  If not, see <https://www.gnu.org/licenses/>.
 
 # Written by David MacKenzie, with help from
-# Franc,ois Pinard, Karl Berry, Richard Pixley, Ian Lance Taylor,
+# François Pinard, Karl Berry, Richard Pixley, Ian Lance Taylor,
 # Roland McGrath, Noah Friedman, david d zuhn, and many others.
 
 

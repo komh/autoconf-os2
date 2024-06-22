@@ -2,7 +2,7 @@
 
 # Build some of the Autoconf test files.
 
-# Copyright (C) 2000-2017, 2020-2021 Free Software Foundation, Inc.
+# Copyright (C) 2000-2017, 2020-2023 Free Software Foundation, Inc.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -88,6 +88,7 @@ my @ac_exclude_list = (
   # Checked in semantics.
   qr/^AC_(PROG_CC|C_CONST|C_VOLATILE)$/,
   qr/^AC_PATH_XTRA$/,
+  qr/^AC_SYS_(LARGEFILE|YEAR2038(_RECOMMENDED)?)$/,
 
   # Use without an argument is obsolete.
   # Checked in semantics.
@@ -112,7 +113,7 @@ my @ac_exclude_list = (
 # Check all AU_DEFUN'ed macros with AT_CHECK_AU_MACRO, except these.
 my @au_exclude_list = (
   # Empty.
-  qr/^AC_(C_CROSS|PROG_CC_(C[89]9|STDC))$/,
+  qr/^AC_(C_CROSS|PROG_(CC_(C[89]9|STDC)|GCC_TRADITIONAL))$/,
 
   # Use AC_REQUIRE.
   qr/^AC_(CYGWIN|MINGW32|EMXOS2)$/,
@@ -189,7 +190,7 @@ my %test_parameters = (
                         ' cxx_cv_varies:cxx_vararrays]')
   },
 
-  # stdbool.h is supposed to be includeable from C++, per C++2011
+  # stdbool.h is supposed to be includable from C++, per C++2011
   # [support.runtime], but the type _Bool was not added to the C++
   # standard, so it may or may not be present depending on how much
   # the C++ compiler cares about C source compatibility.
@@ -289,6 +290,14 @@ sub scan_m4_files
         }
       push @macros_to_test, [ $file, \@ac_macros, \@au_macros ];
     }
+
+  # Do **NOT** filter out AC_FUNC_ALLOCA. Filtering it out
+  # ended up eliding a direct test of AC_FUNC_ALLOCA which
+  # would have exposed a bug, while no required use does so.
+  # Clearing this hash entirely would currently enable direct tests
+  # of 38 macros, but would require designating each that must be
+  # skipped when cross-compiling.
+  delete $required_macros{AC_FUNC_ALLOCA};
 
   # Filter out macros that are AC_REQUIREd by some other macro;
   # it's not necessary to test them directly.

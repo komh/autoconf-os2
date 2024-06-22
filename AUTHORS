@@ -23,7 +23,7 @@ David J. MacKenzie          djm@gnu.org                         1991-07-09
 James L. Avera              ?                                   1993-10-04
 Roland McGrath              roland@gnu.org                      1994-06-24
 Noah Friedman               friedman@gnu.org                    1994-07-15
-Francois Pinard             pinard@iro.umontreal.ca             1997-02-02
+François Pinard             pinard@iro.umontreal.ca             1997-02-02
 Thomas E. Dickey            dickey@clark.net                    1998-01-11
 Matthew D. Langston         langston@slac.stanford.edu          1998-09-29
 Mark Elbrecht               snowball3@usa.net                   1999-01-11
@@ -78,7 +78,7 @@ Peter O'Gorman              peter@pogma.com                     2004-11-14
 Toshio Ernie Kuratomi       toshio@tiki-lounge.com              2004-11-17
 Roger Leigh                 rleigh@whinlatter.ukfsn.org         2004-12-09
 Ian Lance Taylor            ian@airs.com                        2004-12-22
-Daniel Manthey              dan_manthey@partech.com             2005-02-14
+Sarah Manthey               manthd@gmail.com                    2005-02-14
 Gregorio Guidi              greg_g@gentoo.org                   2005-03-03
 Bruno Haible                bruno@clisp.org                     2005-06-12
 Toby Oliver Hilary White    tow21@cam.ac.uk                     2005-10-18
@@ -111,7 +111,7 @@ mode: text
 coding: utf-8
 End:
 
-Copyright (C) 1996, 2000-2001, 2005, 2007-2017, 2020-2021 Free Software
+Copyright (C) 1996, 2000-2001, 2005, 2007-2017, 2020-2023 Free Software
 Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify

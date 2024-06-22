@@ -1,7 +1,7 @@
 # This file is part of Autoconf.                       -*- Autoconf -*-
 # Checking for programs.
 
-# Copyright (C) 1992-1996, 1998-2017, 2020-2021 Free Software
+# Copyright (C) 1992-1996, 1998-2017, 2020-2023 Free Software
 # Foundation, Inc.
 
 # This file is part of Autoconf.  This program is free
@@ -25,7 +25,7 @@
 # respectively.  If not, see <https://www.gnu.org/licenses/>.
 
 # Written by David MacKenzie, with help from
-# Franc,ois Pinard, Karl Berry, Richard Pixley, Ian Lance Taylor,
+# François Pinard, Karl Berry, Richard Pixley, Ian Lance Taylor,
 # Roland McGrath, Noah Friedman, david d zuhn, and many others.
 
 
@@ -341,6 +341,14 @@ fi
 # Please, keep this section sorted.
 # (But of course when keeping related things together).
 
+# AC_PROG_AR
+# --------------
+AN_MAKEVAR([AR], [AC_PROG_AR])
+AN_PROGRAM([ar], [AC_PROG_AR])
+AC_DEFUN([AC_PROG_AR],
+[AC_CHECK_TOOL(AR, ar, :)])
+
+
 # Check for gawk first since it's generally better.
 AN_MAKEVAR([AWK],  [AC_PROG_AWK])
 AN_PROGRAM([awk],  [AC_PROG_AWK])
@@ -363,8 +371,33 @@ AC_CACHE_CHECK([for egrep], ac_cv_path_EGREP,
    fi])
  EGREP="$ac_cv_path_EGREP"
  AC_SUBST([EGREP])
+ dnl
+ dnl Also set EGREP_TRADITIONAL even though unnecessary here,
+ dnl for wrong but too-common code with the following pattern:
+ dnl   AC_PROG_EGREP
+ dnl   if false; then
+ dnl      AC_EGREP_HEADER([printf], [stdio.h], [has_printf=yes])
+ dnl   fi
+ dnl   AC_EGREP_HEADER([malloc], [stdlib.h], [has_malloc=yes])
+ EGREP_TRADITIONAL=$EGREP
+ ac_cv_path_EGREP_TRADITIONAL=$EGREP
 ])# AC_PROG_EGREP
 
+# _AC_PROG_EGREP_TRADITIONAL
+# --------------------------
+# Check for a grep -E program or equivalent.
+# Less stringent than AC_PROG_EGREP, as it succeeds even if there
+# is no working 'grep' or if the -e option does not work (e.g., AT&T UnixPC).
+AC_DEFUN([_AC_PROG_EGREP_TRADITIONAL],
+[AC_CACHE_CHECK([for egrep -e], [ac_cv_path_EGREP_TRADITIONAL],
+   [_AC_PROG_GREP([EGREP_TRADITIONAL], [grep ggrep],
+      [-E 'EGR(EP|AC)_TRADITIONAL$'], [:])
+    AS_IF([test "$ac_cv_path_EGREP_TRADITIONAL"],
+      [ac_cv_path_EGREP_TRADITIONAL="$ac_cv_path_EGREP_TRADITIONAL -E"],
+      [_AC_PROG_GREP([EGREP_TRADITIONAL], [egrep],
+	 ['EGR(EP|AC)_TRADITIONAL$'])])])
+ EGREP_TRADITIONAL=$ac_cv_path_EGREP_TRADITIONAL
+])
 
 # AC_PROG_FGREP
 # -------------
@@ -394,15 +427,16 @@ AC_DEFUN([AC_PROG_GREP],
 ])
 
 
-# _AC_PROG_GREP(VARIABLE, PROGNAME-LIST, PROG-ARGUMENTS)
-# ------------------------------------------------------
+# _AC_PROG_GREP(VARIABLE, PROGNAME-LIST, [PROG-ARGUMENTS],
+#		[ACTION-IF-NOT-FOUND])
+# --------------------------------------------------------
 # Solaris 9 /usr/xpg4/bin/*grep is suitable, but /usr/bin/*grep lacks -e.
 # AIX silently truncates long lines before matching.
 # NeXT understands only one -e and truncates long lines.
 m4_define([_AC_PROG_GREP],
 [_AC_PATH_PROGS_FEATURE_CHECK([$1], [$2],
 	[_AC_FEATURE_CHECK_LENGTH([ac_path_$1], [ac_cv_path_$1],
-		["$ac_path_$1" $3], [$1])], [],
+		["$ac_path_$1" $3], [$1])], [$4],
 	[$PATH$PATH_SEPARATOR/usr/xpg4/bin])dnl
 ])
 
@@ -509,11 +543,12 @@ dnl   # for best performing tool in a list breaks down.
 # ----------------------------------------------------------------
 m4_define([_AC_PATH_PROG_FLAVOR_GNU],
 [# Check for GNU $1
-case `"$1" --version 2>&1` in
+case `"$1" --version 2>&1` in @%:@(
 *GNU*)
   $2;;
 m4_ifval([$3],
-[*)
+[@%:@(
+*)
   $3;;
 ])esac
 ])# _AC_PATH_PROG_FLAVOR_GNU
@@ -615,36 +650,33 @@ AC_SUBST(INSTALL_DATA)dnl
 
 # AC_PROG_MKDIR_P
 # ---------------
-# Check whether `mkdir -p' is known to be race-free, and fall back to
+# Check whether 'mkdir -p' is known to be race-free, and fall back to
 # install-sh -d otherwise.
 #
-# Automake 1.8 used `mkdir -m 0755 -p --' to ensure that directories
-# created by `make install' are always world readable, even if the
+# Automake 1.8 used 'mkdir -m 0755 -p --' to ensure that directories
+# created by 'make install' are always world readable, even if the
 # installer happens to have an overly restrictive umask (e.g. 077).
 # This was a mistake.  There are at least two reasons why we must not
-# use `-m 0755':
+# use '-m 0755':
 #   - it causes special bits like SGID to be ignored,
 #   - it may be too restrictive (some setups expect 775 directories).
 #
 # Do not use -m 0755 and let people choose whatever they expect by
 # setting umask.
 #
-# We cannot accept any implementation of `mkdir' that recognizes `-p'.
-# Some implementations (such as Solaris 8's) are vulnerable to race conditions:
-# if a parallel make tries to run `mkdir -p a/b' and `mkdir -p a/c'
+# Some implementations (such as Solaris 10's) are vulnerable to race conditions:
+# if a parallel make tries to run 'mkdir -p a/b' and 'mkdir -p a/c'
 # concurrently, both version can detect that a/ is missing, but only
-# one can create it and the other will error out.  Consequently we
-# restrict ourselves to known race-free implementations.
+# one can create it and the other will error out.  Users of these
+# implementations should install and use GNU mkdir instead;
+# on Solaris 10, this is /opt/sfw/bin/mkdir.
 #
-# Automake used to define mkdir_p as `mkdir -p .', in order to
+# Automake used to define mkdir_p as 'mkdir -p .', in order to
 # allow $(mkdir_p) to be used without argument.  As in
 #   $(mkdir_p) $(somedir)
 # where $(somedir) is conditionally defined.  However we don't do
 # that for MKDIR_P.
-#  1. before we restricted the check to GNU mkdir, `mkdir -p .' was
-#     reported to fail in read-only directories.  The system where this
-#     happened has been forgotten.
-#  2. in practice we call $(MKDIR_P) on directories such as
+#  * in practice we call $(MKDIR_P) on directories such as
 #       $(MKDIR_P) "$(DESTDIR)$(somedir)"
 #     and we don't want to create $(DESTDIR) if $(somedir) is empty.
 #     To support the latter case, we have to write
@@ -652,13 +684,10 @@ AC_SUBST(INSTALL_DATA)dnl
 #     so $(MKDIR_P) always has an argument.
 #     We will have better chances of detecting a missing test if
 #     $(MKDIR_P) complains about missing arguments.
-#  3. $(MKDIR_P) is named after `mkdir -p' and we don't expect this
+#   * $(MKDIR_P) is named after 'mkdir -p' and we don't expect this
 #     to accept no argument.
-#  4. having something like `mkdir .' in the output is unsightly.
+#   * having something like 'mkdir .' in the output is unsightly.
 #
-# On NextStep and OpenStep, the `mkdir' command does not
-# recognize any option.  It will interpret all options as
-# directories to create.
 AN_MAKEVAR([MKDIR_P], [AC_PROG_MKDIR_P])
 AC_DEFUN_ONCE([AC_PROG_MKDIR_P],
 [AC_REQUIRE_AUX_FILE([install-sh])dnl
@@ -671,7 +700,7 @@ if test -z "$MKDIR_P"; then
 	   AS_EXECUTABLE_P(["$as_dir$ac_prog$ac_exec_ext"]) || continue
 	   case `"$as_dir$ac_prog$ac_exec_ext" --version 2>&1` in #(
 	     'mkdir ('*'coreutils) '* | \
-	     'BusyBox '* | \
+	     *'BusyBox '* | \
 	     'mkdir (fileutils) '4.1*)
 	       ac_cv_path_mkdir=$as_dir$ac_prog$ac_exec_ext
 	       break 3;;
@@ -682,11 +711,9 @@ if test -z "$MKDIR_P"; then
   if test ${ac_cv_path_mkdir+y}; then
     MKDIR_P="$ac_cv_path_mkdir -p"
   else
-    # As a last resort, use the slow shell script.  Don't cache a
-    # value for MKDIR_P within a source directory, because that will
-    # break other packages using the cache if that directory is
-    # removed, or if the value is a relative name.
-    MKDIR_P="$ac_install_sh -d"
+    # As a last resort, use plain mkdir -p,
+    # in the hope it doesn't have the bugs of ancient mkdir.
+    MKDIR_P='mkdir -p'
   fi
 fi
 dnl status.m4 does special magic for MKDIR_P instead of AC_SUBST,
@@ -820,9 +847,9 @@ AS_VAR_SET_IF([LEXLIB], [], [
         [LEXLIB=''],
 	[LEXLIB=$ac_cv_lib_lex])
 dnl
-dnl For compatibility with autoconf 2.69 and prior, if $1 is not `noyywrap',
+dnl For compatibility with autoconf 2.69 and prior, if $1 is not 'noyywrap',
 dnl and we didn't already set LEXLIB to -ll or -lfl, see if one of those
-dnl libraries provides yywrap and set LEXLIB to it if so.  If $1 is `yywrap',
+dnl libraries provides yywrap and set LEXLIB to it if so.  If $1 is 'yywrap',
 dnl and we don't find a library that provides yywrap, we fail.
   m4_case([$1],
     [noyywrap],
@@ -866,8 +893,8 @@ AC_COMPILE_IFELSE([AC_LANG_DEFINES_PROVIDED
 dnl
 if test $ac_cv_prog_lex_yytext_pointer = yes; then
   AC_DEFINE(YYTEXT_POINTER, 1,
-	    [Define to 1 if `lex' declares `yytext' as a `char *' by default,
-	     not a `char[]'.])
+	    [Define to 1 if 'lex' declares 'yytext' as a 'char *' by default,
+	     not a 'char[]'.])
 fi
 ])
 rm -f conftest.l $LEX_OUTPUT_ROOT.c
@@ -897,8 +924,8 @@ fi
 # ----------------
 # Define SET_MAKE to set ${MAKE} if Make does not do so automatically.  If Make
 # does not run the test Makefile, we assume that the Make program the user will
-# invoke does set $(MAKE).  This is typical, and emitting `MAKE=foomake' is
-# always wrong if `foomake' is not available or does not work.
+# invoke does set $(MAKE).  This is typical, and emitting 'MAKE=foomake' is
+# always wrong if 'foomake' is not available or does not work.
 AN_MAKEVAR([MAKE], [AC_PROG_MAKE_SET])
 AN_PROGRAM([make], [AC_PROG_MAKE_SET])
 AC_DEFUN([AC_PROG_MAKE_SET],
@@ -980,9 +1007,9 @@ AN_PROGRAM([bison], [AC_PROG_YACC])
 AC_DEFUN([AC_PROG_YACC],
 [AC_CHECK_PROGS(YACC, 'bison -y' byacc, yacc)dnl
 AC_ARG_VAR(YACC,
-[The `Yet Another Compiler Compiler' implementation to use.  Defaults to
-the first program found out of: `bison -y', `byacc', `yacc'.])dnl
+[The 'Yet Another Compiler Compiler' implementation to use.  Defaults to
+the first program found out of: 'bison -y', 'byacc', 'yacc'.])dnl
 AC_ARG_VAR(YFLAGS,
 [The list of arguments that will be passed by default to $YACC.  This script
-will default YFLAGS to the empty string to avoid a default value of `-d' given
+will default YFLAGS to the empty string to avoid a default value of '-d' given
 by some make applications.])])

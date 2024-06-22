@@ -1,6 +1,6 @@
 # This file is part of Autoconf.			-*- Autoconf -*-
 # Programming languages support.
-# Copyright (C) 2001-2017, 2020-2021 Free Software Foundation, Inc.
+# Copyright (C) 2001-2017, 2020-2023 Free Software Foundation, Inc.
 
 # This file is part of Autoconf.  This program is free
 # software; you can redistribute it and/or modify it under the
@@ -24,7 +24,7 @@
 
 # Written by David MacKenzie, with help from
 # Akim Demaille, Paul Eggert,
-# Franc,ois Pinard, Karl Berry, Richard Pixley, Ian Lance Taylor,
+# François Pinard, Karl Berry, Richard Pixley, Ian Lance Taylor,
 # Roland McGrath, Noah Friedman, david d zuhn, and many others.
 
 
@@ -100,7 +100,7 @@ int
 main (void)
 {
 dnl Do *not* indent the following line: there may be CPP directives.
-dnl Don't move the `;' right after for the same reason.
+dnl Don't move the ';' right after for the same reason.
 $2
   ;
   return 0;
@@ -114,6 +114,8 @@ $2
 m4_define([_AC_LANG_IO_PROGRAM(C)],
 [AC_LANG_PROGRAM([@%:@include <stdio.h>],
 [FILE *f = fopen ("conftest.out", "w");
+ if (!f)
+  return 1;
  return ferror (f) || fclose (f) != 0;
 ])])
 
@@ -126,8 +128,14 @@ m4_define([AC_LANG_CALL(C)],
 m4_if([$2], [main], ,
 [/* Override any GCC internal prototype to avoid an error.
    Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-char $2 ();])], [return $2 ();])])
+   builtin and then its argument prototype would still apply.
+   The 'extern "C"' is for builds by C++ compilers;
+   although this is not generally supported in C code supporting it here
+   has little cost and some practical benefit (sr 110532).  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char $2 (void);])], [return $2 ();])])
 
 
 # AC_LANG_FUNC_LINK_TRY(C)(FUNCTION)
@@ -151,7 +159,7 @@ m4_define([AC_LANG_FUNC_LINK_TRY(C)],
 #define $1 innocuous_$1
 
 /* System header to define __stub macros and hopefully few prototypes,
-   which can conflict with char $1 (); below.  */
+   which can conflict with char $1 (void); below.  */
 
 #include <limits.h>
 #undef $1
@@ -162,7 +170,7 @@ m4_define([AC_LANG_FUNC_LINK_TRY(C)],
 #ifdef __cplusplus
 extern "C"
 #endif
-char $1 ();
+char $1 (void);
 /* The GNU C library defines this for functions which it implements
     to always fail with ENOSYS.  Some functions are actually named
     something starting with __ and the normal name is an alias.  */
@@ -176,8 +184,8 @@ choke me
 # -------------------------------------------------
 # Return a program that is valid if EXPRESSION is nonzero.
 # EXPRESSION must be an integer constant expression.
-# Be sure to use this array to avoid `unused' warnings, which are even
-# errors with `-W error'.
+# Be sure to use this array to avoid 'unused' warnings, which are even
+# errors with '-W error'.
 m4_define([AC_LANG_BOOL_COMPILE_TRY(C)],
 [AC_LANG_PROGRAM([$1], [static int test_array @<:@1 - 2 * !($2)@:>@;
 test_array @<:@0@:>@ = 0;
@@ -187,7 +195,7 @@ return test_array @<:@0@:>@;
 
 # AC_LANG_INT_SAVE(C)(PROLOGUE, EXPRESSION)
 # -----------------------------------------
-# We need `stdio.h' to open a `FILE' and `stdlib.h' for `exit'.
+# We need 'stdio.h' to open a 'FILE' and 'stdlib.h' for 'exit'.
 # But we include them only after the EXPRESSION has been evaluated.
 m4_define([AC_LANG_INT_SAVE(C)],
 [AC_LANG_PROGRAM([$1
@@ -376,7 +384,7 @@ ac_preproc_ok=:
 break])
 
 done
-# Because of `break', _AC_PREPROC_IFELSE's cleaning code was skipped.
+# Because of 'break', _AC_PREPROC_IFELSE's cleaning code was skipped.
 rm -f conftest.i conftest.err conftest.$ac_ext
 AS_IF([$ac_preproc_ok], [$1], [$2])
 ])# _AC_PROG_PREPROC_WORKS_IFELSE
@@ -545,34 +553,11 @@ fi[]dnl
 ])# _AC_PROG_CC_G
 
 
-# AC_PROG_GCC_TRADITIONAL
-# -----------------------
-AC_DEFUN([AC_PROG_GCC_TRADITIONAL],
-[AC_REQUIRE([AC_PROG_CC])dnl
-if test $ac_cv_c_compiler_gnu = yes; then
-    AC_CACHE_CHECK(whether $CC needs -traditional,
-      ac_cv_prog_gcc_traditional,
-[  ac_pattern="Autoconf.*'x'"
-  AC_EGREP_CPP($ac_pattern, [#include <sgtty.h>
-Autoconf TIOCGETP],
-  ac_cv_prog_gcc_traditional=yes, ac_cv_prog_gcc_traditional=no)
-
-  if test $ac_cv_prog_gcc_traditional = no; then
-    AC_EGREP_CPP($ac_pattern, [#include <termio.h>
-Autoconf TCGETA],
-    ac_cv_prog_gcc_traditional=yes)
-  fi])
-  if test $ac_cv_prog_gcc_traditional = yes; then
-    CC="$CC -traditional"
-  fi
-fi
-])# AC_PROG_GCC_TRADITIONAL
-
-
 # AC_PROG_CC_C_O
 # --------------
 AC_DEFUN([AC_PROG_CC_C_O],
 [AC_REQUIRE([AC_PROG_CC])dnl
+AC_LANG_PUSH([C])
 if test "x$CC" != xcc; then
   AC_MSG_CHECKING([whether $CC and cc understand -c and -o together])
 else
@@ -619,6 +604,7 @@ else
   AC_DEFINE(NO_MINUS_C_MINUS_O, 1,
 	   [Define to 1 if your C compiler doesn't accept -c and -o together.])
 fi
+AC_LANG_POP([C])
 ])# AC_PROG_CC_C_O
 
 
@@ -688,7 +674,7 @@ AU_DEFUN([ac_cv_prog_gxx],
 # for (if not specified, a default list is used).  This just gives the
 # user an opportunity to specify an alternative search list for the C++
 # compiler.
-# aCC	HP-UX C++ compiler much better than `CC', so test before.
+# aCC	HP-UX C++ compiler much better than 'CC', so test before.
 # FCC   Fujitsu C++ compiler
 # KCC	KAI C++ compiler
 # RCC	Rational C++
@@ -782,8 +768,8 @@ fi[]dnl
 
 # AC_PROG_CXX_C_O
 # ---------------
-# Test if the C++ compiler accepts the options `-c' and `-o'
-# simultaneously, and define `CXX_NO_MINUS_C_MINUS_O' if it does not.
+# Test if the C++ compiler accepts the options '-c' and '-o'
+# simultaneously, and define 'CXX_NO_MINUS_C_MINUS_O' if it does not.
 AC_DEFUN([AC_PROG_CXX_C_O],
 [AC_REQUIRE([AC_PROG_CXX])dnl
 AC_LANG_PUSH([C++])dnl
@@ -791,7 +777,7 @@ AC_CACHE_CHECK([whether $CXX understands -c and -o together],
 	       [ac_cv_prog_cxx_c_o],
 [AC_LANG_CONFTEST([AC_LANG_PROGRAM([])])
 # We test twice because some compilers refuse to overwrite an existing
-# `.o' file with `-o', although they will create one.
+# '.o' file with '-o', although they will create one.
 ac_try='$CXX $CXXFLAGS -c conftest.$ac_ext -o conftest2.$ac_objext >&AS_MESSAGE_LOG_FD'
 rm -f conftest2.*
 if _AC_DO_VAR(ac_try) &&
@@ -1112,7 +1098,7 @@ fi[]dnl
 # main with its usual two arguments, to give the test fragments some
 # convenient non-compile-time-constant values to pass around.  In main,
 # there is an int variable 'ok' which will eventually become the return
-# value; use `ok |= ...' to consume the results of operations.
+# value; use 'ok |= ...' to consume the results of operations.
 #
 # Warning: each test program may only use the headers required to
 # exist in the relevant standard's *freestanding* environment, in case
@@ -1147,9 +1133,7 @@ struct stat;
 /* Most of the following tests are stolen from RCS 5.7 src/conf.sh.  */
 struct buf { int x; };
 struct buf * (*rcsopen) (struct buf *, struct stat *, int);
-static char *e (p, i)
-     char **p;
-     int i;
+static char *e (char **p, int i)
 {
   return p[i];
 }
@@ -1162,6 +1146,21 @@ static char *f (char * (*g) (char **, int), char **p, ...)
   va_end (v);
   return s;
 }
+
+/* C89 style stringification. */
+#define noexpand_stringify(a) #a
+const char *stringified = noexpand_stringify(arbitrary+token=sequence);
+
+/* C89 style token pasting.  Exercises some of the corner cases that
+   e.g. old MSVC gets wrong, but not very hard. */
+#define noexpand_concat(a,b) a##b
+#define expand_concat(a,b) noexpand_concat(a,b)
+extern int vA;
+extern int vbee;
+#define aye A
+#define bee B
+int *pvA = &expand_concat(v,aye);
+int *pvbee = &noexpand_concat(v,bee);
 
 /* OSF 4.0 Compaq cc is some sort of almost-ANSI by default.  It has
    function prototypes and stuff, but not \xHH hex character constants.
@@ -1196,16 +1195,19 @@ AC_DEFUN([_AC_C_C99_TEST_GLOBALS],
 [m4_divert_text([INIT_PREPARE],
 [[# Test code for whether the C compiler supports C99 (global declarations)
 ac_c_conftest_c99_globals='
-// Does the compiler advertise C99 conformance?
+/* Does the compiler advertise C99 conformance? */
 #if !defined __STDC_VERSION__ || __STDC_VERSION__ < 199901L
 # error "Compiler does not advertise C99 conformance"
 #endif
+
+// See if C++-style comments work.
 
 #include <stdbool.h>
 extern int puts (const char *);
 extern int printf (const char *, ...);
 extern int dprintf (int, const char *, ...);
 extern void *malloc (size_t);
+extern void free (void *);
 
 // Check varargs macros.  These examples are taken from C99 6.10.3.5.
 // dprintf is used instead of fprintf to avoid needing to declare
@@ -1255,7 +1257,6 @@ typedef const char *ccp;
 static inline int
 test_restrict (ccp restrict text)
 {
-  // See if C++-style comments work.
   // Iterate through items via the restricted pointer.
   // Also check for declarations in for loops.
   for (unsigned int i = 0; *(text+i) != '\''\0'\''; ++i)
@@ -1324,6 +1325,8 @@ ac_c_conftest_c99_main='
   ia->datasize = 10;
   for (int i = 0; i < ia->datasize; ++i)
     ia->data[i] = i * 1.234;
+  // Work around memory leak warnings.
+  free (ia);
 
   // Check named initializers.
   struct named_init ni = {
@@ -1348,7 +1351,7 @@ AC_DEFUN([_AC_C_C11_TEST_GLOBALS],
 [m4_divert_text([INIT_PREPARE],
 [[# Test code for whether the C compiler supports C11 (global declarations)
 ac_c_conftest_c11_globals='
-// Does the compiler advertise C11 conformance?
+/* Does the compiler advertise C11 conformance? */
 #if !defined __STDC_VERSION__ || __STDC_VERSION__ < 201112L
 # error "Compiler does not advertise C11 conformance"
 #endif
@@ -1576,14 +1579,14 @@ m4_define([_AC_C_C11_OPTIONS], [
 #
 # If we find a way to make the test program compile, set cache variable
 # ac_cv_prog_cc_cEDITION to the options required (if any), and add those
-# options to $CC.  Set shell variable ac_prog_cc_stdc to `cEDITION',
+# options to $CC.  Set shell variable ac_prog_cc_stdc to 'cEDITION',
 # and set shell variable ac_cv_prog_cc_stdc to the options required.
 # (Neither of these variables is AC_SUBSTed.  ac_cv_prog_cc_stdc used
 # to be a cache variable and is preserved with this name for backward
-# compatibility.)  Otherwise, ac_cv_prog_cc_cEDITION is set to `no'
+# compatibility.)  Otherwise, ac_cv_prog_cc_cEDITION is set to 'no'
 # and the other variables are not changed.
 #
-# If ac_prog_cc_stdc is already set to a value other than `no',
+# If ac_prog_cc_stdc is already set to a value other than 'no',
 # the shell code produced by this macro does nothing.  This is so
 # _AC_PROG_CC_STDC_EDITION can use m4_map to iterate through
 # all the editions.
@@ -1668,6 +1671,12 @@ AU_DEFUN([AC_PROG_CC_STDC],
   [$0 is obsolete; use AC_PROG_CC]
 )
 
+# AC_PROG_GCC_TRADITIONAL
+# -----------------------
+AU_DEFUN([AC_PROG_GCC_TRADITIONAL],
+  [AC_REQUIRE([AC_PROG_CC])],
+  [$0 is obsolete; use AC_PROG_CC]
+)
 
 # AC_C_BACKSLASH_A
 # ----------------
@@ -1702,7 +1711,7 @@ AU_DEFUN([AC_C_CROSS], [])
 # ------------------
 AC_DEFUN([AC_C_CHAR_UNSIGNED],
 [AH_VERBATIM([__CHAR_UNSIGNED__],
-[/* Define to 1 if type `char' is unsigned and your compiler does not
+[/* Define to 1 if type 'char' is unsigned and your compiler does not
    predefine this macro.  */
 #ifndef __CHAR_UNSIGNED__
 # undef __CHAR_UNSIGNED__
@@ -1772,8 +1781,8 @@ AC_DEFUN([AC_C_BIGENDIAN],
 	   [[#include <sys/types.h>
 	     #include <sys/param.h>
 	   ]],
-	   [[#if ! (defined BYTE_ORDER && defined BIG_ENDIAN \
-		     && defined LITTLE_ENDIAN && BYTE_ORDER && BIG_ENDIAN \
+	   [[#if ! (defined BYTE_ORDER && defined BIG_ENDIAN \\
+		     && defined LITTLE_ENDIAN && BYTE_ORDER && BIG_ENDIAN \\
 		     && LITTLE_ENDIAN)
 	      bogus endian macros
 	     #endif
@@ -1830,8 +1839,8 @@ AC_DEFUN([AC_C_BIGENDIAN],
 	[ac_cv_c_bigendian=no],
 	[ac_cv_c_bigendian=yes],
 	[# Try to guess by grepping values from an object file.
-	 AC_COMPILE_IFELSE(
-	   [AC_LANG_PROGRAM(
+	 AC_LINK_IFELSE(
+	   [AC_LANG_SOURCE(
 	      [[unsigned short int ascii_mm[] =
 		  { 0x4249, 0x4765, 0x6E44, 0x6961, 0x6E53, 0x7953, 0 };
 		unsigned short int ascii_ii[] =
@@ -1846,13 +1855,20 @@ AC_DEFUN([AC_C_BIGENDIAN],
 		int use_ebcdic (int i) {
 		  return ebcdic_mm[i] + ebcdic_ii[i];
 		}
-		extern int foo;
-	      ]],
-	      [[return use_ascii (foo) == use_ebcdic (foo);]])],
-	   [if grep BIGenDianSyS conftest.$ac_objext >/dev/null; then
+		int
+		main (int argc, char **argv)
+		{
+		  /* Intimidate the compiler so that it does not
+		     optimize the arrays away.  */
+		  char *p = argv[0];
+		  ascii_mm[1] = *p++; ebcdic_mm[1] = *p++;
+		  ascii_ii[1] = *p++; ebcdic_ii[1] = *p++;
+		  return use_ascii (argc) == use_ebcdic (*p);
+		}]])],
+	   [if grep BIGenDianSyS conftest$ac_exeext >/dev/null; then
 	      ac_cv_c_bigendian=yes
 	    fi
-	    if grep LiTTleEnDian conftest.$ac_objext >/dev/null ; then
+	    if grep LiTTleEnDian conftest$ac_exeext >/dev/null ; then
 	      if test "$ac_cv_c_bigendian" = unknown; then
 		ac_cv_c_bigendian=no
 	      else
@@ -1940,7 +1956,7 @@ $ac_kw foo_t foo (void) {return 0; }
 done
 ])
 AH_VERBATIM([inline],
-[/* Define to `__inline__' or `__inline' if that's what the C compiler
+[/* Define to '__inline__' or '__inline' if that's what the C compiler
    calls it, or to nothing if 'inline' is not supported under any name.  */
 #ifndef __cplusplus
 #undef inline
@@ -2022,7 +2038,7 @@ AC_DEFUN([AC_C_CONST],
 		   [ac_cv_c_const=no])])
 if test $ac_cv_c_const = no; then
   AC_DEFINE(const,,
-	    [Define to empty if `const' does not conform to ANSI C.])
+	    [Define to empty if 'const' does not conform to ANSI C.])
 fi
 ])# AC_C_CONST
 
@@ -2105,8 +2121,8 @@ return !x && !y;])],
 		   [ac_cv_c_volatile=no])])
 if test $ac_cv_c_volatile = no; then
   AC_DEFINE(volatile,,
-	    [Define to empty if the keyword `volatile' does not work.
-	     Warning: valid code using `volatile' can become incorrect
+	    [Define to empty if the keyword 'volatile' does not work.
+	     Warning: valid code using 'volatile' can become incorrect
 	     without.  Disable with care.])
 fi
 ])# AC_C_VOLATILE
@@ -2114,18 +2130,12 @@ fi
 
 # AC_C_STRINGIZE
 # --------------
-# Checks if `#' can be used to glue strings together at the CPP level.
+# Checks if '#' can be used to glue strings together at the CPP level.
 # Defines HAVE_STRINGIZE if positive.
+# Obsolete - new code should assume C89 compliance.
 AC_DEFUN([AC_C_STRINGIZE],
-[AC_CACHE_CHECK([for preprocessor stringizing operator],
-		[ac_cv_c_stringize],
-[AC_EGREP_CPP([@%:@teststring],
-	      [@%:@define x(y) #y
-
-char *s = x(teststring);],
-	      [ac_cv_c_stringize=no],
-	      [ac_cv_c_stringize=yes])])
-if test $ac_cv_c_stringize = yes; then
+[AC_REQUIRE([AC_PROG_CC])
+if test "$ac_prog_cc_stdc" != no; then
   AC_DEFINE(HAVE_STRINGIZE, 1,
 	    [Define to 1 if cpp supports the ANSI @%:@ stringizing operator.])
 fi
@@ -2134,8 +2144,8 @@ fi
 
 # AC_C_PROTOTYPES
 # ---------------
-# Check if the C compiler supports prototypes, included if it needs
-# options.
+# Check if the C compiler supports prototypes.
+# Obsolete - new code should assume C89 compliance.
 AC_DEFUN([AC_C_PROTOTYPES],
 [AC_REQUIRE([AC_PROG_CC])dnl
 if test "$ac_prog_cc_stdc" != no; then
@@ -2164,13 +2174,15 @@ AC_DEFUN([AC_C_FLEXIBLE_ARRAY_MEMBER],
 	    struct s *p = (struct s *) malloc (offsetof (struct s, d)
 					       + m * sizeof (double));
 	    p->d[0] = 0.0;
-	    return p->d != (double *) NULL;]])],
+	    m = p->d != (double *) NULL;
+	    free (p);
+	    return m;]])],
        [ac_cv_c_flexmember=yes],
        [ac_cv_c_flexmember=no])])
   if test $ac_cv_c_flexmember = yes; then
     AC_DEFINE([FLEXIBLE_ARRAY_MEMBER], [],
       [Define to nothing if C supports flexible array members, and to
-       1 if it does not.  That way, with a declaration like `struct s
+       1 if it does not.  That way, with a declaration like 'struct s
        { int n; double d@<:@FLEXIBLE_ARRAY_MEMBER@:>@; };', the struct hack
        can be used with pre-C99 compilers.
        When computing the size of such an object, don't use 'sizeof (struct s)'
@@ -2190,11 +2202,11 @@ AC_DEFUN([AC_C_VARARRAYS],
 [
   AC_CACHE_CHECK([for variable-length arrays],
     ac_cv_c_vararrays,
-    [AC_EGREP_CPP([defined],
-       [#ifdef __STDC_NO_VLA__
-	defined
+    [AC_COMPILE_IFELSE([AC_LANG_SOURCE(
+[[	#ifndef __STDC_NO_VLA__
+	#error __STDC_NO_VLA__ not defined
 	#endif
-       ],
+]])],
        [ac_cv_c_vararrays='no: __STDC_NO_VLA__ is defined'],
        [AC_COMPILE_IFELSE(
 	  [AC_LANG_PROGRAM(
@@ -2309,7 +2321,7 @@ m4_define([_AC_LANG_OPENMP(Fortran 77)],
 [
       program main
       implicit none
-!$    integer tid
+!\$    integer tid
       tid = 42
       call omp_set_num_threads(2)
       end
@@ -2733,14 +2745,14 @@ m4_define([_AC_CXX_CXX11_OPTIONS], [
 #
 # If we find a way to make the test program compile, set cache variable
 # ac_cv_prog_cxx_cxxEDITION to the options required (if any), and add those
-# options to $CXX.  Set shell variable ac_prog_cxx_stdcxx to `cxxEDITION',
+# options to $CXX.  Set shell variable ac_prog_cxx_stdcxx to 'cxxEDITION',
 # and set shell variable ac_cv_prog_cxx_stdcxx to the options required.
 # (Neither of these variables is AC_SUBSTed.  ac_cv_prog_cxx_stdcxx used
 # to be a cache variable and is preserved with this name for backward
-# compatibility.)  Otherwise, ac_cv_prog_cxx_cxxEDITION is set to `no'
+# compatibility.)  Otherwise, ac_cv_prog_cxx_cxxEDITION is set to 'no'
 # and the other variables are not changed.
 #
-# If ac_prog_cxx_stdcxx is already set to a value other than `no',
+# If ac_prog_cxx_stdcxx is already set to a value other than 'no',
 # the shell code produced by this macro does nothing.  This is so
 # _AC_PROG_CXX_STDCXX_EDITION can use m4_map to iterate through
 # all the editions.
@@ -2749,8 +2761,8 @@ AC_DEFUN([_AC_PROG_CXX_STDCXX_EDITION_TRY],
 [AC_REQUIRE([_AC_CXX_CXX$1_TEST_PROGRAM])]dnl
 [AS_IF([test x$ac_prog_cxx_stdcxx = xno],
 [AC_MSG_CHECKING([for $CXX option to enable C++$1 features])
-AC_CACHE_VAL(ac_cv_prog_cxx_$1,
-[ac_cv_prog_cxx_$1=no
+AC_CACHE_VAL(ac_cv_prog_cxx_cxx$1,
+[ac_cv_prog_cxx_cxx$1=no
 ac_save_CXX=$CXX
 AC_LANG_CONFTEST([AC_LANG_DEFINES_PROVIDED][$][ac_cxx_conftest_cxx$1_program])
 for ac_arg in '' m4_normalize(m4_defn([_AC_CXX_CXX$1_OPTIONS]))

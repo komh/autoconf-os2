@@ -2,7 +2,7 @@
 
 AT_BANNER([Autotest.])
 
-# Copyright (C) 2004-2017, 2020-2021 Free Software Foundation, Inc.
+# Copyright (C) 2004-2017, 2020-2023 Free Software Foundation, Inc.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ m4_define([AT_DATA_AUTOTEST],
 #                  [DIR = .])
 # --------------------------------------------------------------------
 # Create a new testsuite named NAME that runs a minimal Autotest test suite,
-# SUITE-CODE.  Do not use `testsuite' for NAME, or the log file it generates
+# SUITE-CODE.  Do not use 'testsuite' for NAME, or the log file it generates
 # will overwrite the log that the Autoconf test produces when managing
 # this test case.  STATUS, STDOUT, and STDERR pass directly to the AT_CHECK
 # that compiles the testsuite.  DIR can specify a particular subdirectory
@@ -802,7 +802,7 @@ AT_CHECK_AT_TEST([BS-BS-newline in command],
 conf
 ], [])])
 
-# A `^BS-BS-newline in command' test will run a command named `\'.  No, thanks.
+# A '^BS-BS-newline in command' test will run a command named '\'.  No, thanks.
 
 AT_CHECK_AT_TEST([BSx640-newline in command],
   [AT_CHECK([printf '%s\n' Auto"\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -863,7 +863,7 @@ AT_CLEANUP
 # Create a new test named TITLE that runs an Autotest test suite
 # comprised of a trivial test named TITLE-TO-TEST, which expands
 # to EXPANDED-TITLE-TO-TEST.  XFAIL-CONDITION passes verbatim to
-# AT_CHECK_AT.  Verify that `ok' prints at COLUMN.
+# AT_CHECK_AT.  Verify that 'ok' prints at COLUMN.
 m4_define([AT_CHECK_AT_TITLE],
 [AT_CHECK_AT([$1],
 [[
@@ -1057,7 +1057,7 @@ AT_CHECK([$CONFIG_SHELL ./micro-suite 1=2], [1], [], [ignore], [ignore])
 # Controlling where the testsuite is run.
 AT_CHECK_AT_TEST([Choosing where testsuite is run],
   [AT_CHECK([:])], [], [], [], [], [], [
-dnl AT_CHECK_AT_TEST tests the default of running in `.'.
+dnl AT_CHECK_AT_TEST tests the default of running in '.'.
 AT_CHECK([$CONFIG_SHELL ./micro-suite --clean])
 AT_CHECK([test -f micro-suite.log], [1])
 AT_CHECK([test -d micro-suite.dir], [1])
@@ -1445,8 +1445,16 @@ AT_SKIP_IF([${CONFIG_SHELL-$SHELL} -c 'test -z "${BASH_VERSION+set}]]dnl
 AT_CHECK([mkfifo fifo || exit 77])
 AT_CHECK([${CONFIG_SHELL-$SHELL} -c '(set -m && set +m) || exit 77'],
 	 [], [], [ignore])
+# Parallel tests malfunction with Guix's bash, as of this writing
+# (bash 5.1.8(1)-release, guix 9584b1d 2023-03-12).  I haven't been
+# able to figure out why.
+# It is *probably* safe to assume that if the shell is Bash and /gnu/store
+# exists, then we also have realpath and $(...).
+AT_SKIP_IF(
+  [${CONFIG_SHELL-$SHELL} -c 'test "${BASH_VERSION+set}" = set' &&
+   test -d /gnu/store &&
+   test "$(realpath "${CONFIG_SHELL-$SHELL}" | cut -c-10)" = /gnu/store])
 ])
-
 
 ## ----------------------- ##
 ## parallel test execution ##
@@ -1609,8 +1617,8 @@ AT_SETUP([parallel autotest and signal handling])
 AT_SKIP_PARALLEL_TESTS
 
 # Goals:
-# (1) interrupt `./testsuite -jN'
-# (2) interrupt `make check TESTSUITEFLAGS=-jN'
+# (1) interrupt './testsuite -jN'
+# (2) interrupt 'make check TESTSUITEFLAGS=-jN'
 # (3) no trailing verbose/trace output
 # (4) exit status should be 128+signal
 
@@ -1675,7 +1683,7 @@ for signal in 2 15; do
   # turn off job control.
   # AT_CHECK([[grep '[iI]nterrupt[	 ]' stderr]], [1])
 
-  # Ditto with `make' in the loop.
+  # Ditto with 'make' in the loop.
   # Explicitly setting TESTSUITEFLAGS to empty...
   AT_CHECK_MAKE([TESTSUITEFLAGS=], [], [1], [ignore], [stderr])
   AT_CHECK([grep 'bailing out' stderr], [], [ignore])
@@ -1702,7 +1710,7 @@ AT_CHECK([($CONFIG_SHELL ./micro-suite -d -3 5-; echo $? >status) | sed 5q],
 AT_CHECK([grep '5.*ok' stdout], [1])
 # Apparently some shells don't get around to creating 'status' any more.
 # And ksh93 on FreeBSD uses 256 + 13 instead of 128 + 13
-AT_CHECK([test ! -s status || grep 141 status || grep 269 status],
+AT_CHECK([test ! -s status || grep 141 status || grep 269 status || grep ^0 status ],
 	 [], [ignore])
 AT_CHECK([if test -f micro-suite.dir/7/micro-suite.log; then ]dnl
 	 [  echo "shell ignores SIGPIPE" > sigpipe-stamp ]dnl

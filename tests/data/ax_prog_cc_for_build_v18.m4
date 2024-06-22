@@ -19,7 +19,7 @@
 #   a compiler with an environment variable (like you do for standard CC).
 #
 #   It also sets BUILD_EXEEXT and BUILD_OBJEXT to the executable and object
-#   file extensions for the build platform, and GCC_FOR_BUILD to `yes' if
+#   file extensions for the build platform, and GCC_FOR_BUILD to 'yes' if
 #   the compiler we found is GCC. All these variables but GCC_FOR_BUILD are
 #   substituted in the Makefile.
 #
@@ -125,7 +125,7 @@ popdef([ac_cv_prog_gcc])dnl
 popdef([ac_cv_prog_CPP])dnl
 
 dnl restore global variables ac_ext, ac_cpp, ac_compile,
-dnl ac_link, ac_compiler_gnu (dependant on the current
+dnl ac_link, ac_compiler_gnu (depending on the current
 dnl language after popping):
 AC_LANG_POP([C])
 

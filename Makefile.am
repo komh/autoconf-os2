@@ -1,6 +1,6 @@
 # Make Autoconf.
 
-# Copyright (C) 1999-2004, 2006-2017, 2020-2021 Free Software
+# Copyright (C) 1999-2004, 2006-2017, 2020-2023 Free Software
 # Foundation, Inc.
 
 # This program is free software: you can redistribute it and/or modify
@@ -70,15 +70,13 @@ MAINTAINERCLEANFILES += $(srcdir)/INSTALL
 
 # Don't leave blank line at end of file.
 OMIT_TRAILING_EMPTY_LINES = '/^$$/H; /^$$/d; x; s/\n//p; s/\n*//; x'
-# Prefer 'plain quotes' over `makeinfo quotes'.
-CONVERT_QUOTES = "s/\`\([^']*\)'/'\1'/g"
 
 $(srcdir)/INSTALL: $(top_srcdir)/doc/install.texi
 	echo @firstparagraphindent insert				\
 	  | cat - $(top_srcdir)/doc/install.texi > tmp.texi
 	$(MAKEINFO) $(custom_MAKEINFOFLAGS) $(MAKEINFOFLAGS)		\
 	     --plaintext tmp.texi					\
-	  | sed -e $(CONVERT_QUOTES) -e $(OMIT_TRAILING_EMPTY_LINES)	\
+	  | sed -e $(OMIT_TRAILING_EMPTY_LINES)				\
 	     > $@-t && mv $@-t $@
 	rm -f tmp.texi
 endif
@@ -88,8 +86,8 @@ gen_start_date = 2012-01-15 18:00:00 UTC
 .PHONY: gen-ChangeLog
 gen-ChangeLog:
 	if test -d $(top_srcdir)/.git; then \
-	  $(top_srcdir)/build-aux/gitlog-to-changelog \
-	    --since='$(gen_start_date)' > $(distdir)/cl-t \
+	  (cd $(top_srcdir) && ./build-aux/gitlog-to-changelog \
+	    --since='$(gen_start_date)') > $(distdir)/cl-t \
 	    && rm -f $(distdir)/ChangeLog \
 	    && mv $(distdir)/cl-t $(distdir)/ChangeLog; \
 	fi

@@ -1,7 +1,7 @@
 # This file is part of Autoconf.                -*- Autoconf -*-
 # Driver that loads the Autoconf macro files.
 #
-# Copyright (C) 1994, 1999-2002, 2006, 2008-2017, 2020-2021 Free
+# Copyright (C) 1994, 1999-2002, 2006, 2008-2017, 2020-2023 Free
 # Software Foundation, Inc.
 
 # This file is part of Autoconf.  This program is free
@@ -51,7 +51,7 @@ m4_include([autoconf/specific.m4])
 m4_include([autoconf/oldnames.m4])
 
 # We discourage the use of the non prefixed macro names: M4sugar maps
-# all the builtins into `m4_'.  Autoconf has been converted to these
+# all the builtins into 'm4_'.  Autoconf has been converted to these
 # names too.  But users may still depend upon these, so reestablish
 # them.
 

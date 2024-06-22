@@ -3,7 +3,7 @@
 # @configure_input@
 
 # autoupdate - modernize an Autoconf file.
-# Copyright (C) 1994, 1999-2017, 2020-2021 Free Software Foundation,
+# Copyright (C) 1994, 1999-2017, 2020-2023 Free Software Foundation,
 # Inc.
 
 # This program is free software: you can redistribute it and/or modify
@@ -81,8 +81,9 @@ Library directories:
   -I, --include=DIR          append directory DIR to search path
 
 Report bugs to <bug-autoconf\@gnu.org>.
-GNU Autoconf home page: <https://www.gnu.org/software/autoconf/>.
-General help using GNU software: <https://www.gnu.org/gethelp/>.
+
+The full documentation for Autoconf can be read via 'info autoconf',
+or on the Web at <https://www.gnu.org/software/autoconf/manual/>.
 ";
 
 # $VERSION
@@ -882,7 +883,7 @@ exit 0;
 #     NEW([0, 0],
 #	  0)
 #
-# And we just run m4 on it.  Et voila`, Monsieur !  Mais oui, mais oui.
+# And we just run m4 on it.  Et voilà, Monsieur !  Mais oui, mais oui.
 #
 # Well, there are a few additional technicalities.  For instance, we
 # rely on 'changequote', 'ifelse' and 'defn', but we don't want to

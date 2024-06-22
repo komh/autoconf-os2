@@ -7,7 +7,7 @@ eval 'case $# in 0) exec @PERL@ -S "$0";; *) exec @PERL@ -S "$0" "$@";; esac'
 
 # autoheader -- create 'config.h.in' from 'configure.ac'.
 
-# Copyright (C) 1992-1994, 1996, 1998-2017, 2020-2021 Free Software
+# Copyright (C) 1992-1994, 1996, 1998-2017, 2020-2023 Free Software
 # Foundation, Inc.
 
 # This program is free software: you can redistribute it and/or modify
@@ -74,6 +74,7 @@ or else 'configure.in'.
   -d, --debug              don\'t remove temporary files
   -f, --force              consider all files obsolete
   -W, --warnings=CATEGORY  report the warnings falling in CATEGORY
+                           (comma-separated list accepted)
 
 " . Autom4te::ChannelDefs::usage . "
 
@@ -82,8 +83,9 @@ Library directories:
   -I, --include=DIR          append directory DIR to search path
 
 Report bugs to <bug-autoconf\@gnu.org>.
-GNU Autoconf home page: <https://www.gnu.org/software/autoconf/>.
-General help using GNU software: <https://www.gnu.org/gethelp/>.
+
+The full documentation for Autoconf can be read via 'info autoconf',
+or on the Web at <https://www.gnu.org/software/autoconf/manual/>.
 ";
 
 

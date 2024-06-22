@@ -31,7 +31,7 @@
 @c Same as @dvar{ARG, DEFAULT-VAR}, but with @var instead of @samp
 @c around DEFAULT-VAR.
 @macro dvarv{varname, default}
-@r{[}@var{\varname\} = @var{\default\}@r{]}@c
+@r{[}@var{\varname\} = @var{\default\}@r{]}
 @end macro
 
 @c Handling the indexes with Texinfo yields several different problems.
@@ -182,9 +182,9 @@
 @end macro
 @end ifclear
 
-@c Define an index for functions: `alloca' etc.  Used for the
-@c portability sections and so on.  We can't use `fn' (aka `fnindex),
-@c since `@defmac' goes into it => we'd get all the macros too.
+@c Define an index for functions: 'alloca' etc.  Used for the
+@c portability sections and so on.  We can't use 'fn' (aka 'fnindex'),
+@c since '@defmac' goes into it => we'd get all the macros too.
 
 @c   FIXME: Aaarg!  It seems there are too many indices for TeX :(
 @c
@@ -210,7 +210,7 @@ This manual (@value{UPDATED}) is for GNU Autoconf
 a package for creating scripts to configure source code packages using
 templates and an M4 macro package.
 
-Copyright @copyright{} 1992--1996, 1998--2017, 2020--2021 Free Software
+Copyright @copyright{} 1992--1996, 1998--2017, 2020--2023 Free Software
 Foundation, Inc.
 
 @quotation
@@ -497,7 +497,7 @@ Writing Autoconf Macros
 * Macro Names::                 What to call your new macros
 * Dependencies Between Macros::  What to do when macros depend on other macros
 * Obsoleting Macros::           Warning about old ways of doing things
-* Coding Style::                Writing Autoconf macros @`a la Autoconf
+* Coding Style::                Writing Autoconf macros à la Autoconf
 
 Dependencies Between Macros
 
@@ -604,8 +604,7 @@ Running @command{configure} Scripts
 * Multiple Architectures::      Compiling for multiple architectures at once
 * Installation Names::          Installing in different directories
 * Optional Features::           Selecting optional features
-* Particular Systems::          Particular systems
-* System Type::                 Specifying the system type
+* System Types::                Specifying a system type
 * Sharing Defaults::            Setting site-wide defaults for @command{configure}
 * Defining Variables::          Specifying the compiler etc.
 * configure Invocation::        Changing how @command{configure} runs
@@ -701,7 +700,7 @@ shouted: ``And the Chaos, where do you think it was coming from, hmm?''
 
 ---Anonymous
 @end flushright
-@c (via Franc,ois Pinard)
+@c (via François Pinard)
 
 Autoconf is a tool for producing shell scripts that automatically
 configure software source code packages to adapt to many kinds of
@@ -767,10 +766,10 @@ for more information.
 Autoconf imposes some restrictions on the names of macros used with
 @code{#if} in C programs (@pxref{Preprocessor Symbol Index}).
 
-Autoconf requires GNU M4 version 1.4.6 or later in order to
+Autoconf requires GNU M4 version 1.4.8 or later in order to
 generate the scripts.  It uses features that some versions of M4,
 including GNU M4 1.3, do not have.  Autoconf works better
-with GNU M4 version 1.4.14 or later, though this is not
+with GNU M4 version 1.4.16 or later, though this is not
 required.
 
 @xref{Autoconf 1}, for information about upgrading from version 1.
@@ -901,11 +900,11 @@ GPL or GNU LGPL.
 
 Gnulib modules typically contain C source code along with Autoconf
 macros used to configure the source code.  For example, the Gnulib
-@code{stdalign} module implements a @file{stdalign.h} header that nearly
-conforms to C11, even on old-fashioned hosts that lack @file{stdalign.h}.
+@code{stdckdint} module implements a @file{stdckdint.h} header that nearly
+conforms to C23, even on older hosts that lack @file{stdckdint.h}.
 This module contains a source file for the replacement header, along
 with an Autoconf macro that arranges to use the replacement header on
-old-fashioned systems.
+older systems.
 
 For more information, consult the Gnulib website,
 @uref{https://@/www.gnu.org/@/software/@/gnulib/}.
@@ -1325,7 +1324,7 @@ AC_COMPILE_IFELSE([AC_LANG_SOURCE([[char b[10];]])], [],
 @end example
 
 @noindent
-Voil@`a, you actually produce @samp{char b[10];} this time!
+Voilà, you actually produce @samp{char b[10];} this time!
 
 On the other hand, descriptions (e.g., the last parameter of
 @code{AC_DEFINE} or @code{AS_HELP_STRING}) are not literals---they
@@ -1576,7 +1575,7 @@ Treat all warnings as errors.
 Disable warnings falling into @var{category}.
 @end table
 
-The enviroment variable @env{WARNINGS} may also be set to a
+The environment variable @env{WARNINGS} may also be set to a
 comma-separated list of warning categories to enable or disable.
 It is interpreted exactly the same way as the argument of
 @option{--warnings}, but unknown categories are silently ignored.
@@ -1804,7 +1803,7 @@ Treat all warnings as errors.
 Disable warnings falling into @var{category}.
 @end table
 
-The enviroment variable @env{WARNINGS} may also be set to a
+The environment variable @env{WARNINGS} may also be set to a
 comma-separated list of warning categories to enable or disable.
 It is interpreted exactly the same way as the argument of
 @option{--warnings}, but unknown categories are silently ignored.
@@ -2178,7 +2177,7 @@ without any backslash-newlines.
 @prindex @command{install-sh}
 
 Some Autoconf macros require auxiliary scripts.  @code{AC_PROG_INSTALL}
-and @code{AC_PROG_@w{MKDIR_P}} (@pxref{Particular Programs}) require a
+(@pxref{Particular Programs}) requires a
 fallback implementation of @command{install} called @file{install-sh},
 and the @code{AC_CANONICAL} macros (@pxref{Manual Configuration})
 require the system-identification scripts @file{config.sub} and
@@ -2352,8 +2351,8 @@ You are encouraged to use literals as @var{tags}.  In particular, you
 should avoid
 
 @example
-@dots{} && my_foos="$my_foos fooo"
-@dots{} && my_foos="$my_foos foooo"
+AS_IF([@dots{}], [my_foos="$my_foos fooo"])
+AS_IF([@dots{}], [my_foos="$my_foos foooo"])
 AC_CONFIG_@var{ITEMS}([$my_foos])
 @end example
 
@@ -2361,8 +2360,8 @@ AC_CONFIG_@var{ITEMS}([$my_foos])
 and use this instead:
 
 @example
-@dots{} && AC_CONFIG_@var{ITEMS}([fooo])
-@dots{} && AC_CONFIG_@var{ITEMS}([foooo])
+AS_IF([@dots{}], [AC_CONFIG_@var{ITEMS}([fooo])])
+AS_IF([@dots{}], [AC_CONFIG_@var{ITEMS}([foooo])])
 @end example
 
 The macros @code{AC_CONFIG_FILES} and @code{AC_CONFIG_HEADERS} use
@@ -3612,7 +3611,7 @@ Treat all warnings as errors.
 Disable warnings falling into @var{category}.
 @end table
 
-The enviroment variable @env{WARNINGS} may also be set to a
+The environment variable @env{WARNINGS} may also be set to a
 comma-separated list of warning categories to enable or disable.
 It is interpreted exactly the same way as the argument of
 @option{--warnings}, but unknown categories are silently ignored.
@@ -3844,19 +3843,21 @@ displaying the options of the package @code{foo}.  Instead, you should
 write:
 
 @example
-if test "x$package_foo_enabled" = xyes; then
-  AC_CONFIG_SUBDIRS([foo])
-fi
+AS_IF([test "x$package_foo_enabled" = xyes],
+  [AC_CONFIG_SUBDIRS([foo])])
 @end example
 
 If a given @var{dir} is not found at @command{configure} run time, a
 warning is reported; if the subdirectory is optional, write:
 
 @example
-if test -d "$srcdir/foo"; then
-  AC_CONFIG_SUBDIRS([foo])
-fi
+AS_IF([test -d "$srcdir/foo"],
+  [AC_CONFIG_SUBDIRS([foo])])
 @end example
+
+These examples use @code{AS_IF} instead of ordinary shell @code{if} to
+avoid problems that Autoconf has with macro calls in shell conditionals
+outside macro definitions.  @xref{Common Shell Constructs}.
 
 If a given @var{dir} contains @command{configure.gnu}, it is run instead
 of @command{configure}.  This is for packages that might use a
@@ -4044,21 +4045,23 @@ previous tests, so for example one may write
 if @file{sys/time.h} has already been tested for.
 
 All hosted environments that are still of interest for portable code
-provide all of the headers specified in ISO C90 (as amended in 1995):
+provide all of the headers specified in C89 (as amended in 1995):
 @file{assert.h}, @file{ctype.h}, @file{errno.h}, @file{float.h},
 @file{iso646.h}, @file{limits.h}, @file{locale.h}, @file{math.h},
 @file{setjmp.h}, @file{signal.h}, @file{stdarg.h}, @file{stddef.h},
 @file{stdio.h}, @file{stdlib.h}, @file{string.h}, @file{time.h},
 @file{wchar.h}, and @file{wctype.h}.  Most programs can safely include
-these headers unconditionally.  All other headers, including all headers
-from later revisions of the C standard, need to be tested for
-(@pxref{Header Files}).
+these headers unconditionally.  A program not intended to be portable to
+C89 can also safely include the C99-specified header @file{stdbool.h}.
+Other headers, including headers from C99 and later revisions of the C
+standard, might need to be tested for (@pxref{Header Files}) or their
+bugs may need to be worked around (@pxref{Gnulib}).
 
 If your program needs to be portable to a @emph{freestanding}
 environment, such as an embedded OS that doesn't provide all of the
-facilities of the C90 standard library, you may need to test for some of
+facilities of the C89 standard library, you may need to test for some of
 the above headers as well.  Note that many Autoconf macros internally
-assume that the complete set of C90 headers are available.
+assume that the complete set of C89 headers are available.
 
 Most generic macros use the following macro to provide a default set
 of includes:
@@ -4157,6 +4160,15 @@ general program-check macros.
 
 These macros check for particular programs---whether they exist, and
 in some cases whether they support certain features.
+
+@defmac AC_PROG_AR
+@acindex{PROG_AR}
+@ovindex AR
+@c @caindex prog_AR
+@c @caindex prog_ac_ct_AR
+Set output variable @code{AR} to @samp{ar} if @code{ar} is found, and
+otherwise to @samp{:} (do nothing).
+@end defmac
 
 @defmac AC_PROG_AWK
 @acindex{PROG_AWK}
@@ -4263,16 +4275,10 @@ and its parent directories if needed, and without race conditions when
 two instances of the program attempt to make the same directory at
 nearly the same time.
 
-This macro uses the @samp{mkdir -p} command if possible.  Otherwise, it
-falls back on invoking @command{install-sh} with the @option{-d} option,
-so your package should
-contain @file{install-sh} as described under @code{AC_PROG_INSTALL}.
-An @file{install-sh} file that predates Autoconf 2.60 or Automake 1.10
-is vulnerable to race conditions, so if you want to support parallel
-installs from
-different packages into the same directory you need to make sure you
-have an up-to-date @file{install-sh}.  In particular, be careful about
-using @samp{autoreconf -if} if your Automake predates Automake 1.10.
+This macro uses the equivalent of the @samp{mkdir -p} command.  Ancient
+versions of @command{mkdir} are vulnerable to race conditions, so if you
+want to support parallel installs from different packages into the same
+directory you should use a non-ancient @command{mkdir}.
 
 This macro is related to the @code{AS_MKDIR_P} macro (@pxref{Programming
 in M4sh}), but it sets an output variable intended for use in other
@@ -4282,11 +4288,6 @@ but @code{MKDIR_P} supports the @option{-m} option, e.g., a makefile
 might invoke @code{$(MKDIR_P) -m 0 dir} to create an inaccessible
 directory, and conversely a makefile should use @code{$(MKDIR_P) --
 $(FOO)} if @var{FOO} might yield a value that begins with @samp{-}.
-Finally, @code{AS_MKDIR_P} does not check for race condition
-vulnerability, whereas @code{AC_PROG_MKDIR_P} does.
-
-@samp{@@MKDIR_P@@} is special, as its value may vary for different
-configuration files.
 
 The result of the test can be overridden by setting the variable
 @code{MKDIR_P} or the cache variable @code{ac_cv_path_mkdir}.
@@ -4384,11 +4385,10 @@ historical Lex:
 
 @example
 AC_PROG_LEX
-if test "x$LEX" != xflex; then
-  LEX="$SHELL $missing_dir/missing flex"
-  AC_SUBST([LEX_OUTPUT_ROOT], [lex.yy])
-  AC_SUBST([LEXLIB], [''])
-fi
+AS_IF([test "x$LEX" != xflex],
+  [LEX="$SHELL $missing_dir/missing flex"
+   AC_SUBST([LEX_OUTPUT_ROOT], [lex.yy])
+   AC_SUBST([LEXLIB], [''])])
 @end example
 
 The shell script @command{missing} can be found in the Automake
@@ -4836,12 +4836,6 @@ declared, due to C++ problems of some sort or another.  For this reason
 we suggest that test programs not invoke @code{exit}, but return from
 @code{main} instead.
 
-@item @code{free}
-@c @fuindex free
-@prindex @code{free}
-The C standard says a call @code{free (NULL)} does nothing, but
-some old systems don't support this (e.g., NextStep).
-
 @item @code{isinf}
 @itemx @code{isnan}
 @c @fuindex isinf
@@ -4852,7 +4846,7 @@ In C99 and later, @code{isinf} and @code{isnan} are
 macros.  On some systems just macros are available
 (e.g., HP-UX and Solaris 10), on
 some systems both macros and functions (e.g., glibc 2.3.2), and on some
-systems only functions (e.g., IRIX 6 and Solaris 9).  In some cases
+systems only functions (e.g., IRIX 6).  In some cases
 these functions are declared in nonstandard headers like
 @code{<sunmath.h>} and defined in non-default libraries like
 @option{-lm} or @option{-lsunmath}.
@@ -4901,7 +4895,7 @@ anyway, so it's probably not worth worrying about.
 @item @code{malloc}
 @c @fuindex malloc
 @prindex @code{malloc}
-The C standard says a call @code{malloc (0)} is implementation
+The C standard says a successful call @code{malloc (0)} is implementation
 dependent.  It can return either @code{NULL} or a new non-null pointer.
 The latter is more common (e.g., the GNU C Library) but is by
 no means universal.  @code{AC_FUNC_MALLOC}
@@ -4929,25 +4923,20 @@ environment, rather than inserting it with an empty value.
 @item @code{realloc}
 @c @fuindex realloc
 @prindex @code{realloc}
-The C standard says a call @code{realloc (NULL, size)} is equivalent
-to @code{malloc (size)}, but some old systems don't support this (e.g.,
-NextStep).
+It is problematic to call @code{realloc} with a zero size.
+The C standard says @code{realloc (NULL, 0)} is equivalent to
+@code{malloc (0)}, which means one cannot portably tell whether the call
+has succeeded if it returns a null pointer.  If @code{ptr} is non-null,
+the C standard says @code{realloc (ptr, 0)} has undefined behavior.
+
+The @code{AC_FUNC_REALLOC} macro avoids some of these portability issues,
+and the Gnulib module @code{realloc-gnu} avoids more of them.
+@xref{Particular Functions}.
 
 @item @code{signal} handler
 @c @fuindex signal
 @prindex @code{signal}
 @prindex @code{sigaction}
-Normally @code{signal} takes a handler function with a return type of
-@code{void}, but some old systems required @code{int} instead.  Any
-actual @code{int} value returned is not used; this is only a
-difference in the function prototype demanded.
-
-All systems we know of in current use return @code{void}.  The
-@code{int} was to support K&R C, where of course @code{void} is not
-available.  The obsolete macro @code{AC_TYPE_SIGNAL}
-(@pxref{AC_TYPE_SIGNAL}) can be used to establish the correct type in
-all cases.
-
 In most cases, it is more robust to use @code{sigaction} when it is
 available, rather than @code{signal}.
 
@@ -4959,47 +4948,22 @@ available, rather than @code{signal}.
 In C99 and later, if the output array isn't big enough
 and if no other errors occur, @code{snprintf} and @code{vsnprintf}
 truncate the output and return the number of bytes that ought to have
-been produced.  Some older systems return the truncated length (e.g.,
-GNU C Library 2.0.x or IRIX 6.5), some a negative value
-(e.g., earlier GNU C Library versions), and some the buffer
-length without truncation (e.g., 32-bit Solaris 7).  Also, some buggy
-older systems ignore the length and overrun the buffer (e.g., 64-bit
-Solaris 7).
-
-@item @code{sprintf}
-@c @fuindex sprintf
-@prindex @code{sprintf}
-@c @fuindex vsprintf
-@prindex @code{vsprintf}
-The C standard says @code{sprintf} and @code{vsprintf} return the
-number of bytes written.  On some ancient systems (SunOS 4 for
-instance) they return the buffer pointer instead, but these no
-longer need to be worried about.
-
-@item @code{sscanf}
-@c @fuindex sscanf
-@prindex @code{sscanf}
-On various old systems, e.g., HP-UX 9, @code{sscanf} requires
-that its
-input string be writable (though it doesn't actually change it).  This
-can be a problem when using @command{gcc} since it normally puts
-constant strings in read-only memory (@pxref{Incompatibilities,
-Incompatibilities of GCC, , gcc, Using and
-Porting the GNU Compiler Collection}).  Apparently in some cases even
-having format strings read-only can be a problem.
+been produced.  Some ancient systems returned the truncated length (e.g.,
+GNU C Library 2.0.x or IRIX 6.5), and some a negative value
+(e.g., earlier GNU C Library versions).
 
 @item @code{strerror_r}
 @c @fuindex strerror_r
 @prindex @code{strerror_r}
 Posix specifies that @code{strerror_r} returns an @code{int}, but many
-systems (e.g., GNU C Library version 2.2.4) provide a
+systems (e.g., GNU C Library version 2.36) provide a
 different version returning a @code{char *}.  @code{AC_FUNC_STRERROR_R}
 can detect which is in use (@pxref{Particular Functions}).
 
 @item @code{strnlen}
 @c @fuindex strnlen
 @prindex @code{strnlen}
-AIX 4.3 provides a broken version which produces the
+AIX 4.3 provided a broken version which produces the
 following results:
 
 @example
@@ -5061,9 +5025,8 @@ value back in the caller (e.g., @code{vsnprintf} in the GNU C Library
 @item Signed @code{>>}
 Normally the C @code{>>} right shift of a signed type replicates the
 high bit, giving a so-called ``arithmetic'' shift.  But care should be
-taken since Standard C doesn't require that behavior.  On those
-few processors without a native arithmetic shift (for instance Cray
-vector systems) zero bits may be shifted in, the same as a shift of an
+taken since Standard C doesn't require that behavior.  On a few platforms
+(e.g., Cray C by default) zero bits are shifted in, the same as a shift of an
 unsigned type.
 
 @item Integer @code{/}
@@ -5194,8 +5157,7 @@ should use Gnulib's @code{error} module.  @xref{Gnulib}.
 @prindex @code{fnmatch}
 @caindex func_fnmatch_works
 If the @code{fnmatch} function conforms to Posix, define
-@code{HAVE_FNMATCH}.  Detect common implementation bugs, for example,
-the bugs in Solaris 2.4.
+@code{HAVE_FNMATCH}.
 
 Unlike the other specific
 @code{AC_FUNC} macros, @code{AC_FUNC_FNMATCH} does not replace a
@@ -5268,6 +5230,7 @@ test, you also need to set the @code{ac_cv_func_fork} and
 @code{ac_cv_func_vfork} variables.
 @end defmac
 
+@anchor{AC_FUNC_FSEEKO}
 @defmac AC_FUNC_FSEEKO
 @acindex{FUNC_FSEEKO}
 @cvindex _LARGEFILE_SOURCE
@@ -5277,12 +5240,13 @@ test, you also need to set the @code{ac_cv_func_fork} and
 @c @fuindex ftello
 @prindex @code{ftello}
 @c @caindex sys_largefile_source
-If the @code{fseeko} function is available, define @code{HAVE_FSEEKO}.
-Define @code{_LARGEFILE_SOURCE} if necessary to make the prototype
-visible on some systems (e.g., glibc 2.2).  Otherwise linkage problems
-may occur when compiling with @code{AC_SYS_LARGEFILE} on
-largefile-sensitive systems where @code{off_t} does not default to a
-64bit entity.  All systems with @code{fseeko} also supply @code{ftello}.
+If the @code{fseeko} and @code{ftello} functions are available, define
+@code{HAVE_FSEEKO}.  Define @code{_LARGEFILE_SOURCE} if necessary to
+make the prototype visible.
+
+Configure scripts that use @code{AC_FUNC_FSEEKO} should normally also
+use @code{AC_SYS_LARGEFILE} to ensure that @code{off_t} can represent
+all supported file sizes.  @xref{AC_SYS_LARGEFILE}.
 
 The Gnulib module @code{fseeko} invokes @code{AC_FUNC_FSEEKO}
 and also contains workarounds for other portability problems of
@@ -5292,18 +5256,26 @@ and also contains workarounds for other portability problems of
 @defmac AC_FUNC_GETGROUPS
 @acindex{FUNC_GETGROUPS}
 @cvindex HAVE_GETGROUPS
-@ovindex GETGROUPS_LIBS
+@ovindex GETGROUPS_LIB
 @c @fuindex getgroups
 @prindex @code{getgroups}
 @caindex func_getgroups_works
-If the @code{getgroups} function is available and works (unlike on
-Ultrix 4.3 and NeXTstep 3.2, where @samp{getgroups (0, 0)} always fails),
-define @code{HAVE_GETGROUPS}.  Set @code{GETGROUPS_LIBS} to any libraries
-needed to get that function.  This macro runs @code{AC_TYPE_GETGROUPS}.
+Perform all the checks performed by @code{AC_TYPE_GETGROUPS}
+(@pxref{AC_TYPE_GETGROUPS}).
+Then, if the @code{getgroups} function is available
+and known to work correctly, define @code{HAVE_GETGROUPS}.
+Set the output variable @code{GETGROUPS_LIB} to any libraries
+needed to get that function.
 
-This macro is obsolescent. New programs need not use this macro.  But
-they may want to use the Gnulib module @code{getgroups}, which provides
-workarounds to other portability problems of this function.
+This macro relies on a list of systems with known, serious bugs in
+@code{getgroups}.  If this list mis-identifies your system's
+@code{getgroups} as buggy, or as not buggy, you can override it by
+setting the cache variable @code{ac_cv_func_getgroups_works} in a
+@file{config.site} file (@pxref{Site Defaults}).  Please also report the
+error to @email{bug-autoconf@@gnu.org, the Autoconf Bugs mailing list}.
+
+The Gnulib module @code{getgroups} provides workarounds for additional,
+less severe portability problems with this function.
 @end defmac
 
 @anchor{AC_FUNC_GETLOADAVG}
@@ -5465,9 +5437,7 @@ the @samp{#undef malloc}):
 #include <config.h>
 #undef malloc
 
-#include <sys/types.h>
-
-void *malloc ();
+#include <stdlib.h>
 
 /* Allocate an N-byte block of memory from the heap.
    If N is zero, allocate a 1-byte block.  */
@@ -5511,10 +5481,7 @@ problems of this function.
 @c @fuindex memcmp
 @prindex @code{memcmp}
 @caindex func_memcmp_working
-If the @code{memcmp} function is not available, or does not work on
-8-bit data (like the one on SunOS 4.1.3), or fails when comparing 16
-bytes or more and with at least one buffer not starting on a 4-byte
-boundary (such as the one on NeXT x86 OpenStep), require an
+If the @code{memcmp} function is not available or does not work, require an
 @code{AC_LIBOBJ} replacement for @samp{memcmp}.
 
 The result of this macro is cached in the
@@ -5654,9 +5621,7 @@ which takes two process IDs as arguments (like the BSD @code{setpgrp}).
 @caindex func_stat_empty_string_bug
 @caindex func_lstat_empty_string_bug
 Determine whether @code{stat} or @code{lstat} have the bug that it
-succeeds when given the zero-length file name as argument.  The @code{stat}
-and @code{lstat} from SunOS 4.1.4 and the Hurd (as of 1998-11-01) do
-this.
+succeeds when given the zero-length file name as argument.
 
 If it does, then define @code{HAVE_STAT_EMPTY_STRING_BUG} (or
 @code{HAVE_LSTAT_EMPTY_STRING_BUG}) and ask for an @code{AC_LIBOBJ}
@@ -6071,8 +6036,7 @@ all recent systems it is safe to include both @file{string.h} and
 @hdrindex{stdint.h}
 C99 specifies that @file{inttypes.h} includes @file{stdint.h}, so there's
 no need to include @file{stdint.h} separately in a standard environment.
-However, some implementations have @file{inttypes.h} but not @file{stdint.h}
-(e.g., Solaris 7), and some have @file{stdint.h} but not @file{inttypes.h}
+However, some implementations have @file{stdint.h} but not @file{inttypes.h}
 (e.g. MSVC 2012).  Therefore, it is necessary to check for each and include
 each only if available.
 
@@ -6131,6 +6095,9 @@ exist, and in some cases whether they declare certain symbols.
 Check whether @file{stdbool.h} exists and conforms to C99 or later,
 and cache the result in the @code{ac_cv_header_stdbool_h} variable.
 If the type @code{_Bool} is defined, define @code{HAVE__BOOL} to 1.
+
+This macro is obsolescent, as all current C compilers have @file{stdbool.h},
+a header that is itself obsolescent as of C23.
 
 This macro is intended for use by Gnulib (@pxref{Gnulib}) and other
 packages that supply a substitute @file{stdbool.h} on platforms lacking
@@ -6294,33 +6261,14 @@ New programs need not use this macro.
 @caindex header_stdbool_h
 If @file{stdbool.h} exists and conforms to C99 or later, define
 @code{HAVE_STDBOOL_H} to 1; if the type @code{_Bool} is defined, define
-@code{HAVE__BOOL} to 1.  To fulfill the standard's requirements, your
-program could contain the following code:
+@code{HAVE__BOOL} to 1.
 
-@example
-@group
-#ifdef HAVE_STDBOOL_H
-# include <stdbool.h>
-#else
-# ifndef HAVE__BOOL
-#  ifdef __cplusplus
-typedef bool _Bool;
-#  else
-#   define _Bool signed char
-#  endif
-# endif
-# define bool _Bool
-# define false 0
-# define true 1
-# define __bool_true_false_are_defined 1
-#endif
-@end group
-@end example
-
-Alternatively you can use the @samp{stdbool} package of Gnulib
-(@pxref{Gnulib}).  It simplifies your code so that it can say just
-@code{#include <stdbool.h>}, and it adds support for less-common
-platforms.
+This macro is obsolescent, as all current C compilers have
+@file{stdbool.h}, a header that is itself obsolescent as of C23.
+Nowadays programs that need @code{bool}, @code{true} and @code{false}
+can include @file{stdbool.h} unconditionally, without using
+@code{AC_HEADER_STDBOOL}, and if such a program needs to be portable
+only to C23 or later it need not even include @file{stdbool.h}.
 
 This macro caches its result in the @code{ac_cv_header_stdbool_h}
 variable.
@@ -6338,10 +6286,10 @@ does not.
 
 This macro is obsolescent.  Its sole effect is to make sure that all the
 headers that are included by @code{AC_INCLUDES_DEFAULT} (@pxref{Default
-Includes}), but not part of ISO C90, have been checked for.
+Includes}), but not part of C89, have been checked for.
 
 All hosted environments that are still of interest for portable code
-provide all of the headers specified in ISO C90 (as amended in 1995).
+provide all of the headers specified in C89 (as amended in 1995).
 @end defmac
 
 @defmac AC_HEADER_SYS_WAIT
@@ -6863,7 +6811,7 @@ If @file{stdint.h} or @file{inttypes.h} does not define the type
 integer type that is exactly 8 bits wide and that uses two's complement
 representation, if such a type exists.
 If you are worried about porting to hosts that lack such a type, you can
-use the results of this macro in C89-or-later code as follows:
+use the results of this macro as follows:
 
 @example
 #if HAVE_STDINT_H
@@ -7287,8 +7235,7 @@ suitable for a variable name mapped to underscores.
 Store into the shell variable @var{var} the value of the integer
 @var{expression}.  The
 value should fit in an initializer in a C variable of type @code{signed
-long}.  To support cross compilation (in which case, the macro only works on
-hosts that use twos-complement arithmetic), it should be possible to evaluate
+long}.  To support cross compilation, it should be possible to evaluate
 the expression at compile-time.  If no @var{includes} are specified, the
 default includes are used (@pxref{Default Includes}).
 
@@ -7439,7 +7386,7 @@ OK, since installers with inadequate compilers like IRIX can simply
 examine these compilers' diagnostic output.
 
 @item Don't rely on correct @code{#line} support
-On Solaris, @command{c89} (at least Sun C 5.3 through 5.8)
+On Solaris, @command{c89} (at least through Oracle Developer Studio 12.6)
 diagnoses @code{#line} directives whose line
 numbers are greater than 32767.  Nothing in Posix
 makes this invalid.  That is why Autoconf stopped issuing
@@ -7486,8 +7433,9 @@ person building the package.  @xref{Preset Output Variables}.)
 
 If necessary, options are added to @code{CC} to enable support for
 ISO Standard C features with extensions, preferring the newest edition
-of the C standard that is supported.  Currently the newest edition
-Autoconf knows how to detect support for is ISO C 2011.  After calling
+of the C standard for which detection is supported.  Currently the
+newest edition Autoconf knows how to detect support for is C11, as there is
+little reason to prefer C17 to C11, and C23 is still too new.  After calling
 this macro you can check whether the C compiler has been set to accept
 standard C by inspecting the shell variable @code{ac_prog_cc_stdc}.
 Its value will be @samp{c11}, @samp{c99}, or @samp{c89}, respectively,
@@ -7824,20 +7772,6 @@ This macro is obsolescent, as current C compilers support prototypes.
 New programs need not use this macro.
 @end defmac
 
-@anchor{AC_PROG_GCC_TRADITIONAL}
-@defmac AC_PROG_GCC_TRADITIONAL
-@acindex{PROG_GCC_TRADITIONAL}
-@ovindex CC
-Add @option{-traditional} to output variable @code{CC} if using a
-GNU C compiler and @code{ioctl} does not work properly without
-@option{-traditional}.  That usually happens when the fixed header files
-have not been installed on an old system.
-
-This macro is obsolescent, since current versions of the GNU C
-compiler fix the header files automatically when installed.
-@end defmac
-
-
 @node C++ Compiler
 @subsection C++ Compiler Characteristics
 
@@ -7885,9 +7819,9 @@ person building the package.  @xref{Preset Output Variables}.)
 If necessary, options are added to @code{CXX} to enable support for
 ISO Standard C++ features with extensions, preferring the newest edition
 of the C++ standard that is supported.  Currently the newest edition
-Autoconf knows how to detect support for is ISO C++ 2011.  After calling
+Autoconf knows how to detect support for is C++11.  After calling
 this macro, you can check whether the C++ compiler has been set to
-accept standard C++ by inspecting the shell variable @code{ac_prog_cc_stdc}.
+accept standard C++ by inspecting the shell variable @code{ac_prog_cxx_stdcxx}.
 Its value will be @samp{cxx11} or @samp{cxx98}, respectively,
 if the C++ compiler has been set to use the 2011 or 1990 edition of the
 C++ standard, and @samp{no} if the compiler does not support compiling
@@ -8295,7 +8229,7 @@ needed:
 #  ifdef __cplusplus
      extern "C"
 #  endif
-   int F77_DUMMY_MAIN () @{ return 1; @}
+   int F77_DUMMY_MAIN (void) @{ return 1; @}
 #endif
 @end example
 
@@ -8741,6 +8675,28 @@ The substituted value of @code{FC_MODOUT} may refer to the
 the significant trailing whitespace in a @file{Makefile}.
 @end defmac
 
+@defmac AC_F77_CRAY_POINTERS (@ovar{action-if-success}, @
+  @dvar{action-if-failure, AC_MSG_FAILURE})
+@defmacx AC_FC_CRAY_POINTERS (@ovar{action-if-success}, @
+  @dvar{action-if-failure, AC_MSG_FAILURE})
+@acindex{F77_CRAY_POINTERS}
+@acindex{FC_CRAY_POINTERS}
+@caindex fc_cray_pointer
+
+Try to ensure that the Fortran compiler (@code{$F77} or @code{$FC})
+accepts Cray pointers.  If successful, the @var{action-if-success} is
+called and any needed flags are added to @code{FFLAGS} or
+@code{FCFLAGS}.  Otherwise, @var{action-if-failure} is called, which
+defaults to failing with an error message.
+
+Cray pointers are a non-standard extension supported by many Fortran
+compilers which allow an integer to be declared as C-like pointer to
+a target variable.
+
+The result of this test, or @samp{none} or @samp{unknown}, is cached in
+the @code{ac_cv_f77_cray_ptr} or @code{ac_cv_fc_cray_ptr} variable.
+@end defmac
+
 
 @node Go Compiler
 @subsection Go Compiler Characteristics
@@ -8834,36 +8790,101 @@ the shell variable @code{interpval}; it is set to @samp{yes}
 if the system supports @samp{#!}, @samp{no} if not.
 @end defmac
 
+@anchor{AC_SYS_LARGEFILE}
 @defmac AC_SYS_LARGEFILE
 @acindex{SYS_LARGEFILE}
 @cvindex _FILE_OFFSET_BITS
-@cvindex _LARGE_FILES
+@cvindex _TIME_BITS
 @ovindex CC
 @cindex Large file support
 @cindex LFS
-Arrange for 64-bit file offsets, known as
-@uref{http://@/www.unix.org/@/version2/@/whatsnew/@/lfs20mar.html,
-large-file support}.  On some hosts, one must use special compiler
-options to build programs that can access large files.  Append any such
-options to the output variable @code{CC}.  Define
-@code{_FILE_OFFSET_BITS} and @code{_LARGE_FILES} if necessary.
+If the default @code{off_t} type is a 32-bit integer,
+and therefore cannot be used with files 2 GiB or larger,
+make a wider @code{off_t} available if the system supports it.
+Similarly, widen other types related to sizes of files and file systems
+if possible.  These types may include @code{blkcnt_t}, @code{dev_t},
+@code{ino_t}, @code{fsblkcnt_t}, @code{fsfilcnt_t}, and @code{rlim_t}.
+
+Also, arrange for a @command{configure} option @code{--enable-year2038}
+to request widening the type @code{time_t} as needed to represent file
+wand other timestamps after mid-January 2038.  This widening is possible
+only on 32-bit GNU/Linux x86 and ARM systems with glibc 2.34 or later.
+If year-2038 support is requested but @command{configure} fails to find a way
+to widen @code{time_t} and inspection of the system suggests that
+this feature is available somehow, @command{configure} will error out.
+If you want the default to be @code{--enable-year2038}, you can use
+@code{AC_SYS_YEAR2038} or @code{AC_SYS_YEAR2038_RECOMMENDED}
+instead of @code{AC_SYS_LARGEFILE}.
+In other words, older packages that have long used @code{AC_SYS_LARGEFILE}
+can have year-2038 support on 32-bit GNU/Linux x86 and ARM systems either by
+regenerating @file{configure} with current Autoconf and configuring with
+@option{--enable-year2038}, or by using @code{AC_SYS_YEAR2038} or
+@code{AC_SYS_YEAR2038_RECOMMENDED} and configuring without
+@option{--disable-year2038}.
+A future version of Autoconf might change the @code{AC_SYS_LARGEFILE}
+default to @code{--enable-year2038}; if and when that happens,
+@code{AC_SYS_LARGEFILE} and @code{AC_SYS_YEAR2038} will become equivalent.
+@xref{AC_SYS_YEAR2038}.
+
+Set the shell variable @code{ac_have_largefile} to @samp{yes} or
+@code{no} depending on whether a wide @code{off_t} is available,
+regardless of whether arrangements were necessary.
+Similarly, set the shell variable @code{ac_have_year2038} to @code{yes}
+or @code{no} depending on whether a wide-enough @code{time_t} is available.
+
+Define preprocessor macros if necessary to make types wider;
+for example, on GNU/Linux systems the macros @code{_FILE_OFFSET_BITS}
+and @code{_TIME_BITS} can be defined.  Some of these macros work only if
+defined before the first system header is included;
+therefore, when using this macro in concert with
+@code{AC_CONFIG_HEADERS}, make sure that @file{config.h} is included
+before any system headers.
+
+On obsolete IRIX systems, also change the output variable @code{CC} to
+add compiler options needed for wide @code{off_t}.
 
 Large-file support can be disabled by configuring with the
-@option{--disable-largefile} option.
+@option{--disable-largefile} option, and year-2038 support can
+be enabled and disabled via the @option{--enable-year2038} and
+@option{--disable-year2038} options.  These options have no effect on
+systems where types are wide enough by default.
+Large-file support is required for year-2038 support: if you configure
+with @option{--disable-largefile} on a platform with 32-bit
+@code{time_t}, then year-2038 support is not available.
 
-If you use this macro, check that your program works even when
-@code{off_t} is wider than @code{long int}, since this is common when
-large-file support is enabled.  For example, it is not correct to print
-an arbitrary @code{off_t} value @code{X} with @code{printf ("%ld",
-(long int) X)}.  Also, when using this macro in concert with
-@code{AC_CONFIG_HEADERS}, be sure that @file{config.h} is included
-before any system header.
+Disabling large-file or year-2038 support can have surprising effects,
+such as causing functions like @code{readdir} and @code{stat} to fail
+even on a small file because its inode number or timestamp is out of range.
 
-The LFS introduced the @code{fseeko} and @code{ftello} functions to
-replace their C counterparts @code{fseek} and @code{ftell} that do not
-use @code{off_t}.  Take care to use @code{AC_FUNC_FSEEKO} to make their
-prototypes available when using them and large-file support is
-enabled.
+Regardless of whether you use this macro, portable programs should not
+assume that any of the types listed above fit into a @code{long int}.
+For example, it is not portable to print an arbitrary @code{off_t} or
+@code{time_t} value @code{X} with @code{printf ("%ld", (long int) X)}.
+
+The standard C library functions @code{fseek} and @code{ftell}
+do not use @code{off_t}.  If you need to use either of these functions,
+you should use @code{AC_FUNC_FSEEKO} as well as @code{AC_SYS_LARGEFILE},
+and then use their Posix replacements @code{fseeko} and @code{ftello}.
+@xref{AC_FUNC_FSEEKO}.
+
+When using @code{AC_SYS_LARGEFILE} in different packages that are linked
+together and that have interfaces that depend on the width of @code{off_t},
+@code{time_t} or related types, the simplest thing is to configure all
+components the same way.  For example, if an application uses
+@code{AC_SYS_LARGEFILE} and is configured with
+@option{--enable-year2038}, libraries it links to with an @code{off_t}-
+or @code{time_t}-dependent interface should be configured equivalently.
+Alternatively, you can modify libraries to support both 32- and 64-bit
+interfaces though this is more work and few libraries other than the C
+library itself are modified in this way.
+
+Applications and libraries should be configured compatibly.
+If @code{off_t}, @code{time_t} or related types appear in a library's
+public interface, enabling or disabling the library's large-file or
+year-2038 support may break binary compatibility with applications or
+with other libraries.  Similarly, if an application links to a such a
+library, enabling or disabling the application's large-file support may
+break binary compatibility with that library.
 @end defmac
 
 @anchor{AC_SYS_LONG_FILE_NAMES}
@@ -8882,6 +8903,28 @@ If the system supports file names longer than 14 characters, define
 Check to see if the Posix termios headers and functions are available on the
 system.  If so, set the shell variable @code{ac_cv_sys_posix_termios} to
 @samp{yes}.  If not, set the variable to @samp{no}.
+@end defmac
+
+@anchor{AC_SYS_YEAR2038}
+@defmac AC_SYS_YEAR2038
+@acindex{SYS_YEAR2038}
+@cindex Year 2038
+This is like @code{AC_SYS_LARGEFILE} except it defaults to enabling
+instead of disabling year-2038 support.  Year-2038 support for
+applications and libraries should be configured compatibly.
+@xref{AC_SYS_LARGEFILE}.
+@end defmac
+
+@defmac AC_SYS_YEAR2038_RECOMMENDED
+@acindex{SYS_YEAR2038_RECOMMENDED}
+This macro has the same effect as @code{AC_SYS_YEAR2038},
+but also declares that the program being configured
+should support timestamps after mid-January 2038.
+If a large @code{time_t} is unavailable, @command{configure} will error
+out unless the @option{--disable-year2038} option is specified.
+
+Year-2038 support for applications and libraries should be configured
+compatibly.  @xref{AC_SYS_YEAR2038}.
 @end defmac
 
 @node C and Posix Variants
@@ -8933,12 +8976,15 @@ Enable extensions specified by ISO/IEC TS 18661-1:2014.
 @item __STDC_WANT_IEC_60559_DFP_EXT__
 @cvindex __STDC_WANT_IEC_60559_DFP_EXT__
 Enable extensions specified by ISO/IEC TS 18661-2:2015.
+@item __STDC_WANT_IEC_60559_EXT__
+@cvindex __STDC_WANT_IEC_60559_EXT__
+Enable extensions specified by C23 Annex F.
 @item __STDC_WANT_IEC_60559_FUNCS_EXT__
 @cvindex __STDC_WANT_IEC_60559_FUNCS_EXT__
 Enable extensions specified by ISO/IEC TS 18661-4:2015.
 @item __STDC_WANT_IEC_60559_TYPES_EXT__
 @cvindex __STDC_WANT_IEC_60559_TYPES_EXT__
-Enable extensions specified by ISO/IEC TS 18661-3:2015.
+Enable extensions specified by C23 Annex H and by ISO/IEC TS 18661-3:2015.
 @item __STDC_WANT_LIB_EXT2__
 @cvindex __STDC_WANT_LIB_EXT2__
 Enable extensions specified by ISO/IEC TR 24731-2:2010.
@@ -8985,7 +9031,7 @@ ISO/IEC TR 24732:2009 was superseded by ISO/IEC TS 18661-2:2015.
 
 @cvindex __STDC_WANT_LIB_EXT1__
 The C preprocessor macro @code{__STDC_WANT_LIB_EXT1__} is not defined,
-as C11 Annex K is problematic.  See: O'Donell C, Sebor M.
+as the C standard's Annex K is problematic.  See: O'Donell C, Sebor M.
 @uref{http://www.open-std.org/jtc1/sc22/wg14/www/docs/n1967.htm, Field
 Experience With Annex K---Bounds Checking Interfaces}.
 
@@ -9357,8 +9403,8 @@ after running test programs and if the script is interrupted.
 @node Test Functions
 @subsection Test Functions
 
-These days it's safe to assume support for function prototypes
-(introduced in C89).
+Functions in test code should use function prototypes, introduced in C89
+and required in C23.
 
 Functions that test programs declare should also be conditionalized for
 C++, which requires @samp{extern "C"} prototypes.  Make sure to not
@@ -9408,6 +9454,10 @@ the results of all of the @code{AC_DEFINE} performed so far.
 Note that the @var{source} is evaluated exactly once, like regular
 Autoconf macro arguments, and therefore (i) you may pass a macro
 invocation, (ii) if not, be sure to double quote if needed.
+
+The @var{source} text is expanded as an unquoted here-document, so
+@samp{$}, @samp{`} and some @samp{\}s should be backslash-escaped.
+@xref{Here-Documents}.
 
 This macro issues a warning during @command{autoconf} processing if
 @var{source} does not include an expansion of the macro
@@ -9605,8 +9655,15 @@ Fortran, or Go, since those languages require no preprocessor.
 @acindex{PREPROC_IFELSE}
 Run the preprocessor of the current language (@pxref{Language Choice})
 on the @var{input}, run the shell commands @var{action-if-true} on
-success, @var{action-if-false} otherwise.  The @var{input} can be made
-by @code{AC_LANG_PROGRAM} and friends.
+success, @var{action-if-false} otherwise.
+
+If @var{input} is nonempty use the equivalent of
+@code{AC_LANG_CONFTEST(@var{input})} to generate the current test source
+file; otherwise reuse the already-existing test source file.
+The @var{input} can be made by @code{AC_LANG_PROGRAM} and friends.
+The @var{input} text is expanded as an unquoted here-document, so
+@samp{$}, @samp{`} and some @samp{\}s should be backslash-escaped.
+@xref{Here-Documents}.
 
 This macro uses @code{CPPFLAGS}, but not @code{CFLAGS}, because
 @option{-g}, @option{-O}, etc.@: are not valid options to many C
@@ -9660,8 +9717,10 @@ to run the @emph{preprocessor} and not the compiler?
 @defmac AC_EGREP_HEADER (@var{pattern}, @var{header-file}, @
   @var{action-if-found}, @ovar{action-if-not-found})
 @acindex{EGREP_HEADER}
+@var{pattern}, after being expanded as if in a double-quoted shell string,
+is an extended regular expression.
 If the output of running the preprocessor on the system header file
-@var{header-file} matches the extended regular expression
+@var{header-file} contains a line matching
 @var{pattern}, execute shell commands @var{action-if-found}, otherwise
 execute @var{action-if-not-found}.
 
@@ -9672,10 +9731,12 @@ See below for some problems involving this macro.
 @defmac AC_EGREP_CPP (@var{pattern}, @var{program}, @
   @ovar{action-if-found}, @ovar{action-if-not-found})
 @acindex{EGREP_CPP}
-@var{program} is the text of a C or C++ program, on which shell
-variable, back quote, and backslash substitutions are performed.  If the
-output of running the preprocessor on @var{program} matches the
-extended regular expression @var{pattern}, execute shell commands
+@var{pattern}, after being expanded as if in a double-quoted shell string,
+is an extended regular expression.
+@var{program} is the text of a C or C++ program, which is expanded as an
+unquoted here-document (@pxref{Here-Documents}).  If the
+output of running the preprocessor on @var{program} contains a line
+matching @var{pattern}, execute shell commands
 @var{action-if-found}, otherwise execute @var{action-if-not-found}.
 
 See below for some problems involving this macro.
@@ -9703,11 +9764,13 @@ Version
 
 @noindent
 Because preprocessors are allowed to insert white space, change escapes
-in string contants, insert backlash-newline pairs, or do any of a number
+in string constants, insert backlash-newline pairs, or do any of a number
 of things that do not change the meaning of the preprocessed program, it
 is better to rely on @code{AC_PREPROC_IFELSE} than to resort to
 @code{AC_EGREP_CPP} or @code{AC_EGREP_HEADER}.
 
+For more information about what can appear in portable extended regular
+expressions, @pxref{Problematic Expressions,,,grep, GNU Grep}.
 
 @node Running the Compiler
 @section Running the Compiler
@@ -9722,8 +9785,15 @@ to compile a small program that uses that feature.
 @acindex{COMPILE_IFELSE}
 Run the compiler and compilation flags of the current language
 (@pxref{Language Choice}) on the @var{input}, run the shell commands
-@var{action-if-true} on success, @var{action-if-false} otherwise.  The
-@var{input} can be made by @code{AC_LANG_PROGRAM} and friends.
+@var{action-if-true} on success, @var{action-if-false} otherwise.
+
+If @var{input} is nonempty use the equivalent of
+@code{AC_LANG_CONFTEST(@var{input})} to generate the current test source
+file; otherwise reuse the already-existing test source file.
+The @var{input} can be made by @code{AC_LANG_PROGRAM} and friends.
+The @var{input} text is expanded as an unquoted here-document, so
+@samp{$}, @samp{`} and some @samp{\}s should be backslash-escaped.
+@xref{Here-Documents}.
 
 It is customary to report unexpected failures with
 @code{AC_MSG_FAILURE}.  This macro does not try to link; use
@@ -9773,9 +9843,16 @@ program.
 Run the compiler (and compilation flags) and the linker of the current
 language (@pxref{Language Choice}) on the @var{input}, run the shell
 commands @var{action-if-true} on success, @var{action-if-false}
-otherwise.  The @var{input} can be made by @code{AC_LANG_PROGRAM} and
-friends.  If needed, @var{action-if-true} can further access the
+otherwise.  If needed, @var{action-if-true} can further access the
 just-linked program file @file{conftest$EXEEXT}.
+
+If @var{input} is nonempty use the equivalent of
+@code{AC_LANG_CONFTEST(@var{input})} to generate the current test source
+file; otherwise reuse the already-existing test source file.
+The @var{input} can be made by @code{AC_LANG_PROGRAM} and friends.
+The @var{input} text is expanded as an unquoted here-document, so
+@samp{$}, @samp{`} and some @samp{\}s should be backslash-escaped.
+@xref{Here-Documents}.
 
 @code{LDFLAGS} and @code{LIBS} are used for linking, in addition to the
 current compilation flags.
@@ -9815,7 +9892,14 @@ resulting program.  If the program returns an exit
 status of 0 when executed, run shell commands @var{action-if-true}.
 Otherwise, run shell commands @var{action-if-false}.
 
+If @var{input} is nonempty use the equivalent of
+@code{AC_LANG_CONFTEST(@var{input})} to generate the current test source
+file; otherwise reuse the already-existing test source file.
 The @var{input} can be made by @code{AC_LANG_PROGRAM} and friends.
+The @var{input} text is expanded as an unquoted here-document, so
+@samp{$}, @samp{`} and some @samp{\}s should be backslash-escaped.
+@xref{Here-Documents}.
+
 @code{LDFLAGS} and @code{LIBS} are used for linking, in addition to the
 compilation flags of the current language (@pxref{Language Choice}).
 Additionally, @var{action-if-true} can run @command{./conftest$EXEEXT}
@@ -9992,24 +10076,25 @@ AC_MSG_CHECKING([how to get file system type])
 fstype=no
 # The order of these tests is important.
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <sys/statvfs.h>
-#include <sys/fstyp.h>]])],
-                  [AC_DEFINE([FSTYPE_STATVFS], [1],
-                     [Define if statvfs exists.])
-                   fstype=SVR4])
-if test $fstype = no; then
-  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <sys/statfs.h>
-#include <sys/fstyp.h>]])],
-                  [AC_DEFINE([FSTYPE_USG_STATFS], [1],
-                     [Define if USG statfs.])
-                   fstype=SVR3])
-fi
-if test $fstype = no; then
-  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <sys/statfs.h>
-#include <sys/vmount.h>]])]),
-                  [AC_DEFINE([FSTYPE_AIX_STATFS], [1],
-                     [Define if AIX statfs.])
-                   fstype=AIX])
-fi
+                                     #include <sys/fstyp.h>
+                                   ]])],
+  [AC_DEFINE([FSTYPE_STATVFS], [1],
+     [Define if statvfs exists.])
+   fstype=SVR4])
+AS_IF([test $fstype = no],
+  [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <sys/statfs.h>
+                                        #include <sys/fstyp.h>
+                                      ]])],
+     [AC_DEFINE([FSTYPE_USG_STATFS], [1],
+        [Define if USG statfs.])
+      fstype=SVR3])])
+AS_IF([test $fstype = no],
+  [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <sys/statfs.h>
+                                        #include <sys/vmount.h>
+                                      ]])],
+     [AC_DEFINE([FSTYPE_AIX_STATFS], [1],
+        [Define if AIX statfs.])
+      fstype=AIX])])
 # (more cases omitted here)
 AC_MSG_RESULT([$fstype])
 @end group
@@ -10050,12 +10135,13 @@ already defined a certain C preprocessor symbol, test the value of the
 appropriate cache variable, as in this example:
 
 @example
-AC_CHECK_FUNC([vprintf], [AC_DEFINE([HAVE_VPRINTF], [1],
-                          [Define if vprintf exists.])])
-if test "x$ac_cv_func_vprintf" != xyes; then
-  AC_CHECK_FUNC([_doprnt], [AC_DEFINE([HAVE_DOPRNT], [1],
-                            [Define if _doprnt exists.])])
-fi
+AC_CHECK_FUNC([vprintf],
+  [AC_DEFINE([HAVE_VPRINTF], [1],
+     [Define if vprintf exists.])])
+AS_IF([test "x$ac_cv_func_vprintf" != xyes],
+  [AC_CHECK_FUNC([_doprnt],
+     [AC_DEFINE([HAVE_DOPRNT], [1],
+        [Define if _doprnt exists.])])])
 @end example
 
 If @code{AC_CONFIG_HEADERS} has been called, then instead of creating
@@ -11250,7 +11336,8 @@ expansion of @code{my_case} results in expanding @code{AS_IF} with a
 truncated parameter, and the expansion is syntactically invalid:
 
 @example
-if :; then
+if :
+then :
   case $file_name in
   *.c
 fi echo "C source code";;
@@ -11551,7 +11638,7 @@ Treat all warnings as errors.
 Disable warnings falling into @var{category}.
 @end table
 
-The enviroment variable @env{WARNINGS} may also be set to a
+The environment variable @env{WARNINGS} may also be set to a
 comma-separated list of warning categories to enable or disable.
 It is interpreted exactly the same way as the argument of
 @option{--warnings}, but unknown categories are silently ignored.
@@ -12923,8 +13010,7 @@ m4_apply([m4_join], [[|], [1], [2]])
 
 @defmac m4_count (@var{arg}, @dots{})
 @msindex{count}
-This macro returns the decimal count of the number of arguments it was
-passed.
+This macro returns the number of arguments it was passed.
 @end defmac
 
 @defmac m4_curry (@var{macro}, @var{arg}@dots{})
@@ -13423,8 +13509,19 @@ respectively.
 @subsection Arithmetic computation in M4
 
 The following macros facilitate integer arithmetic operations.
+
 Where a parameter is documented as taking an arithmetic expression, you
 can use anything that can be parsed by @code{m4_eval}.
+Any other numeric parameter should consist of an optional sign followed
+by one or more decimal digits; it is treated as a decimal integer.
+
+Macros that expand to a number do so as either @samp{0}, or an optional
+@samp{-} followed by a nonzero decimal digit followed by zero or more
+decimal digits.
+
+Due to @command{m4} limitations, arithmetic expressions and numeric
+parameters should use only numbers that fit into a 32-bit signed
+integer.
 
 @defmac m4_cmp (@var{expr-1}, @var{expr-2})
 @msindex{cmp}
@@ -13461,13 +13558,13 @@ m4_list_cmp([1],          [1, 2])
 
 @defmac m4_max (@var{arg}, @dots{})
 @msindex{max}
-This macro was introduced in Autoconf 2.62.  Expand to the decimal value
+This macro was introduced in Autoconf 2.62.  Expand to the value
 of the maximum arithmetic expression among all the arguments.
 @end defmac
 
 @defmac m4_min (@var{arg}, @dots{})
 @msindex{min}
-This macro was introduced in Autoconf 2.62.  Expand to the decimal value
+This macro was introduced in Autoconf 2.62.  Expand to the value
 of the minimum arithmetic expression among all the arguments.
 @end defmac
 
@@ -13986,6 +14083,9 @@ Output the directory portion of @var{file-name}.  For example,
 if @code{$file} is @samp{/one/two/three}, the command
 @code{dir=`AS_DIRNAME(["$file"])`} sets @code{dir} to @samp{/one/two}.
 
+@code{AS_DIRNAME} was designed long ago when
+the @command{dirname} command was not universally supported.
+Nowadays one can safely use @code{dir=`dirname -- "$file"`} instead.
 This interface may be improved in the future to avoid forks and losing
 trailing newlines.
 @end defmac
@@ -14100,15 +14200,8 @@ use @code{AC_REQUIRE} directly or indirectly (@pxref{Prerequisite Macros}).
 @defmac AS_MKDIR_P (@var{file-name})
 @asindex{MKDIR_P}
 Make the directory @var{file-name}, including intervening directories
-as necessary.  This is equivalent to @samp{mkdir -p -- @var{file-name}},
-except that it is portable to older versions of @command{mkdir} that
-lack support for the @option{-p} option or for the @option{--}
-delimiter (@pxref{mkdir, , Limitations of Usual Tools}).  Also,
-@code{AS_MKDIR_P}
-succeeds if @var{file-name} is a symbolic link to an existing directory,
-even though Posix is unclear whether @samp{mkdir -p} should
-succeed in that case.  If creation of @var{file-name} fails, exit the
-script.
+as necessary.  This is equivalent to @samp{mkdir -p -- @var{file-name}}.
+If creation of @var{file-name} fails, exit the script.
 
 Also see the @code{AC_PROG_MKDIR_P} macro (@pxref{Particular Programs}).
 @end defmac
@@ -14278,11 +14371,15 @@ assigning the result as the contents of the polymorphic shell variable
 @var{var}.  The code takes advantage of shells that provide @samp{$(())}
 for fewer forks, but uses @command{expr} as a fallback.  Therefore, the
 syntax for a valid @var{expression} is rather limited: all operators
-must occur as separate shell arguments and with proper quoting, there is
-no portable equality operator, all variables containing numeric values
-must be expanded prior to the computation, all numeric values must be
-provided in decimal without leading zeroes, and the first shell argument
-should not be a negative number.  In the following example, this snippet
+must occur as separate shell arguments and with proper quoting;
+the only operators supported are @samp{*}, @samp{/}, @samp{%}, binary
+@samp{+}, binary @samp{-}, @samp{>}, @samp{>=}, @samp{<}, @samp{<=},
+@samp{!=}, @samp{&}, and @samp{|};
+all variables containing numbers must be expanded prior to the computation;
+the first shell argument must not start with @samp{-};
+and each number must be an optional @samp{-} followed by one or more
+decimal digits, where the first digit is nonzero if there is more than
+one digit.  In the following example, this snippet
 will print @samp{(2+3)*4 == 20}.
 
 @example
@@ -14516,6 +14613,10 @@ leave the temporary directory behind.  Hence it is important to use a
 @var{prefix} that makes it easier to determine if a leftover temporary
 directory from an interrupted script is safe to delete.
 
+If you set @code{TMPDIR=$tmp} after invoking this macro, you should
+reset @code{TMPDIR} before deleting the created directory, to avoid
+breaking commands that rely on @code{$TMPDIR}.
+
 The use of the output variable @samp{$tmp} rather than something in the
 @samp{as_} namespace is historical; it has the unfortunate consequence
 that reusing this otherwise common name for any other purpose inside
@@ -14622,7 +14723,7 @@ and M4sh (@pxref{Programming in M4sh}).
 * Macro Names::                 What to call your new macros
 * Dependencies Between Macros::  What to do when macros depend on other macros
 * Obsoleting Macros::           Warning about old ways of doing things
-* Coding Style::                Writing Autoconf macros @`a la Autoconf
+* Coding Style::                Writing Autoconf macros à la Autoconf
 @end menu
 
 @node Macro Definitions
@@ -14849,7 +14950,7 @@ In particular, @samp{AC_REQUIRE([FOO])} is not replaced with the body of
 @example
 @group
 AC_DEFUN([TRAVOLTA],
-[test "$body_temperature_in_celsius" -gt 38 &&
+[test "$body_temperature_in_Celsius" -gt 38 &&
   dance_floor=occupied])
 AC_DEFUN([NEWTON_JOHN],
 [test "x$hair_style" = xcurly &&
@@ -14887,7 +14988,6 @@ test "$body_temperature_in_Celsius" -gt 38 &&
   dance_floor=occupied
 test "x$hair_style" = xcurly &&
   dance_floor=occupied
-fi
 if test "x`date +%A`" = xSaturday; then
 
 
@@ -15434,11 +15534,6 @@ constructs; these will be documented in the rest of this chapter.
 See in particular @ref{Shell Functions} and @ref{Limitations of
 Builtins, , Limitations of Shell Builtins}.
 
-Some ancient systems have quite
-small limits on the length of the @samp{#!} line; for instance, 32
-bytes (not including the newline) on SunOS 4.
-However, these ancient systems are no longer of practical concern.
-
 The set of external programs you should run in a @command{configure} script
 is fairly small.  @xref{Utilities in Makefiles, , Utilities in
 Makefiles, standards, The GNU Coding Standards}, for the list.  This
@@ -15558,10 +15653,10 @@ On Solaris 11, @command{/bin/sh} and @command{/usr/bin/ksh} are both
 @samp{ksh93}.  On Solaris 10 and earlier, @command{/bin/sh} is a
 pre-Posix Bourne shell and the Korn shell is found elsewhere:
 @prindex @command{/usr/bin/ksh} on Solaris
-@command{/usr/bin/ksh} is @samp{ksh88} on Solaris 2.0 through 10,
+@command{/usr/bin/ksh} is @samp{ksh88} on Solaris 10,
 @prindex @command{/usr/xpg4/bin/sh} on Solaris
 @command{/usr/xpg4/bin/sh} is a Posix-compliant variant of
-@samp{ksh88} on Solaris 9 and later,
+@samp{ksh88} on Solaris 10 and later,
 @prindex @command{/usr/dt/bin/dtksh} on Solaris
 and @command{/usr/dt/bin/dtksh} is @samp{ksh93}.
 Variants that are not standard may be parts of optional
@@ -15641,34 +15736,12 @@ foo
 @cindex Here-documents
 @cindex Shell here-documents
 
-Don't rely on @samp{\} being preserved just because it has no special
-meaning together with the next symbol.  In the native @command{sh}
-on OpenBSD 2.7 @samp{\"} expands to @samp{"} in here-documents with
-unquoted delimiter.  As a general rule, if @samp{\\} expands to @samp{\}
-use @samp{\\} to get @samp{\}.
-
-With OpenBSD 2.7's @command{sh}
-
-@example
-@group
-$ @kbd{cat <<EOF
-> \" \\
-> EOF}
-" \
-@end group
-@end example
-
-@noindent
-and with Bash:
-
-@example
-@group
-bash-2.04$ @kbd{cat <<EOF
-> \" \\
-> EOF}
-\" \
-@end group
-@end example
+Because unquoted here-documents are subject to parameter expansion and
+command substitution, the characters @samp{$} and @samp{`} are special
+in unquoted here-documents and should be escaped by @samp{\} if you want
+them as-is.  Also, @samp{\} is special if it precedes @samp{$},
+@samp{`}, newline or @samp{\} itself, so @samp{\} should be doubled if
+it appears before these characters and you want it as-is.
 
 Using command substitutions in a here-document that is fed to a shell
 function is not portable.  For example, with Solaris 10 @command{/bin/sh}:
@@ -15714,20 +15787,19 @@ a single statement contains many here-documents.  For instance if your
 
 @example
 @group
-if <cross_compiling>; then
-  assume this and that
-else
-  check this
-  check that
-  check something else
-  @dots{}
-  on and on forever
-  @dots{}
-fi
+AS_IF([<cross_compiling>],
+  [assume this and that],
+  [check this
+   check that
+   check something else
+   @dots{}
+   on and on forever
+   @dots{}])
 @end group
 @end example
 
-A shell parses the whole @code{if}/@code{fi} construct, creating
+A shell parses the whole @code{if}/@code{fi} construct generated by
+@code{AS_IF}, creating
 temporary files for each here-document in it.  Some shells create links
 for such here-documents on every @code{fork}, so that the clean-up code
 they had installed correctly removes them.  It is creating the links
@@ -16913,7 +16985,7 @@ When it is available, using arithmetic expansion provides a noticeable
 speedup in script execution; but testing for support requires
 @command{eval} to avoid syntax errors.  The following construct is used
 by @code{AS_VAR_ARITH} to provide arithmetic computation when all
-arguments are provided in decimal and without a leading zero, and all
+arguments are decimal integers without leading zeros, and all
 operators are properly quoted and appear as distinct arguments:
 
 @example
@@ -17109,7 +17181,7 @@ not exhaustive, but you should be safe if you avoid the name
 @code{status} and names containing only upper-case letters and
 underscores.
 
-@c Alphabetical order, case insensitive, `A' before `a'.
+@c Alphabetical order, case insensitive, 'A' before 'a'.
 @table @code
 @item ?
 Not all shells correctly reset @samp{$?} after conditionals (@pxref{if,
@@ -17634,7 +17706,7 @@ often possible to avoid this problem using @samp{echo "x$word"}, taking
 the @samp{x} into account later in the pipe.  Many of these limitations
 can be worked around using M4sh (@pxref{Programming in M4sh}).
 
-@c This table includes things like `@command{test} (files)', so we can't
+@c This table includes things like '@command{test} (files)', so we can't
 @c use @table @command.
 @table @asis
 @item @command{.}
@@ -17658,7 +17730,7 @@ $ @kbd{echo 'fi' > syntax}
 $ @kbd{bash -c '. ./syntax; echo $?'}
 ./syntax: line 1: syntax error near unexpected token `fi'
 ./syntax: line 1: `fi'
-1
+2
 $ @kbd{ash -c '. ./syntax; echo $?'}
 ./syntax: 1: Syntax error: "fi" unexpected
 $ @kbd{zsh -c '. ./syntax; echo $?'}
@@ -17666,6 +17738,7 @@ $ @kbd{zsh -c '. ./syntax; echo $?'}
 0
 @end example
 
+@anchor{!}
 @item @command{!}
 @c --------------
 @prindex @command{!}
@@ -17704,12 +17777,50 @@ cmp file1 file2 >/dev/null 2>&1 ||
   echo files differ or trouble
 @end example
 
+In M4sh, the @code{AS_IF} macro provides an easy way to write these kinds
+of conditionals:
+
+@example
+AS_IF([cmp -s file file.new], [],
+  [echo files differ or trouble])
+@end example
+
+This kind of rewriting is needed in code outside macro definitions that
+calls other macros.  @xref{Common Shell Constructs}.  It is also useful
+inside macro definitions, where the @dfn{then} and @dfn{else} branches
+might contain macro arguments.
+
 More generally, one can always rewrite @samp{! @var{command}} as:
 
 @example
-if @var{command}; then (exit 1); else :; fi
+AS_IF([@var{command}], [(exit 1)])
 @end example
 
+@item @command{&&} and @command{||}
+@c --------------------------------
+@prindex @command{&&}
+@prindex @command{||}
+If an AND-OR list is not inside @code{AC_DEFUN}, and it contains
+calls to Autoconf macros, it should be rewritten using @code{AS_IF}.
+@xref{Common Shell Constructs}.  The operators @code{&&} and @code{||}
+have equal precedence and are left associative, so instead of:
+
+@example
+# This is dangerous outside AC_DEFUN.
+cmp a b >/dev/null 2>&1 &&
+  AS_ECHO([files are same]) >$tmpfile ||
+    AC_MSG_NOTICE([files differ, or echo failed])
+@end example
+
+you can use:
+
+@example
+# This is OK outside AC_DEFUN.
+AS_IF([AS_IF([cmp a b >/dev/null 2>&1],
+         [AS_ECHO([files are same]) >$tmpfile],
+         [false])],
+  [AC_MSG_NOTICE([files differ, or echo failed])])
+@end example
 
 @item @command{@{...@}}
 @c --------------------
@@ -17763,6 +17874,26 @@ The use of @samp{break 2} etc.@: is safe.
 @item @command{case}
 @c -----------------
 @prindex @command{case}
+If a @code{case} command is not inside @code{AC_DEFUN}, and it contains
+calls to Autoconf macros, it should be rewritten using @code{AS_CASE}.
+@xref{Common Shell Constructs}.  Instead of:
+
+@example
+# This is dangerous outside AC_DEFUN.
+case $filename in
+  *.[ch]) AC_MSG_NOTICE([C source file]);;
+esac
+@end example
+
+@noindent
+use:
+
+@example
+# This is OK outside AC_DEFUN.
+AS_CASE([$filename],
+  [[*.[ch]]], [AC_MSG_NOTICE([C source file])])
+@end example
+
 You don't need to quote the argument; no splitting is performed.
 
 You don't need the final @samp{;;}, but you should use it.
@@ -18269,34 +18400,11 @@ c=d
 @item @command{if}
 @c ---------------
 @prindex @command{if}
-Using @samp{!} is not portable.  Instead of:
+If an @code{if} command is not inside @code{AC_DEFUN}, and it contains
+calls to Autoconf macros, it should be rewritten using @code{AS_IF}.
+@xref{Common Shell Constructs}.
 
-@example
-if ! cmp -s file file.new; then
-  mv file.new file
-fi
-@end example
-
-@noindent
-use:
-
-@example
-if cmp -s file file.new; then :; else
-  mv file.new file
-fi
-@end example
-
-@noindent
-Or, especially if the @dfn{else} branch is short, you can use @code{||}.
-In M4sh, the @code{AS_IF} macro provides an easy way to write these kinds
-of conditionals:
-
-@example
-AS_IF([cmp -s file file.new], [], [mv file.new file])
-@end example
-
-This is especially useful in other M4 macros, where the @dfn{then} and
-@dfn{else} branches might be macro arguments.
+Using @code{if ! @dots{}} is not portable.  @xref{!,,@command{!} notes}.
 
 Some very old shells did not reset the exit status from an @command{if}
 with no @command{else}:
@@ -18307,9 +18415,9 @@ $ @kbd{if (exit 42); then true; fi; echo $?}
 @end example
 
 @noindent
-whereas a proper shell should have printed @samp{0}.  But this is no
-longer a portability problem; any shell that supports functions gets it
-correct.  However, it explains why some makefiles have lengthy
+whereas a proper shell should have printed @samp{0}.  Although this is no
+longer a portability problem, as any shell that supports functions gets it
+correct, it explains why some makefiles have lengthy
 constructs:
 
 @example
@@ -18348,7 +18456,7 @@ $ @kbd{printf '\045'}
 bash: printf: `%': missing format character
 @end example
 
-Large outputs may cause trouble.  On Solaris 2.5.1 through 10, for
+Large outputs may cause trouble.  On Solaris 10, for
 example, @file{/usr/bin/printf} is buggy, so when using
 @command{/bin/sh} the command @samp{printf %010000x 123} normally dumps
 core.
@@ -18540,8 +18648,8 @@ $ @kbd{sh -c 'set -e; trap '\''echo $?'\'' 0; false'}
 
 @noindent
 Thus, when writing a script in M4sh, rather than trying to rely on
-@samp{set -e}, it is better to append @samp{|| AS_EXIT} to any
-statement where it is desirable to abort on failure.
+@samp{set -e}, it is better to use @samp{AS_EXIT}
+where it is desirable to abort on failure.
 
 @cindex @command{set -b}
 @cindex @command{set -m}
@@ -18584,9 +18692,7 @@ ksh: warning: line 1: `...` obsolete, use $(...)
 0
 @end example
 
-Furthermore, on ancient hosts, such as SunOS 4, @command{sh -n} could go
-into an infinite loop; even with that bug fixed, Solaris 8
-@command{/bin/sh} takes extremely long to parse large scripts.  Autoconf
+Autoconf
 itself uses @command{sh -n} within its testsuite to check that correct
 scripts were generated, but only after first probing for other shell
 features (such as @code{test $@{BASH_VERSION+y@}}) that indicate
@@ -18661,8 +18767,7 @@ whether some arbitrary file exists.  To do so, use @samp{test -f},
 Solaris 10 @command{/bin/sh}
 lacks it.  To test for symbolic links on systems that have them, use
 @samp{test -h} rather than @samp{test -L}; either form conforms to
-Posix 1003.1-2001, but older shells like Solaris 8
-@code{/bin/sh} support only @option{-h}.
+Posix 1003.1-2001, but @option{-h} has been around longer.
 
 For historical reasons, Posix reluctantly allows implementations of
 @samp{test -x} that will succeed for the root user, even if no execute
@@ -18727,9 +18832,8 @@ to take an action when a token matches a given pattern.  Such constructs
 should be avoided by using:
 
 @example
-case $ac_feature in
-  *[!-a-zA-Z0-9_]*) @var{action};;
-esac
+AS_CASE([$ac_feature],
+  [[*[!-a-zA-Z0-9_]*]], [@var{action}])
 @end example
 
 If the pattern is a complicated regular expression that cannot be
@@ -18848,7 +18952,7 @@ files).
 @item @command{true}
 @c -----------------
 @prindex @command{true}
-@c Info cannot handle `:' in index entries.
+@c Info cannot handle ':' in index entries.
 @c @prindex @command{:}
 Don't worry: as far as we know @command{true} is portable.
 Nevertheless, it's not always a builtin (e.g., Bash 1.x), and the
@@ -18923,7 +19027,7 @@ include some limitations you should be aware of.
 @comment mention all the tools in GNU Coding Standards ``Utilities in
 @comment Makefiles''.
 
-@c This table includes things like `@command{expr} (|)', so we can't
+@c This table includes things like '@command{expr} (|)', so we can't
 @c use @table @command.
 @table @asis
 @anchor{awk}
@@ -19078,8 +19182,13 @@ of at most 3070 bytes.
 @item @command{basename}
 @c ---------------------
 @prindex @command{basename}
-Not all hosts have a working @command{basename}.
-You can use @command{expr} instead.
+Long ago some hosts lacked a working @command{basename},
+and portable scripts needed to use @command{expr} instead.
+Nowadays it is safe to use @command{basename}.  For example:
+
+@example
+base=`basename -- "$file"`
+@end example
 
 @c AS_BASENAME is to be replaced by a better API.
 @ignore
@@ -19137,10 +19246,10 @@ The default executable, produced by @samp{cc foo.c}, can be
 @end itemize
 
 The C compiler's traditional name is @command{cc}, but other names like
-@command{gcc} are common.  Posix 1003.1-2001 and 1003.1-2008 specify the
+@command{gcc} are common.  Posix 1003.1-2001 through 1003.1-2017 specify the
 name @command{c99}, but older Posix editions specified
 @command{c89}, future POSIX standards will likely specify
-@command{c11}, and anyway these standard names are rarely used in
+other commands, and anyway these standard names are rarely used in
 practice.  Typically the C compiler is invoked from makefiles that use
 @samp{$(CC)}, so the value of the @samp{CC} make variable selects the
 compiler name.
@@ -19270,12 +19379,13 @@ Some implementations, such as Tru64's, fail when comparing to
 @item @command{dirname}
 @c --------------------
 @prindex @command{dirname}
-Not all hosts have a working @command{dirname}, and you should instead
-use @code{AS_DIRNAME} (@pxref{Programming in M4sh}).  For example:
+Long ago some hosts lacked a working @command{dirname} and portable
+scripts needed to use use @code{AS_DIRNAME} (@pxref{Programming in M4sh}).
+Nowadays @command{dirname} suffices and the following are equivalent:
 
 @example
-dir=`dirname "$file"`       # This is not portable.
-dir=`AS_DIRNAME(["$file"])` # This is more portable.
+dir=`dirname -- "$file"`
+dir=`AS_DIRNAME(["$file"])`
 @end example
 
 
@@ -19283,7 +19393,7 @@ dir=`AS_DIRNAME(["$file"])` # This is more portable.
 @c ------------------
 @prindex @command{egrep}
 Although Posix stopped requiring @command{egrep} in 2001,
-a few traditional hosts (notably Solaris) do not support the Posix
+a few traditional hosts (notably Solaris 10) do not support the Posix
 replacement @code{grep -E}.  Also, some traditional implementations do
 not work on long input lines.  To work around these problems, invoke
 @code{AC_PROG_EGREP} and then use @code{$EGREP}.
@@ -19304,6 +19414,9 @@ bar|
 foo
 |bar
 @end example
+
+For more information about what can appear in portable extended regular
+expressions, @pxref{Problematic Expressions,,,grep, GNU Grep}.
 
 @command{$EGREP} also suffers the limitations of @command{grep}
 (@pxref{grep, , Limitations of Usual Tools}).
@@ -19356,7 +19469,7 @@ Avoid this portability problem by avoiding the empty string.
 @c ----------------------------
 @prindex @command{expr}
 Portable @command{expr} regular expressions should use @samp{\} to
-escape only characters in the string @samp{$()*.0123456789[\^n@{@}}.
+escape only characters in the string @samp{$()*.123456789[\^@{@}}.
 For example, alternation, @samp{\|}, is common but Posix does not
 require its support, so it should be avoided in portable scripts.
 Similarly, @samp{\+} and @samp{\?} should be avoided.
@@ -19397,13 +19510,13 @@ expr a : '\(b\)' \| ''
 Unfortunately this behaves exactly as the original expression; see the
 @command{expr} (@samp{|}) entry for more information.
 
-Some ancient @command{expr} implementations (e.g., SunOS 4 @command{expr} and
-Solaris 8 @command{/usr/ucb/expr}) have a silly length limit that causes
+Some ancient @command{expr} implementations (e.g.,
+Solaris 10 @command{/usr/ucb/expr}) have a silly length limit that causes
 @command{expr} to fail if the matched substring is longer than 120
 bytes.  In this case, you might want to fall back on @samp{echo|sed} if
 @command{expr} fails.  Nowadays this is of practical importance only for
 the rare installer who mistakenly puts @file{/usr/ucb} before
-@file{/usr/bin} in @env{PATH}.
+@file{/usr/bin} in @env{PATH} on Solaris 10.
 
 On Mac OS X 10.4, @command{expr} mishandles the pattern @samp{[^-]} in
 some cases.  For example, the command
@@ -19469,7 +19582,7 @@ expr: More than one '\(' was used.
 @c ------------------
 @prindex @command{fgrep}
 Although Posix stopped requiring @command{fgrep} in 2001,
-a few traditional hosts (notably Solaris) do not support the Posix
+a few traditional hosts (notably Solaris 10) do not support the Posix
 replacement @code{grep -F}.  Also, some traditional implementations do
 not work on long input lines.  To work around these problems, invoke
 @code{AC_PROG_FGREP} and then use @code{$FGREP}.
@@ -19480,13 +19593,17 @@ Tru64/OSF 5.1 @command{fgrep} does not match an empty pattern.
 @item @command{find}
 @c -----------------
 @prindex @command{find}
-The @option{-maxdepth} option seems to be GNU specific.
-Tru64 v5.1, NetBSD 1.5 and Solaris @command{find}
-commands do not understand it.
+Many operands of GNU @command{find} are not standardized by Posix and
+are missing on many platforms. These nonportable operands include
+@option{-follow}, @option{-maxdepth}, @option{-mindepth},
+@option{-printf}, and @option{,}.  See the
+@uref{https://@/pubs.opengroup.org/@/onlinepubs/@/9699919799/@/utilities/@/find.html,
+Posix spec for @command{find}} for @command{find} operands that
+should be portable nowadays.
 
 The replacement of @samp{@{@}} is guaranteed only if the argument is
 exactly @emph{@{@}}, not if it's only a part of an argument.  For
-instance on DU, and HP-UX 10.20 and HP-UX 11:
+instance, on HP-UX 11:
 
 @example
 $ @kbd{touch foo}
@@ -19496,6 +19613,7 @@ $ @kbd{find . -name foo -exec echo "@{@}-@{@}" \;}
 
 @noindent
 while GNU @command{find} reports @samp{./foo-./foo}.
+Posix allows either behavior.
 
 
 @anchor{grep}
@@ -19511,7 +19629,7 @@ as Posix does not allow this.
 
 Some of the options required by Posix are not portable in practice.
 Don't use @samp{grep -q} to suppress output, because traditional @command{grep}
-implementations (e.g., Solaris) do not support @option{-q}.
+implementations (e.g., Solaris 10) do not support @option{-q}.
 Don't use @samp{grep -s} to suppress output either, because Posix
 says @option{-s} does not suppress output, only some error messages;
 also, the @option{-s} option of traditional @command{grep} behaved
@@ -19529,7 +19647,7 @@ input lines.  On AIX the default @code{grep} silently truncates long
 lines on the input before matching.
 
 Also, traditional implementations do not support multiple regexps
-with @option{-e}: they either reject @option{-e} entirely (e.g., Solaris)
+with @option{-e}: they either reject @option{-e} entirely (e.g., Solaris 10)
 or honor only the last pattern (e.g., IRIX 6.5 and NeXT).  To
 work around these problems, invoke @code{AC_PROG_GREP} and then use
 @code{$GREP}.
@@ -19546,7 +19664,7 @@ bar' in.txt
 except that this fails with traditional @command{grep}
 implementations and with OpenBSD 3.8 @command{grep}.
 
-Traditional @command{grep} implementations (e.g., Solaris) do not
+Traditional @command{grep} implementations (e.g., Solaris 10) do not
 support the @option{-E} or @option{-F} options.  To work around these
 problems, invoke @code{AC_PROG_EGREP} and then use @code{$EGREP}, and
 similarly for @code{AC_PROG_FGREP} and @code{$FGREP}.  Even if you are
@@ -19555,13 +19673,15 @@ not use both @option{-E} and @option{-F}, since Posix does not allow
 this combination.
 
 Portable @command{grep} regular expressions should use @samp{\} only to
-escape characters in the string @samp{$()*.0123456789[\^@{@}}.  For example,
+escape characters in the string @samp{$()*.123456789[\^@{@}}.  For example,
 alternation, @samp{\|}, is common but Posix does not require its
 support in basic regular expressions, so it should be avoided in
 portable scripts.  Solaris and HP-UX @command{grep} do not support it.
 Similarly, the following escape sequences should also be avoided:
 @samp{\<}, @samp{\>}, @samp{\+}, @samp{\?}, @samp{\`}, @samp{\'},
 @samp{\B}, @samp{\b}, @samp{\S}, @samp{\s}, @samp{\W}, and @samp{\w}.
+For more information about what can appear in portable regular expressions,
+@pxref{Problematic Expressions,,, grep, GNU Grep}.
 
 Posix does not specify the behavior of @command{grep} on binary files.
 An example where this matters is using BSD @command{grep} to
@@ -19581,23 +19701,15 @@ escape
 @item @command{join}
 @c -----------------
 @prindex @command{join}
-Solaris 8 @command{join} has bugs when the second operand is standard
-input, and when standard input is a pipe.  For example, the following
-shell script causes Solaris 8 @command{join} to loop forever:
-
-@example
-cat >file <<'EOF'
-1 x
-2 y
-EOF
-cat file | join file -
-@end example
-
-Use @samp{join - file} instead.
-
 On NetBSD, @command{join -a 1 file1 file2} mistakenly behaves like
 @command{join -a 1 -a 2 1 file1 file2}, resulting in a usage warning;
 the workaround is to use @command{join -a1 file1 file2} instead.
+
+On platforms with the BusyBox tools, the @command{join} command is
+entirely missing.  As a workaround, you can simulate special cases of the
+@command{join} command using an @command{awk} script.  For an example,
+see @url{https://lists.gnu.org/r/bug-gnulib/2021-04/msg00054.html}.
+
 
 @item @command{ln}
 @c ---------------
@@ -19649,11 +19761,6 @@ through @code{uniq}.
 @c ------------------
 @prindex @command{mkdir}
 @cindex Making directories
-No @command{mkdir} option is portable to older systems.  Instead of
-@samp{mkdir -p @var{file-name}}, you should use
-@code{AS_MKDIR_P(@var{file-name})} (@pxref{Programming in M4sh})
-or @code{AC_PROG_MKDIR_P} (@pxref{Particular Programs}).
-
 Combining the @option{-m} and @option{-p} options, as in @samp{mkdir -m
 go-w -p @var{dir}}, often leads to trouble.  FreeBSD
 @command{mkdir} incorrectly attempts to change the permissions of
@@ -19663,26 +19770,21 @@ any newly-created parents of @var{dir}.
 
 Posix does not clearly specify whether @samp{mkdir -p foo}
 should succeed when @file{foo} is a symbolic link to an already-existing
-directory.  The GNU Core Utilities 5.1.0 @command{mkdir}
-succeeds, but Solaris @command{mkdir} fails.
+directory.  The GNU @command{mkdir}
+succeeds, but Solaris 10 @command{mkdir} fails.
 
 Traditional @code{mkdir -p} implementations suffer from race conditions.
 For example, if you invoke @code{mkdir -p a/b} and @code{mkdir -p a/c}
 at the same time, both processes might detect that @file{a} is missing,
 one might create @file{a}, then the other might try to create @file{a}
-and fail with a @code{File exists} diagnostic.  The GNU Core
-Utilities (@samp{fileutils} version 4.1), FreeBSD 5.0,
-NetBSD 2.0.2, and OpenBSD 2.4 are known to be
-race-free when two processes invoke @code{mkdir -p} simultaneously, but
-earlier versions are vulnerable.  Solaris @command{mkdir} is still
-vulnerable as of Solaris 10, and other traditional Unix systems are
+and fail with a @code{File exists} diagnostic.  Solaris 10 @command{mkdir}
+is vulnerable, and other traditional Unix systems are
 probably vulnerable too.  This possible race is harmful in parallel
 builds when several Make rules call @code{mkdir -p} to
 construct directories.  You may use
-@code{install-sh -d} as a safe replacement, provided this script is
-recent enough; the copy shipped with Autoconf 2.60 and Automake 1.10 is
-OK, but copies from older versions are vulnerable.
-
+@code{install-sh -d} as a safe replacement, for example by setting
+@samp{MKDIR_P='/path/to/install-sh -d'} in the environment of
+@command{configure}, assuming the package distributes @file{install-sh}.
 
 @item @command{mkfifo}
 @itemx @command{mknod}
@@ -19781,7 +19883,7 @@ XSI options are those in @option{-bcdox}.  The BSD
 @command{hexdump} program can be used instead.
 
 In some versions of some operating systems derived from Solaris 11,
-@command{od} prints decimal byte values padded with zeroes rather than
+@command{od} prints decimal byte values padded with zeros rather than
 with spaces:
 
 @smallexample
@@ -19893,7 +19995,7 @@ $ @kbd{printf '\200\n' | LC_ALL=en_US.ISO8859-1 sed -n /./p | wc -l}
 @end example
 
 Portable @command{sed} regular expressions should use @samp{\} only to escape
-characters in the string @samp{$()*.0123456789[\^n@{@}}.  For example,
+characters in the string @samp{$()*.123456789[\^n@{@}}.  For example,
 alternation, @samp{\|}, is common but Posix does not require its
 support, so it should be avoided in portable scripts.  Solaris
 @command{sed} does not support alternation; e.g., @samp{sed '/a\|b/d'}
@@ -20145,6 +20247,30 @@ s/.*/deleted/g
 :end
 @end example
 
+@item @command{sed} (@samp{w})
+@c ---------------------------
+@prindex @command{sed} (@samp{w})
+
+When a script contains multiple commands to write lines to the same
+output file, BusyBox @command{sed} mistakenly opens a separate output
+stream for each command.  This can cause one of the commands to ``win''
+and the others to ``lose'', in the sense that their output is discarded.
+For example:
+
+@example
+sed -n -e '
+  /a/w xxx
+  /b/w xxx
+' <<EOF
+a
+b
+EOF
+@end example
+
+This might output only @samp{a} to @file{xxx}; the @samp{b} is lost.
+To avoid the problem, a portable script should contain at most one
+@samp{w} or @samp{s/.../.../w} command per output file.
+
 @item @command{sleep}
 @c ------------------
 @prindex @command{sleep}
@@ -20176,15 +20302,6 @@ If you specify the desired timestamp (e.g., with the @option{-r}
 option), older @command{touch} implementations use the @code{utime} or
 @code{utimes} system call, which can result in the same kind of
 timestamp truncation problems that @samp{cp -p} has.
-
-On ancient BSD systems, @command{touch} or any command that
-results in an empty file does not update the timestamps, so use a
-command like @command{echo} as a workaround.
-Also,
-GNU @command{touch} 3.16r (and presumably all before that)
-fails to work on SunOS 4.1.3 when the empty file is on an
-NFS-mounted 4.2 volume.
-However, these problems are no longer of practical concern.
 
 @item @command{tr}
 @c ---------------
@@ -20236,6 +20353,20 @@ $ @kbd{echo abc | /usr/xpg4/bin/tr bc d}
 adc
 $ @kbd{echo abc | coreutils/tr bc d}
 add
+@end example
+
+On platforms with the BusyBox tools, @command{tr} does not support the
+@code{[@var{x}*@var{n}]} option syntax.
+
+@example
+$ @kbd{echo abc | tr 'abcd' '[A*4]'}
+[A*
+$ @kbd{echo abc | coreutils/tr 'abcd' '[A*4]'}
+AAA
+$ @kbd{echo xyz | tr 'a-z' '[A*]'}
+]]]
+$ @kbd{echo xyz | coreutils/tr 'a-z' '[A*]'}
+AAA
 @end example
 
 Posix requires @command{tr} to operate on binary files.  But at least
@@ -20363,30 +20494,6 @@ However, this problem is no longer of practical concern.
 
 @node Backslash-Newline-Empty
 @section Backslash-Newline Before Empty Lines
-
-A bug in Bash 2.03 can cause problems if a Make rule contains a
-backslash-newline followed by line that expands to nothing.
-For example, on Solaris 8:
-
-@example
-SHELL = /bin/bash
-EMPTY =
-foo:
-	touch foo \
-	$(EMPTY)
-@end example
-
-@noindent
-executes
-
-@example
-/bin/bash -c 'touch foo \
-'
-@end example
-
-@noindent
-which fails with a syntax error, due to the Bash bug.  To avoid this
-problem, avoid nullable macros in the last line of a multi-line command.
 
 @c  This has been seen on ia64 hpux 11.20, and on one hppa hpux 10.20,
 @c  but another hppa hpux 10.20 didn't have it.  Bob Proulx
@@ -21294,18 +21401,6 @@ Dependency @file{../foo} was found in @file{sub/../foo}, but Tru64
 directory does not even exist, this just means that the simplification
 occurred before the file was checked for.)
 
-For the record here is how SunOS 4 @command{make} behaves on this
-example.
-
-@smallexample
-$ @kbd{make}
-make: Fatal error: Don't know how to make target `../foo'
-$ @kbd{mkdir sub}
-$ @kbd{make}
-echo sub/../foo
-sub/../foo
-@end smallexample
-
 
 @node Tru64 Directory Magic
 @subsection Tru64 @command{make} Creates Prerequisite Directories Magically
@@ -21434,7 +21529,7 @@ $ @kbd{touch ../newer.x}
 $ @kbd{make}        # GNU make
 Building bar.x
 cp bar.x bar.y
-cp: cannot stat `bar.x': No such file or directory
+cp: cannot stat 'bar.x': No such file or directory
 make: *** [bar.y] Error 1
 $ @kbd{pmake}       # NetBSD make
 Building ../bar.x
@@ -21443,7 +21538,7 @@ $ @kbd{rm bar.y}
 $ @kbd{fmake}       # FreeBSD make, OpenBSD make
 echo Building bar.x
 cp bar.x bar.y
-cp: cannot stat `bar.x': No such file or directory
+cp: cannot stat 'bar.x': No such file or directory
 *** Error code 1
 $ @kbd{tmake}       # Tru64 make
 Building bar.x
@@ -21476,7 +21571,7 @@ cp ../bar.x bar.y
 $ @kbd{rm bar.y}
 $ @kbd{fmake}       # FreeBSD make, OpenBSD make
 cp bar.x bar.y
-cp: cannot stat `bar.x': No such file or directory
+cp: cannot stat 'bar.x': No such file or directory
 *** Error code 1
 $ @kbd{tmake}       # Tru64 make
 cp ../bar.x bar.y
@@ -21620,9 +21715,14 @@ GCC, gcc, Using the GNU Compiler Collection
 for a list of C-related standards.  Many programs also assume the
 @uref{https://@/en.wikipedia.org/@/wiki/@/POSIX, Posix standard}.
 
-Some old code is written to be portable to K&R C, which predates any C
+@cindex K&R C
+@cindex C89, C99, C11, C17, and C23
+The first widely used C variant was K&R C, which predates any C
 standard.  K&R C compilers are no longer of practical interest, though,
-and the rest of section assumes at least C89, the first C standard.
+and Autoconf assumes at least C89, the first C standard,
+which is sometimes called ``C90'' due to a delay in standardization.
+C has since gone through the standards C99, C11, C17, and C23, and
+Autoconf is compatible with all these standards.
 
 Program portability is a huge topic, and this section can only briefly
 introduce common pitfalls.  @xref{System Portability, , Portability
@@ -21686,13 +21786,10 @@ the programs work well enough in practice.
 @cindex signed integer overflow
 @cindex wraparound arithmetic
 
-In practice many portable C programs assume that signed integer overflow wraps
-around reliably using two's complement arithmetic.  Yet the C standard
-says that program behavior is undefined on overflow, and in a few cases
-C programs do not work on some modern implementations because their
-overflows do not wrap around as their authors expected.  Conversely, in
-signed integer remainder, the C standard requires overflow
-behavior that is commonly not implemented.
+Although some traditional C programs assume that signed integer overflow
+wraps around reliably using two's complement arithmetic, the C standard
+says that program behavior is undefined on overflow, and these C
+programs may not work on many modern implementations.
 
 @menu
 * Integer Overflow Basics::     Why integer overflow is a problem
@@ -21709,7 +21806,8 @@ behavior that is commonly not implemented.
 @cindex signed integer overflow
 @cindex wraparound arithmetic
 
-In languages like C, unsigned integer overflow reliably wraps around;
+In languages like C, integer overflow wraps around for unsigned
+integer types that are at least as wide as @code{unsigned int};
 e.g., @code{UINT_MAX + 1} yields zero.
 This is guaranteed by the C standard and is
 portable in practice, unless you specify aggressive,
@@ -21720,25 +21818,28 @@ In contrast, the C standard says that signed integer overflow leads to
 undefined behavior where a program can do anything, including dumping
 core or overrunning a buffer.  The misbehavior can even precede the
 overflow.  Such an overflow can occur during addition, subtraction,
-multiplication, division, and left shift.
+multiplication, division, and left shift.  It can even occur for
+unsigned types like @code{unsigned short int} that are narrower
+than @code{int}, as values of these types are widened to @code{int}
+before computation.
 
-Despite this requirement of the standard, many C programs and Autoconf
-tests assume that signed integer overflow silently wraps around modulo a
-power of two, using two's complement arithmetic, so long as you cast the
-resulting value to a signed integer type or store it into a signed
-integer variable.  If you use conservative optimization flags, such
-programs are generally portable to the vast majority of modern
-platforms, with a few exceptions discussed later.
+Despite this requirement of the standard, some C programs assume that
+signed integer overflow silently wraps around modulo a power of two,
+using two's complement arithmetic, so long as you convert the resulting
+value to a signed integer type.  These programs can have problems,
+especially when optimization is enabled.  If you assume a GCC-like
+compiler, you can work around the problems by compiling with GCC's
+@code{-fwrapv} option; however, this is not portable.
 
-For historical reasons the C standard also allows implementations with
-ones' complement or signed magnitude arithmetic, but it is safe to
-assume two's complement nowadays.
+For historical reasons C17 and earlier also allowed implementations with
+ones' complement or signed magnitude arithmetic, but C23 requires
+two's complement and it is safe to assume two's complement nowadays.
 
 Also, overflow can occur when converting an out-of-range value to a
 signed integer type.  Here a standard implementation must define what
-happens, but this might include raising an exception.  In practice all
-known implementations support silent wraparound in this case, so you need
-not worry about other possibilities.
+happens, and this can include raising an exception.  Although practical
+implementations typically wrap around silently in this case, a few
+debugging implementations trap instead.
 
 @node Signed Overflow Examples
 @subsection Examples of Code Assuming Wraparound Overflow
@@ -21747,14 +21848,15 @@ not worry about other possibilities.
 @cindex signed integer overflow
 @cindex wraparound arithmetic
 
-There has long been a tension between what the C standard requires for
-signed integer overflow, and what C programs commonly assume.  The
+There was long a tension between what the C standard requires for signed
+integer overflow, and what traditional C programs commonly assumed.  The
 standard allows aggressive optimizations based on assumptions that
-overflow never occurs, but many practical C programs rely on overflow
-wrapping around.  These programs do not conform to the standard, but
-they commonly work in practice because compiler writers are
-understandably reluctant to implement optimizations that would break
-many programs, unless perhaps a user specifies aggressive optimization.
+overflow never occurs, but traditionally many C programs relied on overflow
+wrapping around.  Although these programs did not conform to the standard,
+they formerly worked in practice because traditionally compilers did not
+optimize in such a way that would break the programs.  Nowadays, though,
+compilers do perform these optimizations, so portable programs can no
+longer assume reliable wraparound on signed integer overflow.
 
 The C Standard says that if a program has signed integer overflow its
 behavior is undefined, and the undefined behavior can even precede the
@@ -21781,13 +21883,6 @@ Worse, if an earlier bug in the program lets the compiler deduce that
 the C standard allows the compiler to optimize away the password test
 and generate code that allows superuser privileges unconditionally.
 
-Despite this requirement by the standard, it has long been common for C
-code to assume wraparound arithmetic after signed overflow, and all
-known practical C implementations support some C idioms that assume
-wraparound signed arithmetic, even if the idioms do not conform
-strictly to the standard.  If your code looks like the following
-examples it will almost surely work with real-world compilers.
-
 Here is an example derived from the 7th Edition Unix implementation of
 @code{atoi} (1979-01-10):
 
@@ -21803,7 +21898,7 @@ return (f ? -n : n);
 @noindent
 Even if the input string is in range, on most modern machines this has
 signed overflow when computing the most negative integer (the @code{-n}
-overflows) or a value near an extreme integer (the first @code{+}
+overflows) or a value near an extreme integer (the @code{+}
 overflows).
 
 Here is another example, derived from the 7th Edition implementation of
@@ -21817,8 +21912,8 @@ randx = randx * 1103515245 + 12345;
 return (randx >> 16) & 077777;
 @end example
 
-In the following example, derived from the GNU C Library 2.5
-implementation of @code{mktime} (2006-09-09), the code assumes
+In the following example, derived from the GNU C Library 2.15
+implementation of @code{mktime} (2012-03-21), the code assumes
 wraparound arithmetic in @code{+} to detect signed overflow:
 
 @example
@@ -21832,10 +21927,12 @@ if (((t1 < t) != (sec_requested < 0))
   return -1;
 @end example
 
-If your code looks like these examples, it is probably safe even though
-it does not strictly conform to the C standard.  This might lead one to
-believe that one can generally assume wraparound on overflow, but that
-is not always true, as can be seen in the next section.
+Although some of these examples will likely behave as if signed integer
+overflow wraps around reliably, other examples are likely to misbehave
+when optimization is enabled.  All these examples should be avoided in
+portable code because signed integer overflow is not reliable on modern
+systems, and it's not worth worrying about which of these examples
+happen to work on most platforms and which do not.
 
 @node Optimization and Wraparound
 @subsection Optimizations That Break Wraparound Arithmetic
@@ -21860,8 +21957,7 @@ int
 sumc (int lo, int hi)
 @{
   int sum = 0;
-  int i;
-  for (i = lo; i <= hi; i++)
+  for (int i = lo; i <= hi; i++)
     sum ^= i * 53;
   return sum;
 @}
@@ -21878,8 +21974,7 @@ transformed_sumc (int lo, int hi)
 @{
   int sum = 0;
   int hic = hi * 53;
-  int ic;
-  for (ic = lo * 53; ic <= hic; ic += 53)
+  for (int ic = lo * 53; ic <= hic; ic += 53)
     sum ^= ic;
   return sum;
 @}
@@ -21905,8 +22000,7 @@ always useful.  However, edge cases in this area can cause problems.
 For example:
 
 @example
-int j;
-for (j = 1; 0 < j; j *= 2)
+for (int j = 1; 0 < j; j *= 2)
   test (j);
 @end example
 
@@ -21915,11 +22009,8 @@ Here, the loop attempts to iterate through all powers of 2 that
 @code{int} can represent, but the C standard allows a compiler to
 optimize away the comparison and generate an infinite loop,
 under the argument that behavior is undefined on overflow.  As of this
-writing this optimization is not done by any production version of
-GCC with @option{-O2}, but it might be performed by other
-compilers, or by more aggressive GCC optimization options,
-and the GCC developers have not decided whether it will
-continue to work with GCC and @option{-O2}.
+writing this optimization is done on some platforms by
+GCC with @option{-O2}, so this code is not portable in practice.
 
 @node Signed Overflow Advice
 @subsection Practical Advice for Signed Overflow Issues
@@ -21930,25 +22021,42 @@ continue to work with GCC and @option{-O2}.
 
 Ideally the safest approach is to avoid signed integer overflow
 entirely.  For example, instead of multiplying two signed integers, you
-can convert them to unsigned integers, multiply the unsigned values,
-then test whether the result is in signed range.
+can convert them to double-width integers, multiply the wider values,
+then test whether the result is in the narrower range.  Or you can use
+more-complicated code employing unsigned integers of the same width.
 
-Rewriting code in this way will be inconvenient, though, particularly if
-the signed values might be negative.  Also, it may hurt
-performance.  Using unsigned arithmetic to check for overflow is
+Rewriting code in this way will be inconvenient, though, especially if
+the signed values might be negative and no wider type is available.
+Using unsigned arithmetic to check for overflow is
 particularly painful to do portably and efficiently when dealing with an
 integer type like @code{uid_t} whose width and signedness vary from
-platform to platform.
+platform to platform.  Also, this approach may hurt performance.
 
-Furthermore, many C applications pervasively assume wraparound behavior
-and typically it is not easy to find and remove all these assumptions.
-Hence it is often useful to maintain nonstandard code that assumes
+Hence it is often useful to maintain code that needs
 wraparound on overflow, instead of rewriting the code.  The rest of this
 section attempts to give practical advice for this situation.
 
-If your code wants to detect signed integer overflow in @code{sum = a +
-b}, it is generally safe to use an expression like @code{(sum < a) != (b
-< 0)}.
+To detect integer overflow portably when attempting operations like
+@code{sum = a + b}, you can use the C23 @code{<stdckdint.h>} macros
+@code{ckd_add}, @code{ckd_sub}, and @code{ckd_mul}.
+The following code adds two integers with overflow wrapping around
+reliably in the sum:
+
+@example
+#include <stdckdint.h>
+...
+/* Set sum = a + b, with wraparound.  */
+if (ckd_add (&sum, a, b))
+  /* 'sum' has just the low order bits.  */;
+else
+  /* 'sum' is the correct answer.  */;
+@end example
+
+To be portable to pre-C23 platforms you can use Gnulib's
+@code{stdckdint} module, which emulates this part of C23 (@pxref{Gnulib}).
+Invoking the @code{stdckdint} macros typically costs just one machine
+instruction for the arithmetic and another instruction for the rare
+branch on overflow.
 
 If your code uses a signed loop index, make sure that the index cannot
 overflow, along with all signed expressions derived from the index.
@@ -21956,7 +22064,7 @@ Here is a contrived example of problematic code with two instances of
 overflow.
 
 @example
-for (i = INT_MAX - 10; i <= INT_MAX; i++)
+for (int i = INT_MAX - 10; i <= INT_MAX; i++)
   if (i + 1 < 0)
     @{
       report_overflow ();
@@ -21969,22 +22077,18 @@ Because of the two overflows, a compiler might optimize away or
 transform the two comparisons in a way that is incompatible with the
 wraparound assumption.
 
-If your code uses an expression like @code{(i * 2000) / 1000} and you
-actually want the multiplication to wrap around on overflow, use
-unsigned arithmetic
-to do it, e.g., @code{((int) (i * 2000u)) / 1000}.
-
-If your code assumes wraparound behavior and you want to insulate it
+If your code is intended to be compiled only by GCC and
+assumes wraparound behavior, and you want to insulate it
 against any GCC optimizations that would fail to support that
 behavior, you should use GCC's @option{-fwrapv} option, which
 causes signed overflow to wrap around reliably (except for division and
 remainder, as discussed in the next section).
 
-If you need to port to platforms where signed integer overflow does not
-reliably wrap around (e.g., due to hardware overflow checking, or to
-highly aggressive optimizations), you should consider debugging with
-GCC's @option{-ftrapv} option, which causes signed overflow to
-raise an exception.
+If you need to write portable code and therefore cannot assume that
+signed integer overflow wraps around reliably, you should consider
+debugging with a GCC option that causes signed overflow to raise an
+exception.  These options include @option{-fsanitize=undefined} and
+@option{-ftrapv}.
 
 @node Signed Integer Division
 @subsection Signed Integer Division and Integer Overflow
@@ -21995,8 +22099,7 @@ integer division is not always harmless: for example, on CPUs of the
 i386 family, dividing @code{INT_MIN} by @code{-1} yields a SIGFPE signal
 which by default terminates the program.  Worse, taking the remainder
 of these two values typically yields the same signal on these CPUs,
-even though the C standard requires @code{INT_MIN % -1} to yield zero
-because the expression does not overflow.
+behavior that the C standard allows.
 
 @node Preprocessor Arithmetic
 @section Preprocessor Arithmetic
@@ -22213,10 +22316,7 @@ A C or C++ program can exit with status @var{N} by returning
 to exit either with status 0 or @code{EXIT_SUCCESS} to succeed, or with
 status @code{EXIT_FAILURE} to fail, but in practice it is portable to
 fail by exiting with status 1, and test programs that assume Posix can
-fail by exiting with status values from 1 through 255.  Programs on
-SunOS 2.0 (1985) through 3.5.2 (1988) incorrectly exited with zero
-status when @code{main} returned nonzero, but ancient systems like these
-are no longer of practical concern.
+fail by exiting with status values from 1 through 255.
 
 A program can also exit with status @var{N} by passing @var{N} to the
 @code{exit} function, and a program can fail by calling the @code{abort}
@@ -22283,7 +22383,7 @@ system it's running on.  To do so it runs a script called
 command or symbols predefined by the C preprocessor.
 
 Alternately, the user can specify the system type with command line
-arguments to @command{configure} (@pxref{System Type}.  Doing so is
+arguments to @command{configure} (@pxref{System Types}.  Doing so is
 necessary when
 cross-compiling.  In the most complex case of cross-compiling, three
 system types are involved.  The options to specify them are:
@@ -22450,8 +22550,7 @@ program or library.
 AS_CASE([$host],
   [alpha*-*-*], [CYCLE_OBJ=rpcc.o],
   [i?86-*-*],   [CYCLE_OBJ=rdtsc.o],
-  [CYCLE_OBJ=""]
-)
+  [CYCLE_OBJ=""])
 AC_SUBST([CYCLE_OBJ])
 @end example
 
@@ -22461,11 +22560,10 @@ CPUs.  The configured CPU type doesn't always indicate exact CPU types,
 so some runtime capability checks may be necessary too.
 
 @example
-case $host in
-  alpha*-*-*)   AC_CONFIG_LINKS([dither.c:alpha/dither.c]) ;;
-  powerpc*-*-*) AC_CONFIG_LINKS([dither.c:powerpc/dither.c]) ;;
-  *-*-*)        AC_CONFIG_LINKS([dither.c:generic/dither.c]) ;;
-esac
+AS_CASE([$host],
+  [alpha*-*-*],   [AC_CONFIG_LINKS([dither.c:alpha/dither.c])],
+  [powerpc*-*-*], [AC_CONFIG_LINKS([dither.c:powerpc/dither.c])],
+  [AC_CONFIG_LINKS([dither.c:generic/dither.c])])
 @end example
 
 The host system type can also be used to find cross-compilation tools
@@ -22649,7 +22747,7 @@ specified neither @option{--with-readline} nor @option{--without-readline},
 you want to enable support for readline only if the library is available
 on the system.
 
-@c FIXME: Remove AS_IF when the problem of AC_REQUIRE within `if' is solved.
+@c FIXME: Remove AS_IF when the problem of AC_REQUIRE within 'if' is solved.
 @example
 AC_ARG_WITH([readline],
   [AS_HELP_STRING([--with-readline],
@@ -22675,7 +22773,7 @@ The next example shows how to use @code{AC_ARG_WITH} to give the user the
 possibility to enable support for the readline library, in case it is still
 experimental and not well tested, and is therefore disabled by default.
 
-@c FIXME: Remove AS_IF when the problem of AC_REQUIRE within `if' is solved.
+@c FIXME: Remove AS_IF when the problem of AC_REQUIRE within 'if' is solved.
 @example
 AC_ARG_WITH([readline],
   [AS_HELP_STRING([--with-readline],
@@ -22699,7 +22797,7 @@ The last example shows how to use @code{AC_ARG_WITH} to give the user the
 possibility to disable support for the readline library, given that it is
 an important feature and that it should be enabled by default.
 
-@c FIXME: Remove AS_IF when the problem of AC_REQUIRE within `if' is solved.
+@c FIXME: Remove AS_IF when the problem of AC_REQUIRE within 'if' is solved.
 @example
 AC_ARG_WITH([readline],
   [AS_HELP_STRING([--without-readline],
@@ -23205,8 +23303,7 @@ may use comes with Autoconf.
 * Multiple Architectures::      Compiling for multiple architectures at once
 * Installation Names::          Installing in different directories
 * Optional Features::           Selecting optional features
-* Particular Systems::          Particular systems
-* System Type::                 Specifying the system type
+* System Types::                Specifying a system type
 * Sharing Defaults::            Setting site-wide defaults for @command{configure}
 * Defining Variables::          Specifying the compiler etc.
 * configure Invocation::        Changing how @command{configure} runs
@@ -23645,7 +23742,7 @@ This macro is equivalent to:
 @example
 AC_CHECK_TYPE([@var{type}], [],
   [AC_DEFINE_UNQUOTED([@var{type}], [@var{default}],
-     [Define to `@var{default}'
+     [Define to '@var{default}'
       if <sys/types.h> does not define.])])
 @end example
 
@@ -23884,7 +23981,8 @@ These days portable programs should use @code{waitpid}, not
 
 @defmac AC_GCC_TRADITIONAL
 @acindex{GCC_TRADITIONAL}
-Replaced by @code{AC_PROG_GCC_TRADITIONAL} (@pxref{AC_PROG_GCC_TRADITIONAL}).
+Replaced by @code{AC_PROG_GCC_TRADITIONAL} (@pxref{AC_PROG_GCC_TRADITIONAL}),
+which is itself obsolete.
 @end defmac
 
 @defmac AC_GETGROUPS_T
@@ -24267,6 +24365,18 @@ Now done by @code{AC_PROG_CC} (@pxref{AC_PROG_CC}).
 Now done by @code{AC_PROG_CC} (@pxref{AC_PROG_CC}).
 @end defmac
 
+@anchor{AC_PROG_GCC_TRADITIONAL}
+@defmac AC_PROG_GCC_TRADITIONAL
+@acindex{PROG_GCC_TRADITIONAL}
+Used to put GCC into ``traditional'' (pre-ISO C) compilation mode,
+on systems with headers that did not work correctly with a
+standard-compliant compiler.  GCC has not supported traditional
+compilation in many years, and all of the systems that required this are
+long obsolete themselves.  This macro is now a compatibility synonym for
+@code{AC_PROG_CC} (@pxref{AC_PROG_CC}).
+
+@end defmac
+
 @defmac AC_PROGRAMS_CHECK
 @acindex{PROGRAMS_CHECK}
 Replaced by @code{AC_CHECK_PROGS} (@pxref{AC_CHECK_PROGS}).
@@ -24310,7 +24420,7 @@ issue.
 @defmac AC_RETSIGTYPE
 @acindex{RETSIGTYPE}
 Replaced by @code{AC_TYPE_SIGNAL} (@pxref{AC_TYPE_SIGNAL}), which itself
-is obsolete when assuming C89 or better.
+is obsolete.
 @end defmac
 
 @defmac AC_RSH
@@ -24365,7 +24475,7 @@ Replaced by @code{AC_HEADER_STAT} (@pxref{AC_HEADER_STAT}).
 @defmac AC_STDC_HEADERS
 @acindex{STDC_HEADERS}
 Replaced by @code{AC_HEADER_STDC} (@pxref{AC_HEADER_STDC}), which
-is itself obsolete.  Nowadays it is safe to assume the facilities of C90
+is itself obsolete.  Nowadays it is safe to assume the facilities of C89
 exist.
 @end defmac
 
@@ -24584,19 +24694,6 @@ function returning @code{void}, define @code{RETSIGTYPE} to be
 @code{void}; otherwise, define it to be @code{int}.  These days, it is
 portable to assume C89, and that signal handlers return @code{void},
 without needing to use this macro or @code{RETSIGTYPE}.
-
-When targeting older K&R C, it is possible to define signal handlers as
-returning type @code{RETSIGTYPE}, and omit a return statement:
-
-@example
-@group
-RETSIGTYPE
-hup_handler ()
-@{
-@dots{}
-@}
-@end group
-@end example
 @end defmac
 
 @defmac AC_UID_T
@@ -24618,7 +24715,7 @@ unnecessary to write explicitly.
 Define @code{USG} if the BSD string functions (@code{bcopy},
 @code{bzero}, @code{index}, @code{rindex}, etc) are @emph{not} defined
 in @file{strings.h}.  Modern code should assume @file{string.h} exists
-and should use the ISO C string functions (@code{memmove}, @code{memset},
+and should use the standard C string functions (@code{memmove}, @code{memset},
 @code{strchr}, @code{strrchr}, etc) unconditionally.
 
 @file{strings.h} may be the only header that declares @code{strcasecmp},
@@ -24848,13 +24945,13 @@ Here is a way to write it for version 2:
 
 @example
 AC_CHECK_FUNCS([syslog])
-if test "x$ac_cv_func_syslog" = xno; then
-  # syslog is not in the default libraries.  See if it's in some other.
-  for lib in bsd socket inet; do
-    AC_CHECK_LIB([$lib], [syslog], [AC_DEFINE([HAVE_SYSLOG])
-      LIBS="-l$lib $LIBS"; break])
-  done
-fi
+AS_IF([test "x$ac_cv_func_syslog" = xno],
+  [# syslog is not in the default libraries.  See if it's in some other.
+   for lib in bsd socket inet; do
+     AC_CHECK_LIB([$lib], [syslog],
+       [AC_DEFINE([HAVE_SYSLOG])
+        LIBS="-l$lib $LIBS"; break])
+   done])
 @end example
 
 If you were working around bugs in @code{AC_DEFINE_UNQUOTED} by adding
@@ -25043,7 +25140,7 @@ AC_INIT([Example], [1.0], [bug-example@@example.org])
 AM_TYPE_PTRDIFF_T
 $ @kbd{rm aclocal.m4}
 $ @kbd{autoupdate}
-autoupdate: `configure.ac' is updated
+autoupdate: 'configure.ac' is updated
 $ @kbd{cat configure.ac}
 AC_INIT([Example], [1.0], [bug-example@@example.org])
 AC_CHECK_TYPES([ptrdiff_t])
@@ -25492,8 +25589,8 @@ the point of view of the test suite, there remains a single environment,
 @var{host} = @var{build}.  The log contains relevant information on the
 state of the @var{build} machine, including some important environment
 variables.
-@c FIXME: How about having an M4sh macro to say `hey, log the value
-@c of `@dots{}'?  This would help both Autoconf and Autotest.
+@c FIXME: How about having an M4sh macro to say "hey, log the value
+@c of '@dots{}'"?  This would help both Autoconf and Autotest.
 
 @item tested programs
 The absolute file name and answers to @option{--version} of the tested
@@ -25819,7 +25916,7 @@ If @var{commands} exit with unexpected status 77, then the rest of the
 test group is skipped.  If @var{commands} exit with unexpected status
 99, then the test group is immediately failed; this is called a
 @emph{hard failure}.  Otherwise, the test is considered to have
-succeeeded if all of the status, stdout, and stderr expectations were
+succeeded if all of the status, stdout, and stderr expectations were
 met.
 
 If @var{run-if-fail} is nonempty, it provides extra shell commands to
@@ -26345,7 +26442,8 @@ __file__
 __line__
 @end example
 
-Autoconf requires version 1.4.6 or later of GNU M4.
+Autoconf requires version 1.4.8 or later of GNU M4.
+It works better with version 1.4.16 or later.
 
 Since only software maintainers need to use Autoconf, and since GNU
 M4 is simple to configure and install, it seems reasonable to require
@@ -26702,7 +26800,7 @@ $ @kbd{cat configure.ac}
 @result{}AC_OUTPUT
 $ @kbd{autoconf}
 @result{}configure.ac:11: warning: AC_REQUIRE:
-@result{} `TESTA' was expanded before it was required
+@result{} 'TESTA' was expanded before it was required
 @result{}configure.ac:4: TESTB is expanded from...
 @result{}configure.ac:6: TESTC is expanded from...
 @result{}configure.ac:7: OUTER is expanded from...
@@ -26736,7 +26834,7 @@ FOO
 @noindent
 but that was getting complex, so the author wanted to offload some of
 the text into a new macro in another file included via
-@file{aclocal.m4}.  The na@"ive approach merely wraps the text in a new
+@file{aclocal.m4}.  The naïve approach merely wraps the text in a new
 macro:
 
 @example
@@ -26890,8 +26988,7 @@ for simple differences.
 @item
 Most tests which produce their result in a substituted variable allow to
 override the test by setting the variable on the @command{configure}
-command line (@pxref{Compilers and Options}, @pxref{Defining Variables},
-@pxref{Particular Systems}).
+command line (@pxref{Compilers and Options}, @pxref{Defining Variables}).
 
 @item
 Many tests store their result in a cache variable (@pxref{Caching
@@ -27048,7 +27145,7 @@ In the fall of 1991 I called together a group of fellow questers after
 the Holy Grail of portability (er, that is, alpha testers) to give me
 feedback as I encapsulated pieces of my handwritten scripts in M4 macros
 and continued to add features and improve the techniques used in the
-checks.  Prominent among the testers were Fran@,{c}ois Pinard, who came up
+checks.  Prominent among the testers were François Pinard, who came up
 with the idea of making an Autoconf shell script to run M4
 and check for unresolved macro calls; Richard Pixley, who suggested
 running the compiler instead of searching the file system to find
@@ -27083,7 +27180,7 @@ version is better, but still doesn't provide everything we need.
 
 More development occurred as people put Autoconf under more stresses
 (and to uses I hadn't anticipated).  Karl Berry added checks for X11.
-david zuhn contributed C++ support.  Fran@,{c}ois Pinard made it diagnose
+david zuhn contributed C++ support.  François Pinard made it diagnose
 invalid arguments.  Jim Blandy bravely coerced it into configuring
 GNU Emacs, laying the groundwork for several later improvements.
 Roland McGrath got it to configure the GNU C Library, wrote the
@@ -27131,7 +27228,7 @@ of the program.  I made the messages showing results of the checks less
 ambiguous, always printing a result.  I regularized the names of the
 macros and cleaned up coding style inconsistencies.  I added some
 auxiliary utilities that I had developed to help convert source code
-packages to use Autoconf.  With the help of Fran@,{c}ois Pinard, I made
+packages to use Autoconf.  With the help of François Pinard, I made
 the macros not interrupt each others' messages.  (That feature revealed
 some performance bottlenecks in GNU M4, which he hastily
 corrected!)  I reorganized the documentation around problems people want
@@ -27139,7 +27236,7 @@ to solve.  And I began a test suite, because experience had shown that
 Autoconf has a pronounced tendency to regress when we change it.
 
 Again, several alpha testers gave invaluable feedback, especially
-Fran@,{c}ois Pinard, Jim Meyering, Karl Berry, Rob Savoye, Ken Raeburn,
+François Pinard, Jim Meyering, Karl Berry, Rob Savoye, Ken Raeburn,
 and Mark Eichin.
 
 Finally, version 2.0 was ready.  And there was much rejoicing.  (And I
@@ -27290,7 +27387,7 @@ introduced in this document.
 @c  LocalWords:  inttypes STDINT stdint AWK AIX Solaris NeXT env EGREP FGREP yy
 @c  LocalWords:  LEXLIB YYTEXT lfl nonportable Automake's LN RANLIB byacc INETD
 @c  LocalWords:  inetd prog PROGS progs ranlib lmp lXt lX nsl gethostbyname UX
-@c  LocalWords:  NextStep isinf isnan glibc IRIX sunmath lm lsunmath pre sizeof
+@c  LocalWords:  isinf isnan glibc IRIX sunmath lm lsunmath pre sizeof
 @c  LocalWords:  ld inline malloc putenv setenv FreeBSD realloc SunOS MinGW
 @c  LocalWords:  snprintf vsnprintf sprintf vsprintf sscanf gcc strerror ifdef
 @c  LocalWords:  strnlen sysconf PAGESIZE unsetenv va fallback memcpy dst FUNC
@@ -27356,7 +27453,7 @@ introduced in this document.
 @c  LocalWords:  LIBREADLINE lreadline lncurses libreadline vrindex SYS
 @c  LocalWords:  syncodeindex define'd caindex CAindex MacKenzie DIRS
 @c  LocalWords:  Runtime runtime Submakes submakes MAKEFLAGS whitespace
-@c  LocalWords:  Timestamps Unportability Canonicalizing stdalign dirN
+@c  LocalWords:  Timestamps Unportability Canonicalizing stdckdint dirN
 @c  LocalWords:  acinclude AMFLAGS LIBS OBJCXXFLAGS GOFLAGS runstatedir
 @c  LocalWords:  metacharacter EXPENSIVEP errno setjmp wctype sys mawk
 @c  LocalWords:  nawk ggrep egrep gegrep fgrep gfgrep LEX lex yytext nm
@@ -27401,6 +27498,7 @@ introduced in this document.
 @c  LocalWords:  configmake vx bashdb tvtwm questers UUCP McGrath
 @c  LocalWords:  ispell
 @c Local Variables:
+@c coding: utf-8
 @c fill-column: 72
 @c ispell-local-dictionary: "american"
 @c indent-tabs-mode: nil
