@@ -1,6 +1,6 @@
 # Freeze M4 files.
 
-# Copyright (C) 2002, 2004, 2006-2017, 2020-2023 Free Software
+# Copyright (C) 2002, 2004, 2006-2017, 2020-2026 Free Software
 # Foundation, Inc.
 
 # This program is free software: you can redistribute it and/or modify
@@ -62,7 +62,7 @@ m4f_dependencies = $(top_build_prefix)bin/autom4te $(AUTOM4TE_CFG)
 m4sugar_m4f_dependencies =			\
 	$(m4f_dependencies)			\
 	$(src_libdir)/m4sugar/m4sugar.m4	\
-	$(build_libdir)/version.m4
+	$(build_libdir)/autoconf_version.m4
 
 m4sh_m4f_dependencies =				\
 	$(m4sugar_m4f_dependencies)		\
@@ -89,6 +89,7 @@ autoconf_m4f_dependencies =			\
 	$(src_libdir)/autoconf/fortran.m4	\
 	$(src_libdir)/autoconf/erlang.m4	\
 	$(src_libdir)/autoconf/go.m4		\
+	$(src_libdir)/autoconf/a68.m4		\
 	$(src_libdir)/autoconf/functions.m4	\
 	$(src_libdir)/autoconf/headers.m4	\
 	$(src_libdir)/autoconf/types.m4		\

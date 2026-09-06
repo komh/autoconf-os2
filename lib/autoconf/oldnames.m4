@@ -1,6 +1,6 @@
 # This file is part of Autoconf.                           -*- Autoconf -*-
 # Support old macros, and provide automated updates.
-# Copyright (C) 1994, 1999-2001, 2003, 2009-2017, 2020-2023 Free
+# Copyright (C) 1994, 1999-2001, 2003, 2009-2017, 2020-2026 Free
 # Software Foundation, Inc.
 
 # This file is part of Autoconf.  This program is free
@@ -21,7 +21,8 @@
 # You should have received a copy of the GNU General Public License
 # and a copy of the Autoconf Configure Script Exception along with
 # this program; see the files COPYINGv3 and COPYING.EXCEPTION
-# respectively.  If not, see <https://www.gnu.org/licenses/>.
+# respectively.  If not, see <https://www.gnu.org/licenses/> and
+# <https://git.savannah.gnu.org/gitweb/?p=autoconf.git;a=blob_plain;f=COPYING.EXCEPTION>.
 
 # Originally written by David J. MacKenzie.
 

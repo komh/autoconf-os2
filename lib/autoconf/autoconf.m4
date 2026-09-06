@@ -1,7 +1,7 @@
 # This file is part of Autoconf.                -*- Autoconf -*-
 # Driver that loads the Autoconf macro files.
 #
-# Copyright (C) 1994, 1999-2002, 2006, 2008-2017, 2020-2023 Free
+# Copyright (C) 1994, 1999-2002, 2006, 2008-2017, 2020-2026 Free
 # Software Foundation, Inc.
 
 # This file is part of Autoconf.  This program is free
@@ -22,7 +22,8 @@
 # You should have received a copy of the GNU General Public License
 # and a copy of the Autoconf Configure Script Exception along with
 # this program; see the files COPYINGv3 and COPYING.EXCEPTION
-# respectively.  If not, see <https://www.gnu.org/licenses/>.
+# respectively.  If not, see <https://www.gnu.org/licenses/> and
+# <https://git.savannah.gnu.org/gitweb/?p=autoconf.git;a=blob_plain;f=COPYING.EXCEPTION>.
 
 # Written by David MacKenzie and many others.
 #
@@ -43,6 +44,7 @@ m4_include([autoconf/c.m4])
 m4_include([autoconf/erlang.m4])
 m4_include([autoconf/fortran.m4])
 m4_include([autoconf/go.m4])
+m4_include([autoconf/a68.m4])
 m4_include([autoconf/functions.m4])
 m4_include([autoconf/headers.m4])
 m4_include([autoconf/types.m4])

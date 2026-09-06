@@ -1,7 +1,7 @@
 # This file is part of Autoconf.			-*- Autoconf -*-
 # Macros that test for specific, unclassified, features.
 #
-# Copyright (C) 1992-1996, 1998-2017, 2020-2023 Free Software
+# Copyright (C) 1992-1996, 1998-2017, 2020-2026 Free Software
 # Foundation, Inc.
 
 # This file is part of Autoconf.  This program is free
@@ -22,7 +22,8 @@
 # You should have received a copy of the GNU General Public License
 # and a copy of the Autoconf Configure Script Exception along with
 # this program; see the files COPYINGv3 and COPYING.EXCEPTION
-# respectively.  If not, see <https://www.gnu.org/licenses/>.
+# respectively.  If not, see <https://www.gnu.org/licenses/> and
+# <https://git.savannah.gnu.org/gitweb/?p=autoconf.git;a=blob_plain;f=COPYING.EXCEPTION>.
 
 # Written by David MacKenzie, with help from
 # François Pinard, Karl Berry, Richard Pixley, Ian Lance Taylor,
@@ -132,7 +133,7 @@ m4_define([_AC_SYS_YEAR2038_OPTIONS], m4_normalize(
 # If you change this macro you may also need to change
 # _AC_SYS_YEAR2038_OPTIONS.
 AC_DEFUN([_AC_SYS_YEAR2038_PROBE],
-[AC_CACHE_CHECK([for $CC option for timestamps after 2038],
+[AC_CACHE_CHECK([for $CC option to support timestamps after 2038],
   [ac_cv_sys_year2038_opts],
   [ac_save_CPPFLAGS="$CPPFLAGS"
   ac_opt_found=no
@@ -183,8 +184,8 @@ AS_CASE([$ac_cv_sys_year2038_opts],
 m4_define([_AC_SYS_YEAR2038_ENABLE],
 [m4_divert_text([DEFAULTS],
   m4_provide_if([AC_SYS_YEAR2038],
-    [enable_year2038=yes],
-    [enable_year2038=no]))]dnl
+    [: ${enable_year2038:=yes}],
+    [: ${enable_year2038:=no}]))]dnl
 [AC_ARG_ENABLE([year2038],
   m4_provide_if([AC_SYS_YEAR2038],
     [AS_HELP_STRING([--disable-year2038],
@@ -262,7 +263,6 @@ m4_define([_AC_SYS_LARGEFILE_OPTIONS], m4_normalize(
     ["none needed"]                   dnl Most current systems
     ["-D_FILE_OFFSET_BITS=64"]        dnl X/Open LFS spec
     ["-D_LARGE_FILES=1"]              dnl 32-bit AIX 4.2.1+, 32-bit z/OS
-    ["-n32"]                          dnl 32-bit IRIX 6, SGI cc (obsolete)
 ))
 
 # _AC_SYS_LARGEFILE_PROBE
@@ -279,25 +279,25 @@ m4_define([_AC_SYS_LARGEFILE_OPTIONS], m4_normalize(
 # If you change this macro you may also need to change
 # _AC_SYS_LARGEFILE_OPTIONS.
 AC_DEFUN([_AC_SYS_LARGEFILE_PROBE],
-[AC_CACHE_CHECK([for $CC option to enable large file support],
+[AC_CACHE_CHECK([for $CC option to support large files],
   [ac_cv_sys_largefile_opts],
-  [ac_save_CC="$CC"
+  [ac_save_CPPFLAGS=$CPPFLAGS
   ac_opt_found=no
   for ac_opt in _AC_SYS_LARGEFILE_OPTIONS; do
     AS_IF([test x"$ac_opt" != x"none needed"],
-      [CC="$ac_save_CC $ac_opt"])
+      [CPPFLAGS="$ac_save_CPPFLAGS $ac_opt"])
     AC_COMPILE_IFELSE([AC_LANG_PROGRAM([_AC_SYS_LARGEFILE_TEST_CODE])],
      [AS_IF([test x"$ac_opt" = x"none needed"],
 	[# GNU/Linux s390x and alpha need _FILE_OFFSET_BITS=64 for wide ino_t.
-	 CC="$CC -DFTYPE=ino_t"
+	 CPPFLAGS="$CPPFLAGS -DFTYPE=ino_t"
 	 AC_COMPILE_IFELSE([], [],
-	   [CC="$CC -D_FILE_OFFSET_BITS=64"
+	   [CPPFLAGS="$CPPFLAGS -D_FILE_OFFSET_BITS=64"
 	    AC_COMPILE_IFELSE([], [ac_opt='-D_FILE_OFFSET_BITS=64'])])])
       ac_cv_sys_largefile_opts=$ac_opt
       ac_opt_found=yes])
     test $ac_opt_found = no || break
   done
-  CC="$ac_save_CC"
+  CPPFLAGS=$ac_save_CPPFLAGS
   dnl Gnulib implements large file support for native Windows, based on the
   dnl variables WINDOWS_64_BIT_OFF_T, WINDOWS_64_BIT_ST_SIZE.
   m4_ifdef([gl_LARGEFILE], [
@@ -327,9 +327,6 @@ AS_CASE([$ac_cv_sys_largefile_opts],
     [AC_DEFINE([_LARGE_FILES], [1],
       [Define to 1 on platforms where this makes off_t a 64-bit type.])],
 
-  ["-n32"],
-    [CC="$CC -n32"],
-
   [AC_MSG_ERROR(
     [internal error: bad value for \$ac_cv_sys_largefile_opts])])
 
@@ -342,7 +339,7 @@ AC_CONFIG_COMMANDS_PRE([_AC_SYS_YEAR2038_ENABLE])])
 # By default, many hosts won't let programs access large files;
 # one must use special compiler options to get large-file access to work.
 # For more details about this brain damage please see:
-# http://www.unix.org/version2/whatsnew/lfs20mar.html
+# https://unix.org/version2/whatsnew/lfs20mar.html
 # Additionally, on Linux file systems with 64-bit inodes a file that happens
 # to have a 64-bit inode number cannot be accessed by 32-bit applications on
 # Linux x86/x86_64.  This can occur with file systems such as XFS and NFS.
@@ -554,6 +551,10 @@ AH_VERBATIM([USE_SYSTEM_EXTENSIONS],
 #ifndef _ALL_SOURCE
 # undef _ALL_SOURCE
 #endif
+/* Enable extensions on Cosmopolitan Libc. */
+#ifndef _COSMO_SOURCE
+# undef _COSMO_SOURCE
+#endif
 /* Enable general extensions on macOS.  */
 #ifndef _DARWIN_C_SOURCE
 # undef _DARWIN_C_SOURCE
@@ -680,6 +681,7 @@ dnl it should only be defined when necessary.
           [ac_cv_should_define__xopen_source=yes])])])])
 
   AC_DEFINE([_ALL_SOURCE])
+  AC_DEFINE([_COSMO_SOURCE])
   AC_DEFINE([_DARWIN_C_SOURCE])
   AC_DEFINE([_GNU_SOURCE])
   AC_DEFINE([_HPUX_ALT_XOPEN_SOCKET_API])

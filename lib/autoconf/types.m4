@@ -1,7 +1,7 @@
 # This file is part of Autoconf.			-*- Autoconf -*-
 # Type related macros: existence, sizeof, and structure members.
 #
-# Copyright (C) 2000-2002, 2004-2017, 2020-2023 Free Software
+# Copyright (C) 2000-2002, 2004-2017, 2020-2026 Free Software
 # Foundation, Inc.
 
 # This file is part of Autoconf.  This program is free
@@ -22,7 +22,8 @@
 # You should have received a copy of the GNU General Public License
 # and a copy of the Autoconf Configure Script Exception along with
 # this program; see the files COPYINGv3 and COPYING.EXCEPTION
-# respectively.  If not, see <https://www.gnu.org/licenses/>.
+# respectively.  If not, see <https://www.gnu.org/licenses/> and
+# <https://git.savannah.gnu.org/gitweb/?p=autoconf.git;a=blob_plain;f=COPYING.EXCEPTION>.
 
 # Written by David MacKenzie, with help from
 # François Pinard, Karl Berry, Richard Pixley, Ian Lance Taylor,
@@ -532,8 +533,7 @@ AC_DEFUN([AC_TYPE_LONG_LONG_INT],
   AC_CACHE_CHECK([for long long int], [ac_cv_type_long_long_int],
      [ac_cv_type_long_long_int=yes
       case $ac_prog_cc_stdc in
-	no | c89) ;;
-	*)
+	no | c89)
 	  ac_cv_type_long_long_int=$ac_cv_type_unsigned_long_long_int
 	  if test $ac_cv_type_long_long_int = yes; then
 	    dnl Catch a bug in Tandem NonStop Kernel (OSS) cc -O circa 2004.
@@ -578,8 +578,7 @@ AC_DEFUN([AC_TYPE_UNSIGNED_LONG_LONG_INT],
     [ac_cv_type_unsigned_long_long_int],
     [ac_cv_type_unsigned_long_long_int=yes
      case $ac_prog_cc_stdc in
-       no | c89) ;;
-       *)
+       no | c89)
 	 AC_LINK_IFELSE(
 	   [_AC_TYPE_LONG_LONG_SNIPPET],
 	   [],
@@ -839,11 +838,7 @@ AC_DEFUN([AC_CHECK_SIZEOF],
 _AC_CACHE_CHECK_INT([size of $1], [AS_TR_SH([ac_cv_sizeof_$1])],
   [(long int) (sizeof ($1))],
   [AC_INCLUDES_DEFAULT([$3])],
-  [if test "$AS_TR_SH([ac_cv_type_$1])" = yes; then
-     AC_MSG_FAILURE([cannot compute sizeof ($1)], 77)
-   else
-     AS_TR_SH([ac_cv_sizeof_$1])=0
-   fi])
+  [AS_TR_SH([ac_cv_sizeof_$1])=0])
 
 AC_DEFINE_UNQUOTED(AS_TR_CPP(sizeof_$1), $AS_TR_SH([ac_cv_sizeof_$1]),
 		   [The size of '$1', as computed by sizeof.])
@@ -868,11 +863,7 @@ _AC_CACHE_CHECK_INT([alignment of $1], [AS_TR_SH([ac_cv_alignof_$3])],
   [(long int) offsetof (ac__type_alignof_, y)],
   [AC_INCLUDES_DEFAULT([$2])
 typedef struct { char x; $1 y; } ac__type_alignof_;],
-  [if test "$AS_TR_SH([ac_cv_type_$3])" = yes; then
-     AC_MSG_FAILURE([cannot compute alignment of $1], 77)
-   else
-     AS_TR_SH([ac_cv_alignof_$3])=0
-   fi])
+  [AS_TR_SH([ac_cv_alignof_$3])=0])
 
 AC_DEFINE_UNQUOTED(AS_TR_CPP(alignof_$3), $AS_TR_SH([ac_cv_alignof_$3]),
 		   [The normal alignment of '$1', in bytes.])

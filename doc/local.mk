@@ -1,6 +1,6 @@
 # Make Autoconf documentation.
 
-# Copyright (C) 2000-2003, 2007-2017, 2020-2023 Free Software
+# Copyright (C) 2000-2003, 2007-2017, 2020-2026 Free Software
 # Foundation, Inc.
 
 # This program is free software: you can redistribute it and/or modify
@@ -16,7 +16,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-AM_MAKEINFOFLAGS = --no-split
+# ASCII_DASHES_AND_QUOTES=0 is needed for makeinfo versions ≥ 7.1.
+# CHECK_NORMAL_MENU_STRUCTURE=1 is needed for makeinfo versions ≥ 6.8.
+AM_MAKEINFOFLAGS = --no-split \
+ -c ASCII_DASHES_AND_QUOTES=0 \
+ -c CHECK_NORMAL_MENU_STRUCTURE=1
 TEXI2HTML_FLAGS = -split_chapter
 TEXINFO_TEX = build-aux/texinfo.tex
 

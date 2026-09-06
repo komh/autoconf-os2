@@ -1,4 +1,1316 @@
+2026-03-20  Zack Weinberg  <zack@owlfolio.org>
+
+	Release version 2.73.
+
+2026-03-20  Zack Weinberg  <zack@owlfolio.org>
+
+	autoreconf tests: make “running: something” regexes more generous
+	Under some conditions you get “running: /absolute/path/bin/autoconf”
+	instead of just “running: autoconf” and the checks weren’t expecting
+	this.
+
+	Caught by ‘make distcheck’.
+
+2026-03-20  Zack Weinberg  <zack@owlfolio.org>
+
+	make fetch
+	gnulib still hasn’t merged the maint.mk fixes in commits 7da7ecd0
+	and 7c62a0cd so those were put back by hand afterward.
+
+	.gitignore: ignore lib/autoconf_version.m4, not lib/version.m4.
+	This should have been part of commit 9a6c58cf but I always use
+	a separate build directory so I didn't notice.
+
+2026-03-18  Zack Weinberg  <zack@owlfolio.org>
+
+	Allow --enable/disable-year2038 to be set in environment.
+	In both AC_SYS_YEAR2038 and AC_SYS_YEAR2038_RECOMMENDED, only set
+	the shell variable ‘enable_year2038’ if it doesn’t already have a
+	value, thus allowing it to be passed down from the environment.
+
+	Fixes <https://savannah.gnu.org/support/?111394>.
+
+	* lib/autoconf/specific.m4 (_AC_SYS_YEAR2038_ENABLE): When setting
+	  the default value of enable_year2038, do not override a value that
+	  was set in the environment.
+	* tests/semantics.at: Add tests for setting enable_year2038 in the
+	  environment and in config.site.
+
+2026-03-18  Bruno Haible  <bruno@clisp.org>
+
+	autoreconf: Fix recognition of autopoint versions 0.26 or newer.
+	* bin/autoreconf.in (autoreconf_current_directory): In the regex that
+	extracts the version number components from `autopoint --version`, mark
+	the third component as optional.
+
+2026-03-17  Zack Weinberg  <zack@owlfolio.org>
+
+	update NEWS for bug fixes since the beta release
+
+2026-03-17  Zack Weinberg  <zack@owlfolio.org>
+
+	autoreconf: add --exclude option
+	‘autoreconf --exclude COMMAND’ will not run COMMAND even if it appears
+	to be necessary.  The option can be given several times, or passed a
+	comma-separated list, to disable several such commands.  This may be
+	useful when autoreconf’s heuristics are incorrect (e.g. various
+	reported problems with gtkdocize and autopoint in the past few
+	years), or when a tool is unavailable or undesirable.
+
+	(For future consideration: also add the inverse option, run a command
+	even if it doesn’t seem to be necessary.)
+
+	* bin/autoreconf.in (may_run_command): New function.
+	  (%C, %cmd_excluded): New globals.
+	  ($autoconf, $autoheader, $autom4te, $automake, $aclocal, $libtoolize)
+	  ($intltoolize, $gtkdocize, $autopoint, $make): Fold into %C.
+	  ($run_make): Now local to parse_args.
+	  (parse_args): Recognize -x, --exclude option.  Merge all of the
+	  options and environment variable settings that can cause us not to
+	  run various commands into %cmd_excluded.
+	  (autoreconf_current_directory): Call may_run_command before running
+	  each command.  Revise autopoint version detection for clarity.
+
+	* doc/autoconf.texi: Document new -x, --exclude option to autoreconf.
+	  Clarify that the COMMANDNAME environment variables can have the same
+	  effect.
+
+	* tests/statesave.m4 (AC_STATE_SAVE): Split into its component tasks:
+	  AC_STATE_SAVE_DIR and AC_STATE_SAVE_ENV.  AC_STATE_SAVE by itself
+	  still does both tasks.
+
+	* tests/local.at: Log availability and version numbers for libtoolize,
+	  gtkdocize, intltoolize, and autopoint.  Detect whether autopoint
+	  supports AM_GNU_GETTEXT without AM_GNU_GETTEXT_(REQUIRE_)VERSION.
+	  (AT_REQUIRE_LIBTOOL, AT_REQUIRE_AUTOPOINT, AT_REQUIRE_INTLTOOLIZE)
+	  (AT_REQUIRE_GTKDOCIZE): New macros.
+	  (AT_STATE_SAVE, AT_STATE_SAVE_DIR, AT_STATE_SAVE_ENV): Import from
+	  statesave.m4.
+
+	* tests/torture.at: Add several new tests of autoreconf invoking
+	  third-party tools, and of the new --exclude option.
+
+2026-03-09  Zack Weinberg  <zack@owlfolio.org>
+
+	autoconf: error out if AC_OUTPUT receives more than three arguments
+	Modified versions of Autoconf exist that expect more than three
+	arguments to AC_OUTPUT; attempting to regenerate a configure
+	script that uses the extra arguments, with the unmodified
+	Autoconf, is likely to produce a broken script.
+
+	The feature enabled by a fourth argument, in the case I know about
+	(<https://invisible-island.net/autoconf/autoconf.html> - look for
+	“simplify the way we generate the config.h file”) is potentially
+	worth folding into our version of Autoconf, but we would need to
+	do it with a new AC_CONFIG_something macro, instead of reverting
+	to having AC_OUTPUT take arguments.
+
+	* lib/autoconf/status.m4 (AC_OUTPUT): Error out if more than three
+	  arguments are supplied.
+	* tests/torture.at: Add tests of AC_OUTPUT with one, three, and four
+	  arguments.  Two arguments is treated as a special case of three
+	  arguments, so it doesn’t need its own test.
+
+2026-03-05  Paul Eggert  <eggert@cs.ucla.edu>
+
+	Pacify Emacs 30 in Elisp sources
+	* lib/emacs/autoconf-mode.el:
+	* lib/emacs/autotest-mode.el:
+	Mark these as using lexical binding as they work just fine with that,
+	and if you compile them without the mark, Emacs 30 complains
+	“Warning: file has no `lexical-binding' directive on its first line”.
+
+2026-02-24  Zack Weinberg  <zack@owlfolio.org>
+
+	autoheader: preserve hand-written template files
+	Consistent with the existing behavior of autoreconf regarding
+	hand-maintained aclocal.m4, make both autoheader and autoreconf
+	check for the /* Generated from configure.ac by autoheader */
+	line that autoheader emits at the beginning of its generated
+	configuration header templates.  If the file exists but the
+	marker line is not there, they will now leave the file alone
+	unless given the new command line option --replace-handwritten.
+
+	Fixes <https://savannah.gnu.org/support/index.php?111388>.
+
+	I’m looking for feedback regarding whether the new option should
+	also cause autoreconf to clobber a hand-written aclocal.m4, or any
+	other files that _could_ be generated but aren’t always.  (aclocal.m4
+	in particular may need coordination with Automake, since the ‘aclocal’
+	tool belongs to them.)
+
+	* bin/autoheader.in: Add option --replace-handwritten.  If the
+	  primary template file already exists and doesn’t begin with a
+	  marker comment indicating it was generated by autoheader, don’t
+	  modify it unless --replace-handwritten was given.
+	* bin/autoreconf.in: Similarly.
+	* doc/autoconf.texi: Document new option for autoheader and
+	  autoreconf.
+	* tests/tools.at: Test new behavior.
+
+2026-02-18  Zack Weinberg  <zack@owlfolio.org>
+
+	Update documentation for building Autoconf from a Git checkout.
+	* Clarify that you need a full Git clone, not a shallow clone, because
+	  the build scripts inspect the Git history.
+
+	* Remove all references to CVS and the CVS mirror of the Git repo.
+	  pserver.git.sv.gnu.org doesn’t exist anymore, and I suspect building
+	  from a CVS-based working copy wouldn’t work anyway, for the same
+	  reason a shallow clone doesn’t work.
+
+	* Add a note to the paragraph about copyright assignments for patches,
+	  explaining that that Signed-off-by: is useless to us.
+
+2026-02-09  Zack Weinberg  <zack@owlfolio.org>
+
+	Go: do not clobber GOFLAGS in AC_PROG_GO (sr #111383)
+	The AC_PROG_GO macro should honor the GOFLAGS set by the user at
+	configure time.
+
+	Fixes <https://savannah.gnu.org/support/?111382>.
+
+	* lib/autoconf/go.m4: Do not clobber GOFLAGS in AC_PROG_GO.
+	  Simplify sequence of AC_CHECK_TOOL/AC_CHECK_PROGS operations;
+	  this macro does not have the backward compatibility constraints
+	  that AC_PROG_CC does.
+
+2026-02-09  Jose E. Marchesi  <jemarch@gnu.org>
+
+	Algol68: do not clobber A68FLAGS in AC_PROG_A68 (sr #111382)
+	The AC_PROG_A68 macro should honor the A68FLAGS set by the user at
+	configure time.
+
+	Fixes <https://savannah.gnu.org/support/?111382>.
+
+	* lib/autoconf/a68.m4: Do not clobber A68FLAGS in AC_PROG_A68.
+	  Simplify sequence of AC_CHECK_TOOL/AC_CHECK_PROGS operations;
+	  this macro does not have the backward compatibility constraints
+	  that AC_PROG_CC does.
+
+2026-02-04  Zack Weinberg  <zack@owlfolio.org>
+
+	AC_PROG_LEX: Be compatible with Solaris 10 lex’s handling of C++.
+	Solaris 10 lex (Software Generation Utilities (SGU) Solaris-ELF (4.0))
+	provides its own declaration of yywrap.  When the generated scanner is
+	compiled as C++, that declaration will *not* be tagged with `extern "C"`
+	unless the preprocessor macro __EXTERN_C__ is defined using -D.
+	The %{ %} block of the .l file is too late.
+
+	Our test .l file also declares yywrap, and it unconditionally tags it
+	with `extern "C"` when compiling as C++.  Thus, we need to define
+	__EXTERN_C__ or we’ll get a spurious compile error with this
+	implementation of lex.  This macro should be harmless with other
+	implementations.
+
+	sr #111381
+
+	* lib/autoconf/programs.m4 (_AC_PROG_LEX_YYTEXT_DECL): Add -D__EXTERN_C__=1
+	  to CPPFLAGS while compiling test programs, for improved compatibility
+	  with Solaris 10 lex.
+
+2026-02-04  Zack Weinberg  <zack@owlfolio.org>
+
+	tests: AC_C_FLEXIBLE_ARRAY_MEMBER result can vary between C and C++.
+	For example, the native C compiler for Solaris 10 (Sun C in, at least,
+	the version 5.9 .. 5.15 range) supports C99 flexible array members,
+	but the matching C++ compiler doesn’t.
+
+	sr #111380
+
+2026-02-03  Zack Weinberg  <zack@owlfolio.org>
+
+	Autoconf 2.72.90 (beta test 1 for Autoconf 2.73).
+
+	maint.mk: remove overquotation in ‘announcement’ rule
+	If $(bootstrap-tools) *doesn’t* include “gnulib”, a nested shell
+	command is supposed to expand to nothing, but instead it expands to
+	an empty argument, causing announce-gen to barf.
+
+2026-02-03  Zack Weinberg  <zack@owlfolio.org>
+
+	NEWS: Briefly mention a few more improvements.
+	Specifically, this is meant to cover these commits:
+
+	2b56e8c2 autoreconf: don’t fail if gtkdocize is unavailable (#110503)
+	912567e9 autoreconf: require word boundaries when grepping for macros (#111271)
+	4774e6bb autoreconf: Adapt to the on-disk situation after autopoint has run.
+	f0d97fb5 autoreconf: Invoke autopoint in more situations.
+
+	and
+
+	9a6c58cf Rename version.m4 to autoconf_version.m4.
+
+2026-02-03  Zack Weinberg  <zack@owlfolio.org>
+
+	fetch.pl: get GNU standards documents from gnulib
+	Pulling these files from gnulib, instead of getting them directly
+	from their official home, means that all the files fetched by fetch.pl
+	come from Savannah Git repositories, which is particularly important
+	right now as Savannah CVS repositories are currently inaccessible via
+	the web, see
+	https://lists.gnu.org/archive/html/savannah-hackers/2026-02/msg00024.html
+	et seq.
+
+	* fetch.pl (to_fetch): Get all gnustandards files from gnulib instead.
+	  (savannah_url): Remove special case for gnustandards.
+
+2026-02-03  Zack Weinberg  <zack@owlfolio.org>
+
+	syntax-check: avoid unsigned_* false positive on maint.mk
+	* maint.mk (sc_unsigned_char, sc_unsigned_short, sc_unsigned_int)
+	  (sc_unsigned_log): Add ‘exclude’ patterns so that these tests do
+	  not throw a false positive on their own commentary.
+
+	autoconf.texi: typo fix
+	‘the the’ -> ‘the’ in one place.  Caught by ‘make syntax-check’.
+
+	maint.mk: fix tab/space usage in release-prep script
+	This makes the ‘makefile_TAB_only_indentation’ syntax check happy.
+
+	cfg.mk: update old_NEWS_hash
+	Commit c3705f11bc0f1796836cddacfcd97e9f7e243563 modified the copyright
+	dates at the bottom of NEWS but did not update old_NEWS_hash.
+
+	syntax-check: avoid fsf_postal false positive on maint.mk
+	* maint.mk (sc_fsf_postal): Adjust ‘prohibit’ regex to not match itself.
+
+	Update COPYING from https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt
+	Our copy still mentioned the FSF’s old postal mail address.
+
+	make fetch
+	Right now, Savannah’s HTTP interface to CVS repositories (viewvc) is
+	responding to all queries with a 429 Too Many Requests error code,
+	so those files were updated manually.  (The actual CVS server is
+	still working fine.)
+
+2026-02-03  Bruno Haible  <bruno@clisp.org>
+
+	maint: Suggest to use the savannah tracker for bug reports.
+	* bin/autoconf.in ($help): Mention the savannah tracker as first bug
+	reporting option.
+	* bin/autoheader.in ($help): Likewise.
+	* bin/autom4te.in ($help): Likewise.
+	* bin/autoreconf.in ($help): Likewise.
+	* bin/autoscan.in ($help): Likewise.
+	* bin/autoupdate.in ($help): Likewise.
+	* bin/ifnames.in ($help): Likewise.
+
+2026-01-27  Paul Eggert  <eggert@cs.ucla.edu>
+
+	Mention strchr issues in NEWS
+	* NEWS: Mention problems with strchr-like functions in C23.
+
+2026-01-27  Zack Weinberg  <zack@owlfolio.org>
+
+	autoreconf: don’t fail if gtkdocize is unavailable (#110503)
+	Since 2.70, autoreconf has run gtkdocize when it detects a use of the
+	macro GTK_DOC_CHECK in the configure.ac.  Some projects (e.g. per the
+	bug report, gnutls and harfbuzz) were using a clever hack with
+	m4_ifdef to allow people to build the project without having gtkdocize
+	installed, if they didn’t care about building the documentation; the
+	change to autoreconf broke this hack.
+
+	Attempt to make the hack work again, by only running gtkdocize if that
+	command is actually installed; autoreconf will not error out if the
+	macro is detected but the command is unavailable, similar to the
+	existing treatment of autopoint.
+
+	Problem reported by Marvin Scholz.
+
+	* bin/autoreconf.in (autoreconf_current_directory): Do not error out
+	  if gtkdocize is wanted but unavailable.
+
+2026-01-27  Zack Weinberg  <zack@owlfolio.org>
+
+	autoreconf: require word boundaries when grepping for macros (#111271)
+	autoreconf’s first pass over configure.ac is effectively a grep
+	operation for a number of macros that almost always appear directly
+	in that file, if they’re going to appear at all.  All but one of the
+	regular expressions made no attempt to check for word boundaries, and
+	the one that did was doing it incorrectly (using ^ rather than \b),
+	leading to issue #111271.
+
+	Fix all the regexps to surround each identifier with \b…\b and not
+	to use ^.
+
+	Reported by Kip, originally as gettext bug #52424.
+
+	* bin/autoreconf.in (autoreconf_current_directory): In the first pass,
+	  require each of the macros we look for to be a complete word.
+
+2026-01-27  Jan André Reuter  <j.reuter@fz-juelich.de>
+
+	Ignore target feature flags in _AC_FC_LIBRARY_LDFLAGS (#111353)
+	Ignore target specific feature flags passed via '-target-feature'.
+	When encountered, ignore the flag passed after. These flags might
+	contain a '-l', e.g. '-target-feature -lwp', causing non-existent
+	libraries to be picked up, failing later checks, or the build of
+	the application.
+
+	This can e.g. be encountered when '-march=native' is passed to
+	configure during a build with LLVM on Zen 4 machines.
+
+	Reported by, and patch written by, Jan André Reuter <j.reuter@fz-juelich.de>.
+
+	* lib/autoconf/fortran.m4 (_AC_FC_LIBRARY_LDFLAGS): Skip arguments
+	  immediately following ‘-target-feature’.
+
+2026-01-27  Luke Mewburn  <Luke@Mewburn.net>
+
+	doc: cross-reference m4 manual for regex syntax (#111095)
+	The documentation of the various M4sugar macros that take regex
+	arguments did not explain GNU M4’s idiosyncratic regex syntax, which
+	resembles POSIX basic regexes but is not actually the same, nor is it
+	the same as Emacs regexes.  Add cross-references to the GNU M4 manual
+	to rectify this.
+
+	Reported by Luke Mewburn <Luke@Mewburn.net>.
+	Patch originally by Luke Mewburn, revised by Zack Weinberg.
+
+	* doc/autoconf.texi: Add cross-references from the documentation of
+	  ‘m4_bpatsubst’ and ‘m4_bregexp’ to the GNU M4 manual sections that
+	  explain ‘patsubst’ and ‘regexp’.  Also add cross-references from
+	  ‘m4_bmatch’ and ‘m4_bpatsubsts’ to ‘m4_bregexp’ and ‘m4_bpatsubst’
+	  respectively.
+
+2026-01-27  Paul Eggert  <eggert@cs.ucla.edu>
+
+	Avoid trailing whitespace in config.h
+	Problem (and earlier patch) reported by Collin Funk in:
+	https://lists.gnu.org/archive/html/autoconf-patches/2025-10/msg00002.html
+	* NEWS: Mention this.
+	* lib/autoconf/status.m4 (_AC_OUTPUT_HEADERS_PREPARE):
+	Omit trailing white space from C macro definitions.
+	* tests/torture.at (No trailing white space in macro definitions):
+	New test.
+
+2026-01-26  Zack Weinberg  <zack@owlfolio.org>
+
+	Rename version.m4 to autoconf_version.m4.
+	Many existing projects have their own version.m4, and in some cases
+	having one is recommended by the Automake manual.  As of 2.72, the
+	name collision causes a spurious warning about including ‘version.m4’
+	multiple times, because the “has this been included before” machinery
+	does not track full pathnames.
+
+	A proper fix is more complicated than anyone has time to develop;
+	let’s just rename our version.m4 to autoconf_version.m4, which should
+	be sufficiently distinctive.
+
+	Reported in <https://savannah.gnu.org/support/?111007>.
+
+	* lib/version.in: Rename to lib/autoconf_version.in.
+	* bootstrap, configure.ac, lib/freeze.mk, lib/local.mk,
+	  lib/m4sugar/m4sugar.m4: Change all uses of version.m4 to
+	  autoconf_version.m4, and all uses of version.in to
+	  autoconf_version.in.
+
+2026-01-26  Zack Weinberg  <zack@owlfolio.org>
+
+	lib/autom4te.in: Update Autoreconf-preselections.
+	It looks like the trace list in autoreconf proper was updated several
+	times without keeping this in sync.
+
+2026-01-26  Bruno Haible  <bruno@clisp.org>
+
+	autoreconf: Adapt to the on-disk situation after autopoint has run.
+	Reported in <https://savannah.gnu.org/support/?111273>.
+
+	* bin/autoreconf.in (autoreconf_current_directory): After invoking autopoint,
+	rerun aclocal. When doing so, pass extra options "-I m4" if the configure.ac
+	does not specify a macro dir.
+
+2026-01-26  Bruno Haible  <bruno@clisp.org>
+
+	autoreconf: Invoke autopoint in more situations.
+	Reported in <https://savannah.gnu.org/support/?111272>.
+
+	* bin/autoreconf.in (autoreconf_current_directory): Invoke autopoint also when
+	the package uses AM_GNU_GETTEXT (without AM_GNU_GETTEXT_VERSION), AM_PO_SUBDIRS,
+	AM_ICONV, AC_LIB_LINKFLAGS, AC_LIB_HAVE_LINKFLAGS, AC_LIB_LINKFLAGS_FROM_LIBS,
+	or GUILE_FLAGS.
+
+2026-01-26  Zack Weinberg  <zack@owlfolio.org>
+
+	Move more code out of shell traps into shell functions.
+	Follow-up on 416b8f50c9bd4e38f9bc48b946505d2a18f6b1fd.
+
+	* lib/autoconf/general.m4 (_AC_INIT_PREPARE): Emit function ac_exit_trap,
+	  move remaining code from the 'trap 0' command to ac_exit_trap.
+
+2026-01-09  Paul Eggert  <eggert@cs.ucla.edu>
+
+	Fix quoting problem in Solaris commentary
+	Problem reported by Nick Bowler in:
+	https://lists.gnu.org/r/bug-autoconf/2026-01/msg00001.html
+
+2026-01-01  Paul Eggert  <eggert@cs.ucla.edu>
+
+	maint: update all copyright dates via "make update-copyright"
+
+2025-12-13  Paul Eggert  <eggert@cs.ucla.edu>
+
+	Update Solaris commentary
+
+2025-11-20  Christian Feld  <c.feld@fz-juelich.de>  (tiny change)
+
+	Fix bug in Fortran implicit int handling
+	* lib/autoconf/fortran.m4 (_AC_FC_IMPLICIT_NONE):
+	Fix typo in argument numbering.
+
+2025-10-26  Jose E. Marchesi  <jemarch@gnu.org>
+
+	Support for the Algol 68 language
+	This patch adds support for the Algol 68 programming language to
+	Autoconf.  It is based on the Algol 68 GCC front-end, which is
+	currently under development [1].  The front-end is temporarily hosted
+	in the sourceware forge until integration in GCC is completed [3].
+
+	Note that the GCC Algol 68 front-end is not yet integrated in the main
+	compiler, so it is developed and distributed off-tree.  See
+	https://gcc.gnu.org/wiki/Algol68FrontEnd.  Additional information
+	about the Algol 68 programming language, and how it is being evolved
+	by the GNU Algol 68 Working Group can be found at
+	https://algol68-lang.org.
+
+	Automake support for Algol 68 has been already pushed as of 2 February
+	2025.
+
+	[1] https://gcc.gnu.org/wiki/Algol68FrontEnd
+	[2] https://inbox.sourceware.org/gcc-patches/20250101020952.18404-1-jose.marchesi@oracle.com/T/#t
+	[3] https://forge.sourceforge.org/gcc/gcc-a68
+
+	    Add support for the Algol68 programming language.
+
+	    * lib/autoconf/a68.m4: New file.
+	    * lib/autoconf/autoconf.m4: Include autoconf/a68.m4.
+	    * lib/autoconf/Makefile.am (dist_autoconflib_DATA): Add a68.m4.
+	    * lib/freeze.mk (autoconf_m4f_dependencies): Add
+	    $(src_libdir)/autoconf/a68.m4.
+	    * doc/autoconf.texi: Rebuild menus.
+	    (Preset Output Variables): Mention Algol 68.  Document A68FLAGS.
+	    (Algol 68 Compiler): New subsection.
+	    (Language Choice): Mention Algol 68.
+	    (Generating Sources): Likewise.
+	    (Running the Preprocessor): Likewise.
+	    * tests/a68.at: New file.
+	    * tests/suite.at: Include a68.at.
+	    * tests/local.at (_AT_CHECK_ENV): Add A68 and A68FLAGS.
+	    * NEWS: Update.
+
+2025-10-15  Basil L. Contovounesios  <basil@contovou.net>  (tiny change)
+
+	doc: fix AC_LANG_PROGRAM signature
+	* doc/autoconf.texi (Generating Sources): Mark AC_LANG_PROGRAM
+	arguments as optional to match its definition and common usage.
+
+2025-08-30  Paul Eggert  <eggert@cs.ucla.edu>
+
+	doc: improve sed doc
+	* src/autoconf.texi: Modernize description of sed limitations.
+	Prompted by a bug report by Daniel Locks in:
+	https://lists.gnu.org/r/bug-autoconf/2025-08/msg00001.html
+
+2025-08-07  Paul Eggert  <eggert@cs.ucla.edu>
+
+	Port _AC_C_C99_TEST_MAIN to -Wc++-compat
+	Problem reported by Vincent Lefevre in:
+	https://lists.gnu.org/r/autoconf-patches/2025-08/msg00004.html
+	* lib/autoconf/c.m4 (_AC_C_C99_TEST_MAIN):
+	Don’t use malloc.
+
+	Port _AC_C_C99_TEST_GLOBALS to -Wc++-compat
+	Problem reported by Vincent Lefevre in:
+	https://lists.gnu.org/r/autoconf-patches/2025-08/msg00004.html
+	* lib/autoconf/c.m4 (_AC_C_C99_TEST_GLOBALS): and → aND.
+
+2025-08-07  Vincent Lefevre  <vincent@vinc17.net>  (tiny change)
+
+	Make _AC_C_C99_TEST_MAIN more robust with -Werror
+	The current code fails with gcc r16-2729-g0d276cd378e and
+	  -Werror=discarded-qualifiers -Werror=write-strings
+	(the -Werror=write-strings is useful to check compatibility of
+	user code with C++, and the -Werror=discarded-qualifiers is an
+	upgrade of a default warning to an error). Since this is a test
+	for C99, we may assume that const is supported by the compiler,
+	and adding const makes the code more robust in this context.
+
+2025-08-07  Paul Eggert  <eggert@cs.ucla.edu>
+
+	Port AC_C_CONST to GCC 16 -Wunused-but-set-variable
+	Problem reported by Vincent Lefevre in:
+	https://lists.gnu.org/r/autoconf-patches/2025-08/msg00001.html
+	https://lists.gnu.org/r/autoconf-patches/2025-08/msg00002.html
+	* lib/autoconf/c.m4 (AC_C_CONST): Combine two tests, use
+	the set variable, and don’t try to add 1 to a null pointer.
+
+2025-07-28  Paul Eggert  <eggert@cs.ucla.edu>
+
+	Quote $OLDPWD in doc
+	Problem reported by Florian Weimer in:
+	https://lists.gnu.org/r/autoconf/2025-07/msg00008.html
+
+2025-07-27  Paul Eggert  <eggert@cs.ucla.edu>
+
+	doc: update cd info
+	* doc/autoconf.texi: Modernize and update description
+	of cd gotchas.  Prompted by email from Farblos in:
+	https://lists.gnu.org/r/autoconf/2025-07/msg00004.html
+
+2025-07-18  Paul Eggert  <eggert@cs.ucla.edu>
+
+	doc: omit confusing space before paren
+	* doc/autoconf.texi: Set txidefnamenospace to avoid confusing spaces.
+	Problem reported by Gavin Smith in:
+	https://lists.gnu.org/r/autoconf/2025-07/msg00000.html
+
+2025-06-25  Paul Eggert  <eggert@cs.ucla.edu>
+
+	Document s/a/\n/ etc
+	Problem reported by Bruno Haible in:
+	https://lists.gnu.org/r/autoconf-patches/2025-06/msg00001.html
+	* doc/autoconf.texi (Limitations of Usual Tools):
+	Also mention escapes in replacement strings.
+	While we’re at it, update -e and -f concatenation doc.
+
+2025-05-26  Bruno Haible  <bruno@clisp.org>
+
+	Fix trap quoting (regression 2024-08-04).
+	* lib/autoconf/general.m4 (_AC_INIT_PREPARE): Emit functions ac_cache_dump,
+	ac_dump_debugging_info. In the trap command, invoke ac_dump_debugging_info.
+	(AC_CACHE_SAVE): Invoke ac_cache_dump instead of expanding _AC_CACHE_DUMP a
+	second time.
+
+2025-05-26  Bruno Haible  <bruno@clisp.org>
+	    Paul Eggert  <eggert@cs.ucla.edu>
+
+	AC_CHECK_DECL now ignores future Darwin functions
+	* lib/autoconf/general.m4 (_AC_UNDECLARED_BUILTIN):
+	Use shorter diagnostic, to be consistent with other changes.
+	(_AC_FUTURE_DARWIN): New macro.
+	(AC_CHECK_DECL): Require per-language _AC_FUTURE_DARWIN.
+	Use $ac_c_future_darwin_options alongside with
+	$ac_c_undeclared_builtin_options.
+	* NEWS: Mention the fix.
+
+2025-05-06  Paul Eggert  <eggert@cs.ucla.edu>
+
+	More shell patterns to avoid
+	* doc/autoconf.texi (Shell Pattern Matching):
+	Improve on the recent discussion about brace expansion.
+
+2025-05-06  Bruno Haible  <bruno@clisp.org>
+
+	doc: Document another pitfall of shell pattern matching.
+	* doc/autoconf.texi (Shell Pattern Matching): Mention non-portability of
+	patterns with braces.
+
+2025-04-20  Paul Eggert  <eggert@cs.ucla.edu>
+
+	Fall back on busybox awk
+	* lib/autoconf/programs.m4 (AC_PROG_AWK):
+	Fall back 'busybox awk' of none of the other awks work.
+
+2025-04-18  Paul Eggert  <eggert@cs.ucla.edu>
+
+	Avoid grep in minimal configure
+	* lib/autoconf/status.m4 (_AC_OUTPUT_FILES_PREPARE):
+	Use ‘sed -n '$='’ instead of ‘grep -c’, since these
+	are the only uses of grep in a minimal ‘configure’
+	and we are already using sed elsewhere.
+
+	config.status now checks for missing awk
+	* lib/autoconf/status.m4 (_AC_OUTPUT_CONFIG_STATUS):
+	Diagnose missing awk and fail, rather than blundering on.
+
+2025-04-17  Paul Eggert  <eggert@cs.ucla.edu>
+
+	Improve list of 'configure' prereqs
+	* doc/install.texi (Installation Prerequisites):
+	Use a more-accurate list.
+
+	Document that 'configure' needs awk etc
+	Problem reported by Simon Josefsson in:
+	https://lists.gnu.org/r/bug-gnulib/2025-04/msg00127.html
+	* doc/install.texi (Installation Prerequisites): New section.
+
+2025-04-07  Paul Eggert  <eggert@cs.ucla.edu>
+
+	Fix AC_DEFINE_UNQUOTED regexp
+	Problem reported by Eric Blake in:
+	https://savannah.gnu.org/support/?111221
+	* lib/autoconf/general.m4 (_AC_DEFINE_UNQUOTED): Fix typo that
+	caused us to not use a here-document in some cases when we should.
+	* tests/torture.at (Substitute and define special characters):
+	Test for the bug.
+
+2025-02-09  Paul Eggert  <eggert@cs.ucla.edu>
+
+	Port install_aux_file to OS/2
+	* bin/autoreconf.in (install_aux_file): Port to OS/2,
+	which does not allow file name operations on open files.
+	Problem reported by KO Myung-Hun in:
+	https://lists.gnu.org/r/autoconf-patches/2025-02/msg00001.html
+
+2025-01-29  Paul Eggert  <eggert@cs.ucla.edu>
+
+	Fix dependency issue for autoscan.list
+	* lib/local.mk (lib/autoscan/autoscan.list):
+	Depend on lib/autoconf/autoconf.m4f, not merely on its dependencies.
+
+2025-01-29  Yann E. MORIN  <yann.morin@orange.com>  (tiny change)
+
+	tests/local.mk: fix dependencies for generating the wrapper template
+	Generating the tests wrapper template currently depends on the
+	dependencies needed for the frozen lib/m4sugar/m4sh.m4f. However,
+	it also requires that frozen sugar to actually be generated, or the
+	build will fail if it is not (or at least if it is in the process of
+	being generated).
+
+	Change the dependency to actually depend on the generated file, rather
+	than on its dependencies.
+
+	This kind of failure has been noticed on highly parallel builds on very
+	loaded machines.
+
+2025-01-29  Paul Eggert  <eggert@cs.ucla.edu>
+
+	Document AIX 7.3 find exec + bug
+	* doc/autoconf.texi (Limitations of Usual Tools):
+	Document AIX 7.3 bug with exit status of ‘find ... -exec ... +’.
+
+	Update doc for POSIX, OS versions
+	* doc/autoconf.texi: Some updates for newer POSIX and OS versions.
+	Omit no-longer-relevant version numbers.
+
+2025-01-16  Paul Eggert  <eggert@cs.ucla.edu>
+
+	Port better to NVHPC
+	See <https://savannah.gnu.org/support/?111172>.
+	* lib/autoconf/fortran.m4 (_AC_FC_LIBRARY_LDFLAGS):
+	Ignore -l options with embedded '='.
+
+2025-01-05  Markus Mützel  <markus.muetzel@gmx.de>
+
+	Keep "-lmingwex" and "-lmoldname" in linker flags for MinGW
+	It is needed when building Octave targeting Windows. Without it, the
+	implementation of "casin" from the Windows runtime is used instead of
+	the replacement from MinGW-w64.  That means that results for the
+	"casin" function are wrong without that change.
+	* lib/autoconf/fortran.m4: Do not remove "-lmingwex" or "-lmoldname"
+	from the linker flags when targeting MinGW.  Removing "-lmingwex" causes
+	an incorrect linker resolution for functions like "casin" for projects
+	that consist of Fortran and C++ sources.  Removing "-lmoldname" causes
+	issues for Fortran projects that try to use POSIX-like C functions
+	without a '_' symbol prefix when targeting MinGW.
+
+2025-01-05  Jack Kelly  <jack@jackkelly.name>
+
+	AC_USE_SYSTEM_EXTENSIONS: Set _COSMO_SOURCE
+	This enables extensions when compiling with Cosmopolitan Libc.
+	https://justine.lol/cosmopolitan/
+	* lib/autoconf/specific.m4: Define _COSMO_SOURCE.
+
+2025-01-01  Paul Eggert  <eggert@cs.ucla.edu>
+
+	Fix test failure on macOS 15.1.1
+	Problem reported by Sean Denny in:
+	https://lists.gnu.org/r/bug-autoconf/2024-12/msg00001.html
+	* doc/autoconf.texi (Limitations of Builtins):
+	Document the macOS sh bug.
+	* tests/base.at (AC_CACHE_CHECK):
+	* tests/local.at: Use test -ot rather than ls -t, as POSIX
+	requires the former to work reliably, but does not require the
+	latter (POSIX does not require a stable sort for ls -t).
+	Somewhat ironically, this should work around the macOS bug
+	because the use of its buggy test -ot should increase the
+	timestamp resolution to 1 s.
+
+	maint: update all copyright dates via "make update-copyright"
+
+2024-12-28  Paul Eggert  <eggert@cs.ucla.edu>
+
+	Update timestamp doc
+	* doc/autoconf.texi (Limitations of Usual Tools)
+	(Timestamps and Make): Modernize discussion a bit,
+	and give a downside of the GNU make approach.
+
+2024-12-02  Paul Eggert  <eggert@cs.ucla.edu>
+
+	doc: mention tr issues in multi-byte locales
+	* doc/autoconf.texi (tr): Mention multi-byte issues.
+
+2024-12-02  R. Diez  <rdiez-2006@rd10.de>
+
+	bootstrap: Disallow use of undefined shell variables, if possible.
+
+2024-11-17  Paul Eggert  <eggert@cs.ucla.edu>
+
+	Further improvements for C23 tests
+	Problems reported by Bruno Haible in:
+	https://lists.gnu.org/r/bug-gnulib/2024-11/msg00140.html
+	https://lists.gnu.org/r/bug-gnulib/2024-11/msg00141.html
+	https://lists.gnu.org/r/bug-gnulib/2024-11/msg00145.html
+	* lib/autoconf/c.m4 (_AC_C_C23_TEST_GLOBALS):
+	In use_u8, add parens to pacify GCC 15 -Wbool-compare,
+	and use sizeof to make it a conforming integer constant expression.
+	Do not test stdbit.h, as some current sort-of-C23 environments
+	lack it and want to use options like -std=gnu23 on such platforms.
+	Use null_pointer to pacify GCC -Wunused-const-variable.
+
+2024-11-05  Paul Eggert  <eggert@cs.ucla.edu>
+
+	Fix comment typo re malloc
+	Problem reported by Bruno Haible in:
+	https://lists.gnu.org/r/bug-gnulib/2024-11/msg00048.html
+
+2024-10-31  Paul Eggert  <eggert@cs.ucla.edu>
+
+	Fix use of $3 in _AC_FUNC_MALLOC_IF etc
+	Use m4_default in case $3 is omitted.
+	Problem reported by Bruno Haible in:
+	https://lists.gnu.org/r/bug-gnulib/2024-10/msg00284.html
+	Also, use AS_CASE to defend against $3 containing macros
+	that might be expaned.
+
+2024-10-31  Bruno Haible  <bruno@clisp.org>
+
+	AC_FUNC_MALLOC now guesses yes when cross-compiling
+	The only platform that had this problem was native Windows,
+	and MSVC's malloc sets errno since 2015 at least.
+
+	* lib/autoconf/functions.m4 (AC_FUNC_MALLOC): Guess yes when
+	cross-compiling.
+
+2024-10-31  Paul Eggert  <eggert@cs.ucla.edu>
+
+	Say malloc/realloc cache vars can have spaces
+
+2024-10-29  Paul Eggert  <eggert@cs.ucla.edu>
+
+	* functions.m4: Fix typos in previous change.
+
+	Update ‘volatile’ doc for C23
+	* doc/autoconf.texi (Volatile Objects): Update for C23.
+
+	Match Gnulib INSTALL for quoting
+	The manual was already using curved single quotes, so we
+	might as well use curved double quotes and en and em dashes too.
+	* doc/local.mk (AM_MAKEINFOFLAGS): Add ASCII_DASHES_AND_QUOTES=0,
+	CHECK_NORMAL_MENU_STRUCTURE=1.
+	* Makefile.am ($(srcdir)/INSTALL): Also use AM_MAKEINFOFLAGS.
+	This matches Gnulib INSTALL’s quoting practice.
+
+	Merge from Gnulib for malloc, realloc checking
+	* lib/autoconf/functions.m4 (_AC_FUNC_MALLOC_IF, _AC_FUNC_REALLOC_IF):
+	Add 3rd argument for cross-guessing; all callers changed.
+	Use ‘volatile’ so that compilers don’t second-guess.
+	Also guess yes on gnu*, midipix*, midnightbsd*.
+
+2024-10-26  Paul Eggert  <eggert@cs.ucla.edu>
+
+	Go back to using “POSIX” not “Posix”
+	In my Mon Oct 11 20:21:33 2004 +0000 commit when I standardized the
+	spelling of various acronyms in documentation and comments I spelled
+	it “Posix”.  However, it seems that “POSIX” has won out in practice
+	(including my own practice!), so let’s change it back to “POSIX”.
+
+	Remove some doc for no-longer-used systems; update URLs
+
+	Document realloc (p, 0) gotchas
+	* doc/autoconf.texi (Function Portability, Particular Functions):
+	Don’t recommend realloc-gnu as it doesn’t (and probably shouldn’t)
+	enforce glibc compatibility.  Document variance in glibc behavior.
+
+2024-10-21  Paul Eggert  <eggert@cs.ucla.edu>
+
+	Avoid some echo '...\...' gotchas
+	Problem with AC_SUBST_FILE reported by Dylan Palauzov in:
+	https://lists.gnu.org/r/bug-autoconf/2024-10/msg00018.html
+	The other problems I found by a manual scan.
+	* bootstrap: Use printf, not echo.
+	* doc/autoconf.texi (Polymorphic Variables):
+	* lib/autoconf/fortran.m4 (_AC_PROG_FC_V_OUTPUT):
+	* lib/autoconf/general.m4 (_AC_CANONICAL_SPLIT):
+	* lib/autoconf/status.m4 (_AC_SUBST_FILES):
+	* lib/autotest/general.m4 (AT_FINISH):
+	Use AS_ECHO, not echo.
+
+2024-09-28  Paul Eggert  <eggert@cs.ucla.edu>
+
+	Mention autogen.sh sooner in doc
+	* doc/install.texi (Basic Installation):
+	Be more explicit about bootstrapping scripts
+	not named ‘bootstrap’.  Problem reported by Gavin Smith in:
+	https://lists.gnu.org/r/autoconf/2024-09/msg00003.html
+
+2024-09-22  Paul Eggert  <eggert@cs.ucla.edu>
+
+	doc: remove IRIX from manual
+	* doc/autoconf.texi: Remove references to IRIX, except for the
+	obsolete macro AC_IRIX_SUN.  IRIX has not been supported by its
+	vendor since 2013, and is no longer a documented Autoconf target.
+
+2024-09-05  Paul Eggert  <eggert@cs.ucla.edu>
+
+	Give a URL for COPYING.EXCEPTION in notices
+	This can be useful if the file is copied elsewhere
+	but the COPYING.EXCEPTION file is not present at the destination.
+
+2024-08-06  Paul Eggert  <eggert@cs.ucla.edu>
+
+	Stop documenting Tru64
+	* doc/autoconf.texi: Simplify manual by removing coverage of
+	Ultrix, OSF/1, Tru64, and DEC Alpha.  HP stopped supporting the
+	last release at the end of 2012, so this platform is long dead.
+	(Long Lines in Makefiles, Tru64 Directory Magic): Remove.
+
+	Improve coverage of ‘echo’ in manual
+	In manual, prefer AS_ECHO or printf instead of echo,
+	when that might make a difference.
+	Don’t use ‘date >timestamp’, to avoid spurious diffs.
+	* doc/autoconf.texi (Notices): No need to worry any more about
+	RCS or CVS being used to maintain Autoconf.
+	(Preset Output Variables): Say that ECHO_N etc. are obsolete.
+	(Automatic Remaking): Remove obsolescent mention of CVS.
+	(AS_ECHO): Mention that AS_ECHO expands to something involving “'”,
+	and how to work around this (rare) issue.
+	(Shell Substitutions, Slashes, Limitations of Builtins): Omit
+	no-longer-relevant discussion about ancient shell bugs that
+	involved a lot of ‘echo’s that would otherwise need to be
+	replaced.
+	(Limitations of Builtins): Don’t mention ‘echo "x$word"’ trick, as
+	it doesn’t resist backslashes.  Just use printf.  Expand on
+	discussion of ‘echo’ options.  Say that even modernish shells (e.g.,
+	ksh93 on OmniOS) sometimes screw up with here-documents.
+	(Making testsuite Scripts): Simplify $(srcdir)/package.m4
+	rule by using printf instead of echo, and defend against
+	some shell metacharacters in $(srcdir).
+
+	More defense against bad echo
+	* lib/autoconf/general.m4 (_AC_INIT_PARSE_ARGS)
+	(_AC_ARG_VAR_VALIDATE):
+	Defend against ‘echo’ interpreting ‘\’ or leading ‘-’.
+	(_AC_EVAL, _AC_EVAL_STDERR): Add to comment yet another reason
+	that these macros are obsolete and should be removed.  There’s no
+	point trying to change them as that’s more likely to hurt than
+	help the (zero?) callers who still use them.
+
+	Allow shell metachars in CONFIG_STATUS
+	* lib/autoconf/general.m4 (_AC_INIT_DEFAULTS, _AC_INIT_PREPARE):
+	* lib/autoconf/status.m4 (_AC_OUTPUT_FILES_PREPARE)
+	(_AC_OUTPUT_FILE, _AC_OUTPUT_HEADERS_PREPARE, AC_OUTPUT)
+	(_AC_OUTPUT_CONFIG_STATUS):
+	Work even if $CONFIG_STATUS contains shell metacharacters,
+	leading ‘-’, or no ‘/’.
+
+	Support more special chars in $(LIBDIR) etc
+	* lib/autoconf/libs.m4 (_AC_PATH_X_XMKMF):
+	* lib/autoconf/programs.m4 (AC_PROG_MAKE_SET):
+	Allow more special characters in ‘make’ macros like LIBDIR and MAKE.
+
+	Minor AC_FUNC_SELECT_ARGTYPES speedups
+	* lib/autoconf/functions.m4 (AC_FUNC_SELECT_ARGTYPES):
+	Don’t use ‘sed 's/\*/\*/g'’, which is a no-op.
+	Don’t use ‘echo’ either.
+
+	Don’t mishandle ‘\’ in VERSION
+	This is minor, it’s just allowing more chars (though not all)
+	in $(VERSION).
+	* Makefile.am (edit, top_srcdir.version, dist-hook)
+	(check-coverage-report):
+	* man/local.mk (VERSION):
+	Work even if VERSION contains ‘\’.
+
+	Follow own advice about \ in shell double-quoted strings
+	* lib/autoconf/headers.m4 (_AC_HEADERS_EXPANSION):
+	* lib/m4sugar/m4sh.m4 (AS_ECHO):
+	Go back to using '%s\n' instead of "%s\n".
+	(AS_VAR_GET): Work around the quoting problem by using printf
+	directly with "%s\\n" instead of AS_ECHO; this is safe now that we
+	assume printf.
+
+2024-08-03  Paul Eggert  <eggert@cs.ucla.edu>
+
+	Fix typos in previous $@ doc change
+	Problem reported in <https://savannah.gnu.org/support/?111102>.
+
+2024-08-02  Paul Eggert  <eggert@cs.ucla.edu>
+
+	Port to AIX 7.2 ksh93
+	Problem reported in <https://savannah.gnu.org/support/?111102>.
+	* lib/autotest/general.m4:
+	* lib/m4sugar/m4sh.m4 (_AS_REEXEC_WITH_SHELL):
+	* tests/wrapper.as:
+	Port to AIX 7.2 ksh93, whidh mishandles ${1+"$@"}, by not using
+	that construct.
+
+2024-07-17  Zack Weinberg  <zack@owlfolio.org>
+
+	Fix syntax-check complaints
+	One complaint is correct: house style is “file system” not “filesystem.”
+
+	The other one is bogus: sc_two_space_separator_in_usage gets a false
+	positive on gendocs.sh, which isn’t even our code.  I tried to exclude
+	just that file using exclude_file_name_regexp but it didn’t immediately
+	work and my patience for debugging maint.mk is nil.
+
+2024-07-17  Zack Weinberg  <zack@owlfolio.org>
+
+	Adjust set size correctly in all cases of m4_set_add_all.
+	Both the recursive and the iterative versions of m4_set_add_all had a
+	bug where they did not update the set size correctly if the set
+	contained tombstones.  I guess m4_set_remove isn’t used that often.
+	(I found this bug by accident while investigating an unrelated thing.)
+
+	The root cause of the bug was that in the tombstone case we had two
+	different layers quarreling over who got the last word on the size of
+	the set: m4_set_add, called for each value argument, was updating the
+	set size for each actual addition, and then the outer expansion of
+	m4_set_add_all was clobbering those updates with a calculation based
+	on the number of times the loop evaluated to a ‘-’ character, which
+	in the tombstone case was always zero.
+
+	The fix is to not mess with the set size on each actual addition,
+	relying on the outer calculation in all cases.  Most of the volume
+	of the patch is refactoring to eliminate all the duplicate copies of
+	the “add this element only if it isn’t already there” logic which were
+	confusing the issue.
+
+	I also made m4_set_add_all not go into an infinite loop if invoked
+	with fewer than two arguments.  Possibly it should error out in this
+	case instead of silently doing nothing, but I don’t think it matters
+	very much.
+
+	* lib/m4sugar/m4sugar.m4 (_m4_set_add, _m4_set_add_clean):
+	  New macros, factoring out common “add element to set” logic.
+	  (m4_set_add): Redefine using _m4_set_add.
+	  (_m4_set_add_all): Rename to _m4_set_add_all_clean; use _m4_set_add_clean.
+	  (_m4_set_add_check): Use _m4_set_add, not m4_set_add; emit a string
+	  of dashes as _m4_set_add_all_clean does.
+	  (m4_set_add_all): Update to match renamed _m4_set_add_all_clean.
+	  Do nothing if invoked with fewer than two arguments.
+
+	* lib/m4sugar/foreach.m4: Define variants of _m4_set_add_all_clean and
+	  _m4_set_add_all_check, matching the behavior of the definitions in
+	  m4sugar.m4.  Do not define m4_set_add_all here.
+
+	* tests/m4sugar.at (m4_set): Add more tests of interaction among
+	  m4_set_add_all, m4_set_remove, and m4_set_size.
+
+2024-07-17  Zack Weinberg  <zack@owlfolio.org>
+
+	Quote separators in foreach.m4 version of m4_joinall.
+	The entire output of m4_joinall is supposed to be quoted, including
+	separators, but the foreach.m4 implementation (used with M4 1.4.x)
+	was missing some quotes, and we didn’t notice because the test suite
+	wasn’t thorough enough.  Fix.
+
+	* lib/m4sugar/foreach.m4 (m4_joinall): Quote each separator as it’s
+	  emitted.
+	* tests/m4sugar.at (m4_join test): Expand tests of both m4_join and
+	  m4_joinall.
+
+2024-07-17  Zack Weinberg  <zack@owlfolio.org>
+
+	Add a FLAGS argument to AT_CHECK_M4SUGAR_TEXT.
+	This is not actually used within the testsuite at present, but is
+	handy for troubleshooting m4sugar tests.  For instance, you can pass
+	-v to a specific autom4te invocation and get told the underlying m4
+	invocation.
+
+	* tests/m4sugar.at (AT_CHECK_M4SUGAR_TEXT): Add fourth argument
+	  FLAGS which specifies additional command line arguments to pass to
+	  autom4te.
+
+2024-07-17  Zack Weinberg  <zack@owlfolio.org>
+
+	Emit compat shims less often for old AS_ECHO implementation details.
+	The shell variables $as_echo and $as_echo_n and the substitution
+	variables @ECHO_C@, @ECHO_N@, and @ECHO_T@ are implementation
+	details of the old implementation of AS_ECHO and AS_ECHO_N
+	(2.69-era; before the switch to use ‘printf’).  We continue
+	to provide them for compatibility with various third-party macros and
+	Makefiles that used them, even though, as far as I can tell, they were
+	never documented.  (Someone made ECHO_C etc. substitution variables on
+	purpose, though.)
+
+	For $as_echo and $as_echo_n, we can tell precisely when they are
+	needed, because all uses are exposed to M4 macro expansion.
+	Therefore, emit the necessary support code on first use and not
+	from AS_INIT.  As a side effect this means the -Wobsolete warning
+	only appears on the first use of each, which IMHO is polite.
+
+	For @ECHO_C@, @ECHO_N@, and @ECHO_T@, we have no way of knowing
+	whether a substitution variable is used, but we *do* know that
+	substitution variables are exclusively a configure.ac thing, so their
+	support code can be moved to general.m4 and emitted from AC_INIT
+	rather than from AS_INIT.
+
+	(It’s faintly possible that someone decided to use $ECHO_C in an
+	Autotest script but considering how rare it is for people to use
+	Autotest at all, or any other non-Autoconf application of M4sh,
+	I think we can worry about that when we hear about it.)
+
+	* lib/m4sugar/m4sh.m4 (_AS_ECHO_N_PREPARE): Removed.
+	  (AS_PREPARE, _AS_PREPARE): Don’t use _AS_ECHO_N_PREPARE.
+	  (_as_echo_var_prepare, _as_echo_n_var_prepare): New macros which
+	  emit the -Wobsolete warning and the support code for $as_echo and
+	  $as_echo_n respectively.
+	  (as_echo, as_echo_n): Move to bottom of the block that sets up
+	  the current implementation of AS_ECHO.  Invoke _as_echo_var_prepare
+	  and _as_echo_n_var_prepare, respectively, on first use.
+
+	* lib/autoconf/general.m4 (_AC_INIT_ECHO_N): New internal macro,
+	  contains the probe code that used to be in _AS_ECHO_N_PREPARE.
+	  AC_SUBSTs ECHO_C, ECHO_N, and ECHO_T.
+	  (AC_INIT): Don’t AC_SUBST ECHO_C, ECHO_N, and ECHO_T here.
+	  Invoke _AC_INIT_ECHO_N.
+
+2024-07-16  Bruno Haible  <bruno@clisp.org>
+
+	Port AC_PROG_OBJC to RHEL 9
+	* lib/autoconf/c.m4 (AC_PROG_OBJC): Search for gobjc before gcc.
+	* NEWS: Mention the change.
+
+2024-07-16  Paul Eggert  <eggert@cs.ucla.edu>
+
+	Detect Android 5.0 strnlen bug
+	This is useful for GNU Emacs, which still ports to that
+	old Android version.  The change here is imported from Gnulib.
+	* lib/autoconf/functions.m4 (AC_FUNC_STRNLEN):
+	Also detect Android 5.0 bug.  Use AC_COMPILE_IFELSE rather
+	than AC_CANONICAL_HOST for cross-compile test.
+
+2024-07-05  Paul Eggert  <eggert@cs.ucla.edu>
+
+	doc: mention ACLOCAL_AMFLAGS and #
+	* doc/autoconf.texi: Mention that ACLOCAL_AMFLAGS
+	cannot use makefile comments.  Problem reported by
+	Collin Funk in:
+	https://lists.gnu.org/r/bug-gnulib/2024-06/msg00005.html
+
+2024-06-23  Zack Weinberg  <zack@owlfolio.org>
+
+	autoconf.texi: Don’t say that Darwin is “derived from FreeBSD.”
+	This is an oversimplification and is probably going to cause
+	more confusion than it solves.
+
+	The commit which added this text was attributed to Sevan Janiyan,
+	but the text itself was written by me (Zack Weinberg); I revised
+	the patch but did not remember to also revise the commit message.
+
+2024-06-23  Zack Weinberg  <zack@owlfolio.org>
+
+	autoconf.texi: Move ‘Systemology’ to ‘Portable Shell Programming’ section.
+	It’s not an ideal fit in this location, but it’s better here than
+	where it was (jammed in the middle of ‘Writing Tests’).
+
+	Add ‘shell.nix’ defining Autoconf’s build dependencies in NixOS terms.
+	Like the existing ‘manifest.scm’, which does the same job for GNU Guix,
+	the point of this file is to facilitate testing Autoconf itself on NixOS:
+	‘nix-shell --pure shell.nix’ gives you an interactive shell with all
+	the necessary tools in $PATH, and nothing else.
+
+2024-06-23  Sevan Janiyan  <venture37@geeklan.co.uk>
+
+	doc/autoconf.texi (Systemology): Update Darwin.
+	Catch up with changes in Darwin since 2002 when the section was added.
+
+2024-06-23  KO Myung-Hun  <komh78@gmail.com>
+
+	bootstrap: Allow 'ln -s' to be overridden by the user.
+	For example, one might set LN_S=cp when working on an
+	OS or filesystem that does not support symbolic links.
+
+	* bootstrap: Honor $LN_S environment variable, defaulting
+	  to 'ln -s'.
+
+2024-06-18  Paul Eggert  <eggert@cs.ucla.edu>
+
+	Improve wording for Y2038 and largefile probes
+	Problem reported by Bruno Haible in:
+	https://lists.gnu.org/r/bug-gnulib/2024-06/msg00181.html
+	* lib/autoconf/specific.m4 (_AC_SYS_YEAR2038_PROBE)
+	(_AC_SYS_LARGEFILE_PROBE): Improve wording of chatter.
+
+2024-06-15  Paul Eggert  <eggert@cs.ucla.edu>
+
+	Process C23 #elifdef and #elifndef
+	Inspired by Collin Funk’s suggestion in:
+	https://lists.gnu.org/r/autoconf-patches/2024-06/msg00000.html
+	* bin/autom4te.in (handle_output):
+	* bin/autoscan.in, bin/ifnames.in (scan_c_file):
+	Also recognize #elifdef and #elifndef.
+	* tests/tools.at (ifnames): Test it for ifnames.
+
+2024-06-01  Paul Eggert  <eggert@cs.ucla.edu>
+
+	Document Solaris ‘make’ glitch with ‘!’
+	* doc/autoconf.texi (Failure in Make Rules):
+	Document that there are some complicated exceptions to
+	the idea that sh -e exits if any subcommand fails.
+	(Command Line Prefixes): New section.
+
+2024-05-28  Paul Eggert  <eggert@cs.ucla.edu>
+
+	AC_PROG_CXX no longer adjusts C++ language version
+	* lib/autoconf/c.m4 (_AC_CXX_CXX98_TEST_GLOBALS)
+	(_AC_CXX_CXX98_TEST_MAIN, _AC_CXX_CXX11_TEST_GLOBALS)
+	(_AC_CXX_CXX11_TEST_MAIN, _AC_CXX_CXX98_TEST_PROGRAM)
+	(_AC_CXX_CXX11_TEST_PROGRAM, _AC_CXX_CXX14_TEST_PROGRAM)
+	(_AC_CXX_CXX17_TEST_PROGRAM, _AC_CXX_CXX20_TEST_PROGRAM)
+	(_AC_CXX_CXX23_TEST_PROGRAM, _AC_CXX_CXX98_OPTIONS)
+	(_AC_CXX_CXX11_OPTIONS, _AC_CXX_CXX14_OPTIONS)
+	(_AC_CXX_CXX17_OPTIONS, _AC_CXX_CXX20_OPTIONS)
+	(_AC_CXX_CXX23_OPTIONS, _AC_PROG_CXX_STDCXX_EDITION_TRY)
+	(_AC_PROG_CXX_STDCXX_EDITION_TRY): Remove.  All uses removed.
+
+2024-05-26  Paul Eggert  <eggert@cs.ucla.edu>
+
+	AC_PROG_CXX now tries C++23, C++20, C++17, C++14
+	The recent glitch with C++11 underscores the fact that it’s
+	long past time for Autoconf to catch up with the C++ standards.
+	Add simple tests for each iteration of the C++ standard.
+	They can be improved later as needed.  When testing for these
+	newer standards, do not also test for features required by earlier
+	standards, as this isn’t all that helpful, leads to an O(N**2)
+	growth of ‘configure’, and can result in problems such as the
+	C++11 vs C++20 bug recently fixed.
+	* lib/autoconf/c.m4 (_AC_CXX_CXX14_TEST_PROGRAM)
+	(_AC_CXX_CXX17_TEST_PROGRAM, _AC_CXX_CXX20_TEST_PROGRAM)
+	(_AC_CXX_CXX23_TEST_PROGRAM, _AC_CXX_CXX14_OPTIONS)
+	(_AC_CXX_CXX17_OPTIONS, _AC_CXX_CXX20_OPTIONS)
+	(_AC_CXX_CXX23_OPTIONS): New macros.
+	(_AC_C_C23_TEST_PROGRAM, _AC_C_C23_OPTIONS): New macros.
+	(_AC_PROG_CC_STDC_EDITION): Try C23 first.
+	(_AC_PROG_CXX_STDCXX_EDITION): Use them.
+
+	Port C11 test to C++20
+	Trivial fix suggested by Peter Johansson in:
+	https://lists.gnu.org/r/autoconf/2024-05/msg00004.html
+	* lib/autoconf/c.m4 (_AC_CXX_CXX11_TEST_MAIN):
+	Do not test assigning u8"..." to char const *, as this
+	runs afoul of C++20.
+
+2024-05-15  Alyssa Ross  <hi@alyssa.is>
+
+	AC_FUNC_MALLOC: fix cross compilation to musl
+	This check returned yes for me on musl 1.2.3 on
+	aarch64-unknown-linux-musl.
+
+2024-04-30  Paul Eggert  <eggert@cs.ucla.edu>
+
+	Improve VLA wording in NEWS
+	Thanks to a suggestion by Werner Lemberg in:
+	https://lists.gnu.org/r/autoconf/2024-04/msg00009.html
+
+	Mention C keywords in NEWS
+	Thanks to Alan Coopersmith for mentioning this in:
+	https://lists.gnu.org/r/autoconf/2024-04/msg00011.html
+
+	AC_PROG_CC now tries C23 too
+	As C23 is now mostly supported by GCC, it's time for
+	AC_PROG_CC to prefer C23 if available.
+	* lib/autoconf/c.m4 (_AC_C_C23_TEST_GLOBALS, _AC_C_C23_TEST_MAIN):
+	(_AC_C_C23_TEST_PROGRAM, _AC_C_C23_OPTIONS): New macros.
+	(_AC_PROG_CC_STDC_EDITION): Try C23 first.
+
+	Port better to MSVC
+	Problems reported by Antonin Décimo in:
+	https://lists.gnu.org/r/autoconf/2024-04/msg00001.html
+	* lib/autoconf/c.m4 (_AC_C_C89_TEST_GLOBALS):
+	Do not test the value of __STDC__.
+	(_AC_C_C99_TEST_MAIN): Do not test for VLAs.
+	(_AC_C_C11_OPTIONS): Also test -std:c11.
+
+	Fix doc typo with " {"
+	Problem reported by Brad Smith
+	<https://savannah.gnu.org/support/?111054>.
+
+2024-04-25  Paul Eggert  <eggert@cs.ucla.edu>
+
+	Adjust tests to match new Automake files
+	* tests/m4sugar.at (bad categories): Adjust test cases
+	to match changed behavior of files copied from Automake.
+
+	make fetch
+
+2024-04-24  Paul Eggert  <eggert@cs.ucla.edu>
+
+	Port AC_SYS_LARGEFILE to C++
+	Problem reported by Zack Weinberg
+	<https://savannah.gnu.org/support/?110983>.
+	* lib/autoconf/specific.m4 (_AC_SYS_YEAR2038_PROBE)
+	(_AC_SYS_LARGEFILE_PROBE):
+	In chatter, say it’s a CPPFLAGS option, not a CC option.
+	(_AC_SYS_LARGEFILE_OPTIONS): Omit -n32, as we no longer
+	need to worry about IRIX.
+	(_AC_SYS_LARGEFILE_PROBE): Fiddle with CPPFLAGS, not CC,
+	and don’t worry about -n32.
+
+2024-04-06  Paul Eggert  <eggert@cs.ucla.edu>
+
+	Improve “possibly undefined macro” diagnostic
+	Simplified version of a suggestion by Reuben Thomas in:
+	https://lists.gnu.org/r/bug-autoconf/2024-04/msg00021.html
+	* bin/autom4te.in (warn_forbidden): Change message wording.
+	* tests/tools.at (autom4te and whitespace in file names)
+	(forbidden tokens, exceptions): Adjust tests to match new behavior.
+
+2024-02-07  Paul Eggert  <eggert@cs.ucla.edu>
+
+	Remove incorrect check in AC_CHECK_SIZEOF
+	* lib/autoconf/types.m4 (AC_CHECK_SIZEOF, AC_CHECK_ALIGNOF):
+	When the size or alignment cannot be determined, do not fail if
+	ac_cv_type_$1 is yes, as there’s no guarantee that ac_cv_type_$1
+	is defined, and failure here would contradict the documentation
+	that the size or alignment is 0 when sizeof($1)/alignof($1) cannot
+	be compiled.  The test for ac_cv_type_$1 made sense long ago when
+	it was checked for in these macros, but the test has not made
+	sense for many years.
+
+2024-02-04  Paul Eggert  <eggert@cs.ucla.edu>
+
+	Document ‘cp’ limitations better
+	* doc/autoconf.texi (Limitations of Usual Tools):
+	Modernize discussion of ‘cp’.
+
+2024-01-17  Paul Eggert  <eggert@cs.ucla.edu>
+
+	Fix typo in previous patch
+
+2024-01-16  Paul Eggert  <eggert@cs.ucla.edu>
+
+	Fix ‘long long’ checks on ancient platforms
+	Problem reported by Nick Bowler in:
+	https://lists.gnu.org/r/bug-autoconf/2024-01/msg00018.html
+	* lib/autoconf/types.m4 (AC_TYPE_LONG_LONG_INT)
+	(AC_TYPE_UNSIGNED_LONG_LONG_INT): Test for these
+	when K&R or c89, not when neither K&R nor C89.
+	This fixes a thinko that I introduced in
+	commit cdef0d2dad57f92301cb4baf782f8c24b01d5f1d
+	dated Wed Feb 16 01:29:40 2011 -0800.
+
+	make fetch
+
+2024-01-10  Paul Eggert  <eggert@cs.ucla.edu>
+
+	doc: mention join bug
+	* doc/autoconf.texi: Mention BSD ‘join’ bug
+	<https://lists.gnu.org/r/bug-gnulib/2024-01/msg00028.html>.
+
+2024-01-05  Jim Meyering  <meyering@meta.com>
+
+	maint: update all copyright dates via "make update-copyright"
+
 2023-12-22  Zack Weinberg  <zack@owlfolio.org>
+
+	maint: post-release administrivia
+	* NEWS: Add header line for next release.
+	* .prev-version: Record previous version.
+	* cfg.mk (old_NEWS_hash): Auto-update.
 
 	Finalize NEWS for release 2.72.
 	Since 2.72[abcde] did not get widely used, squash all the NEWS entries

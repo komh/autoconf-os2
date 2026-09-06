@@ -1,7 +1,7 @@
 # This file is part of Autoconf.                       -*- Autoconf -*-
 # Parameterized macros.
 m4_define([_AC_COPYRIGHT_YEARS], [
-Copyright (C) 1992-1996, 1998-2017, 2020-2023 Free Software Foundation,
+Copyright (C) 1992-1996, 1998-2017, 2020-2026 Free Software Foundation,
 Inc.
 ])
 
@@ -23,7 +23,8 @@ Inc.
 # You should have received a copy of the GNU General Public License
 # and a copy of the Autoconf Configure Script Exception along with
 # this program; see the files COPYINGv3 and COPYING.EXCEPTION
-# respectively.  If not, see <https://www.gnu.org/licenses/>.
+# respectively.  If not, see <https://www.gnu.org/licenses/> and
+# <https://git.savannah.gnu.org/gitweb/?p=autoconf.git;a=blob_plain;f=COPYING.EXCEPTION>.
 
 # Written by David MacKenzie, with help from
 # François Pinard, Karl Berry, Richard Pixley, Ian Lance Taylor,
@@ -419,6 +420,7 @@ ac_hostname=`(hostname || uname -n) 2>/dev/null | sed 1q`
 # Initializations.
 #
 ac_default_prefix=/usr/local
+ac_clean_CONFIG_STATUS=
 ac_clean_files=
 ac_config_libobj_dir=.
 LIB@&t@OBJS=
@@ -929,7 +931,7 @@ Try '$[0] --help' for more information])
 done
 
 if test -n "$ac_prev"; then
-  ac_option=--`echo $ac_prev | sed 's/_/-/g'`
+  ac_option=--`printf '%s\n' $ac_prev | sed 's/_/-/g'`
   AC_MSG_ERROR([missing argument to $ac_option])
 fi
 
@@ -1307,66 +1309,76 @@ done
 AS_UNSET(ac_configure_args0)
 AS_UNSET(ac_configure_args1)
 
-# When interrupted or exit'd, cleanup temporary files, and complete
-# config.log.  We remove comments because anyway the quotes in there
-# would cause problems or look ugly.
-# WARNING: Use '\'' to represent an apostrophe within the trap.
-# WARNING: Do not start the trap code with a newline, due to a FreeBSD 4.0 bug.
-trap 'exit_status=$?
-  # Sanitize IFS.
-  IFS=" ""	$as_nl"
-  # Save into config.log some information that might help in debugging.
-  {
-    echo
+# Dump the cache to stdout.  It can be in a pipe (this is a requirement).
+ac_cache_dump ()
+{
+  _AC_CACHE_DUMP
+}
 
-    AS_BOX([Cache variables.])
-    echo
-    m4_bpatsubsts(m4_defn([_AC_CACHE_DUMP]),
-		  [^ *\(#.*\)?
-],                [],
-		  ['], ['\\''])
-    echo
+# Print debugging info to stdout.
+ac_dump_debugging_info ()
+{
+  echo
 
-    AS_BOX([Output variables.])
+  AS_BOX([Cache variables.])
+  echo
+  ac_cache_dump
+  echo
+
+  AS_BOX([Output variables.])
+  echo
+  for ac_var in $ac_subst_vars
+  do
+    eval ac_val=\$$ac_var
+    case $ac_val in
+    *\'*) ac_val=`AS_ECHO(["$ac_val"]) | sed "s/'/'\\\\\\\\''/g"`;;
+    esac
+    AS_ECHO(["$ac_var='$ac_val'"])
+  done | sort
+  echo
+
+  if test -n "$ac_subst_files"; then
+    AS_BOX([File substitutions.])
     echo
-    for ac_var in $ac_subst_vars
+    for ac_var in $ac_subst_files
     do
       eval ac_val=\$$ac_var
       case $ac_val in
-      *\'\''*) ac_val=`AS_ECHO(["$ac_val"]) | sed "s/'\''/'\''\\\\\\\\'\'''\''/g"`;;
+      *\'*) ac_val=`AS_ECHO(["$ac_val"]) | sed "s/'/'\\\\\\\\''/g"`;;
       esac
-      AS_ECHO(["$ac_var='\''$ac_val'\''"])
+      AS_ECHO(["$ac_var='$ac_val'"])
     done | sort
     echo
+  fi
 
-    if test -n "$ac_subst_files"; then
-      AS_BOX([File substitutions.])
-      echo
-      for ac_var in $ac_subst_files
-      do
-	eval ac_val=\$$ac_var
-	case $ac_val in
-	*\'\''*) ac_val=`AS_ECHO(["$ac_val"]) | sed "s/'\''/'\''\\\\\\\\'\'''\''/g"`;;
-	esac
-	AS_ECHO(["$ac_var='\''$ac_val'\''"])
-      done | sort
-      echo
-    fi
+  if test -s confdefs.h; then
+    AS_BOX([confdefs.h.])
+    echo
+    cat confdefs.h
+    echo
+  fi
+  test "$ac_signal" != 0 &&
+    AS_ECHO(["$as_me: caught signal $ac_signal"])
+  AS_ECHO(["$as_me: exit $exit_status"])
+}
 
-    if test -s confdefs.h; then
-      AS_BOX([confdefs.h.])
-      echo
-      cat confdefs.h
-      echo
-    fi
-    test "$ac_signal" != 0 &&
-      AS_ECHO(["$as_me: caught signal $ac_signal"])
-    AS_ECHO(["$as_me: exit $exit_status"])
-  } >&AS_MESSAGE_LOG_FD
-  rm -f core *.core core.conftest.* &&
+# When interrupted or exit'd, cleanup temporary files, and complete
+# config.log.
+ac_exit_trap ()
+{
+  exit_status=$1
+  # Sanitize IFS.
+  IFS=" ""	$as_nl"
+  # Save into config.log some information that might help in debugging.
+  ac_dump_debugging_info >&AS_MESSAGE_LOG_FD
+  eval "rm -f $ac_clean_CONFIG_STATUS core *.core core.conftest.*" &&
     rm -f -r conftest* confdefs* conf$[$]* $ac_clean_files &&
     exit $exit_status
-' 0
+}
+
+dnl To minimize quoting issues, put as little code as possible in traps.
+dnl Do not start any trap code with a newline, due to a FreeBSD 4.0 bug.
+trap 'ac_exit_trap $?' 0
 for ac_signal in 1 2 13 15; do
   trap 'ac_signal='$ac_signal'; AS_EXIT([1])' $ac_signal
 done
@@ -1399,6 +1411,44 @@ AC_SITE_LOAD
 AC_CACHE_LOAD
 m4_divert_pop([INIT_PREPARE])dnl
 ])# _AC_INIT_PREPARE
+
+
+# _AC_INIT_ECHO_N
+# ---------------
+# Emit code for backward compatibility with Makefiles that use the
+# ECHO_C, ECHO_N, and ECHO_T substitution variables.  From Autoconf's
+# perspective, these were undocumented internals of the old definition
+# of AS_ECHO_N, before that was changed to use 'printf' instead of
+# 'echo', but they were AC_SUBSTed and Makefiles were written to use
+# them.  We don't have any way to know whether substitution variables
+# are actually used in the project being configured, and the cost of
+# this test is minimal.
+#
+# Test logic borrowed from dist 3.0.  Use '*c*,', not '*c,' because if '\c'
+# failed there is also a newline to match.  Use 'xy' because '\c' echoed
+# in a command substitution prints only the first character of the output
+# with ksh version M-11/16/88f on AIX 6.1; it needs to be reset by another
+# backquoted echo.
+m4_define([_AC_INIT_ECHO_N], [
+# Determine whether it's possible to make 'echo' print without a newline.
+# These variables are no longer used directly by Autoconf, but are AC_SUBSTed
+# for compatibility with existing Makefiles.
+ECHO_C= ECHO_N= ECHO_T=
+case `echo -n x` in @%:@(((((
+-n*)
+  case `echo 'xy\c'` in
+  *c*) ECHO_T='	';;	# ECHO_T is single tab character.
+  xy)  ECHO_C='\c';;
+  *)   echo `echo ksh88 bug on AIX 6.1` > /dev/null
+       ECHO_T='	';;
+  esac;;
+*)
+  ECHO_N='-n';;
+esac
+AC_SUBST([ECHO_C])dnl
+AC_SUBST([ECHO_N])dnl
+AC_SUBST([ECHO_T])dnl
+])
 
 
 # AU::AC_INIT([UNIQUE-FILE-IN-SOURCE-DIR])
@@ -1457,13 +1507,13 @@ m4_ifval([$2], , [m4_ifval([$1], [AC_CONFIG_SRCDIR([$1])])])dnl
 dnl
 dnl Substitute for predefined variables.
 AC_SUBST([DEFS])dnl
-AC_SUBST([ECHO_C])dnl
-AC_SUBST([ECHO_N])dnl
-AC_SUBST([ECHO_T])dnl
 AC_SUBST([LIBS])dnl
 _AC_ARG_VAR_PRECIOUS([build_alias])AC_SUBST([build_alias])dnl
 _AC_ARG_VAR_PRECIOUS([host_alias])AC_SUBST([host_alias])dnl
 _AC_ARG_VAR_PRECIOUS([target_alias])AC_SUBST([target_alias])dnl
+dnl
+dnl Backward compatibility with old Makefiles and old macros.
+_AC_INIT_ECHO_N
 dnl
 AC_LANG_PUSH(C)
 dnl
@@ -1660,8 +1710,14 @@ for ac_var in $ac_precious_vars; do
     *)
       if test "x$ac_old_val" != "x$ac_new_val"; then
 	# differences in whitespace do not lead to failure.
-	ac_old_val_w=`echo x $ac_old_val`
-	ac_new_val_w=`echo x $ac_new_val`
+	ac_old_val_w=
+	for ac_val in x $ac_old_val; do
+	  ac_old_val_w="$ac_old_val_w $ac_val"
+	done
+	ac_new_val_w=
+	for ac_val in x $ac_new_val; do
+	  ac_new_val_w="$ac_new_val_w $ac_val"
+	done
 	if test "$ac_old_val_w" != "$ac_new_val_w"; then
 	  AS_MESSAGE([error: '$ac_var' has changed since the previous run:], 2)
 	  ac_cache_corrupted=:
@@ -2003,7 +2059,7 @@ shift; shift
 # except with old shells:
 $1_os=$[*]
 IFS=$ac_save_IFS
-case $$1_os in *\ *) $1_os=`echo "$$1_os" | sed 's/ /-/g'`;; esac
+case $$1_os in *\ *) $1_os=`AS_ECHO(["$$1_os"]) | sed 's/ /-/g'`;; esac
 AC_SUBST([$1_os])dnl
 ])# _AC_CANONICAL_SPLIT
 
@@ -2207,7 +2263,7 @@ m4_define([AC_CACHE_SAVE],
 
 _ACEOF
 
-_AC_CACHE_DUMP() |
+ac_cache_dump |
   sed ['
      /^ac_cv_env_/b end
      t clear
@@ -2339,7 +2395,7 @@ m4_define([AC_DEFINE_UNQUOTED], [_AC_DEFINE_Q([_$0], $@)])
 # avoid AS_ECHO if "#" is present to avoid confusing m4 with comments,
 # but quadrigraphs are fine in that case.
 m4_define([_AC_DEFINE_UNQUOTED],
-[m4_if(m4_bregexp([$1], [#\|\\\|`\|\(\$\|@S|@\)\((|{|@{:@\)]), [-1],
+[m4_if(m4_bregexp([$1], [#\|\\\|`\|\(\$\|@S|@\)\((\|{\|@{:@\)]), [-1],
        [AS_ECHO(["AS_ESCAPE([$1], [""])"]) >>confdefs.h],
        [cat >>confdefs.h <<_ACEOF
 [$1]
@@ -2650,7 +2706,8 @@ AC_DEFUN([_AC_DO_LIMIT],
 # _AC_EVAL(COMMAND)
 # -----------------
 # Eval COMMAND, save the exit status in ac_status, and log it.
-# Unlike _AC_DO, this macro mishandles quoted arguments in some cases.
+# Unlike _AC_DO, this macro mishandles quoted arguments
+# and backslashes in some cases.
 # It is present only for backward compatibility with previous Autoconf versions.
 AC_DEFUN([_AC_EVAL],
 [_AC_RUN_LOG([eval $1],
@@ -2660,7 +2717,8 @@ AC_DEFUN([_AC_EVAL],
 # _AC_EVAL_STDERR(COMMAND)
 # ------------------------
 # Like _AC_RUN_LOG_STDERR, but eval (instead of running) COMMAND.
-# Unlike _AC_DO_STDERR, this macro mishandles quoted arguments in some cases.
+# Unlike _AC_DO_STDERR, this macro mishandles quoted arguments
+# and backslashes in some cases.
 # It is present only for backward compatibility with previous Autoconf versions.
 AC_DEFUN([_AC_EVAL_STDERR],
 [_AC_RUN_LOG_STDERR([eval $1],
@@ -3057,7 +3115,7 @@ AC_DEFUN([AC_CHECK_FILES],
 # used by AC_CHECK_DECL, report failure.
 AC_DEFUN([_AC_UNDECLARED_BUILTIN],
 [AC_CACHE_CHECK(
-  [for $[]_AC_CC options needed to detect all undeclared functions],
+  [for $[]_AC_CC options to detect undeclared functions],
   [ac_cv_[]_AC_LANG_ABBREV[]_undeclared_builtin_options],
   [ac_save_CFLAGS=$CFLAGS
    ac_cv_[]_AC_LANG_ABBREV[]_undeclared_builtin_options='cannot detect'
@@ -3095,6 +3153,39 @@ extern void ac_decl (int, char *);
     ['none needed'],
       [ac_[]_AC_LANG_ABBREV[]_undeclared_builtin_options=''],
       [ac_[]_AC_LANG_ABBREV[]_undeclared_builtin_options=$ac_cv_[]_AC_LANG_ABBREV[]_undeclared_builtin_options])
+])
+
+# _AC_FUTURE_DARWIN
+# -----------------
+# Set ac_[]_AC_LANG_ABBREV[]_future_darwin_options to any options needed
+# to make the compiler issue a hard error, not a warning, when a function
+# is used that is declared in the .h files but that is introduced in a
+# version *after* the current minimum OS version.
+# These options should not cause any other unrelated warnings to become
+# errors.
+AC_DEFUN([_AC_FUTURE_DARWIN],
+[AC_CACHE_CHECK(
+  [for $[]_AC_CC options to ignore future-version functions],
+  [ac_cv_[]_AC_LANG_ABBREV[]_future_darwin_options],
+  [dnl Test whether the compiler supports the option
+   dnl '-Werror=unguarded-availability-new'.
+   ac_compile_saved="$ac_compile"
+   ac_compile="$ac_compile -Werror=unguarded-availability-new"
+   AC_COMPILE_IFELSE(
+     [AC_LANG_PROGRAM(
+	[[#if ! (defined __APPLE__ && defined __MACH__)
+	   #error "-Werror=unguarded-availability-new not needed here"
+	  #endif
+	]],
+	[[]])],
+     [ac_cv_[]_AC_LANG_ABBREV[]_future_darwin_options='-Werror=unguarded-availability-new'],
+     [ac_cv_[]_AC_LANG_ABBREV[]_future_darwin_options='none needed'])
+   ac_compile="$ac_compile_saved"
+  ])
+ AS_CASE([$ac_cv_[]_AC_LANG_ABBREV[]_future_darwin_options],
+   ['none needed'],
+     [ac_[]_AC_LANG_ABBREV[]_future_darwin_options=''],
+     [ac_[]_AC_LANG_ABBREV[]_future_darwin_options=$ac_cv_[]_AC_LANG_ABBREV[]_future_darwin_options])
 ])
 
 # _AC_CHECK_DECL_BODY
@@ -3147,10 +3238,16 @@ dnl Initialize each $ac_[]_AC_LANG_ABBREV[]_undeclared_builtin_options once.
 [AC_DEFUN([_AC_UNDECLARED_BUILTIN_]_AC_LANG_ABBREV,
           [_AC_UNDECLARED_BUILTIN])]dnl
 [AC_REQUIRE([_AC_UNDECLARED_BUILTIN_]_AC_LANG_ABBREV)]dnl
+dnl Initialize each $ac_[]_AC_LANG_ABBREV[]_future_darwin_options once.
+[AC_DEFUN([_AC_FUTURE_DARWIN_]_AC_LANG_ABBREV,
+	  [_AC_FUTURE_DARWIN])]dnl
+[AC_REQUIRE([_AC_FUTURE_DARWIN_]_AC_LANG_ABBREV)]dnl
 [AS_VAR_PUSHDEF([ac_Symbol], [ac_cv_have_decl_$1])]dnl
 [ac_fn_check_decl ]dnl
 ["$LINENO" "$1" "ac_Symbol" "AS_ESCAPE([AC_INCLUDES_DEFAULT([$4])], [""])" ]dnl
-["$ac_[]_AC_LANG_ABBREV[]_undeclared_builtin_options" "_AC_LANG_PREFIX[]FLAGS"]
+["$ac_[]_AC_LANG_ABBREV[]_undeclared_builtin_options]dnl
+[$ac_[]_AC_LANG_ABBREV[]_future_darwin_options" ]dnl
+["_AC_LANG_PREFIX[]FLAGS"]
 [AS_VAR_IF([ac_Symbol], [yes], [$2], [$3])]dnl
 [AS_VAR_POPDEF([ac_Symbol])]dnl
 )# AC_CHECK_DECL

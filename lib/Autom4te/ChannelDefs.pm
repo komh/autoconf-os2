@@ -1,4 +1,4 @@
-# Copyright (C) 2002-2023 Free Software Foundation, Inc.
+# Copyright (C) 2002-2025 Free Software Foundation, Inc.
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -12,6 +12,11 @@
 
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+##################################################################
+# The master copy of this file is in Automake's source repository.
+# Please send updates to automake-patches@gnu.org.
+##################################################################
 
 package Autom4te::ChannelDefs;
 
@@ -44,10 +49,7 @@ shorthand function to output on specific channels.
 
 =cut
 
-use 5.006;
-use strict;
-use warnings FATAL => 'all';
-
+use 5.006; use strict; use warnings;
 use Exporter;
 
 use Autom4te::Channels;
@@ -69,7 +71,7 @@ our @EXPORT = qw (&prog_error &error &fatal &verb
 =head2 CHANNELS
 
 The following channels can be used as the first argument of
-C<Autom4te::Channel::msg>.  For some of them we list a shorthand
+C<Autom4te::Channels::msg>.  For some of them we list a shorthand
 function that makes the code more readable.
 
 =over 4
@@ -446,8 +448,8 @@ sub merge_WARNINGS (@)
         {
           # The character class in the second match group is ASCII \S minus
           # comma.  We are generous with this because category values may come
-          # from WARNINGS and we don't want to assume what other programs'
-          # syntaxes for warnings categories are.
+          # from WARNINGS and we don't want to assume other programs'
+          # syntax for warnings categories.
           /^(no-|)([\w\[\]\/\\!"#$%&'()*+-.:;<=>?@^`{|}~]+)$/
             or die "Invalid warnings category: $_";
           $warnings{$2} = $1;

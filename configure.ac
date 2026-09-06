@@ -1,7 +1,7 @@
 #                                                       -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-# Copyright (C) 1992-1995, 1999-2017, 2020-2023 Free Software
+# Copyright (C) 1992-1995, 1999-2017, 2020-2026 Free Software
 # Foundation, Inc.
 
 # This program is free software: you can redistribute it and/or modify
@@ -38,7 +38,7 @@ AM_INIT_AUTOMAKE([1.11 dist-xz readme-alpha no-texinfo.tex std-options])
 
 # Keep this on a line of its own, since it must be found and processed
 # by the 'update-release-year' rule in our Makefile.
-RELEASE_YEAR=2023
+RELEASE_YEAR=2026
 AC_SUBST([RELEASE_YEAR])
 
 AB_INIT
@@ -235,7 +235,7 @@ dnl Allow maintainer rules under GNU make even in VPATH builds.
 AC_CONFIG_LINKS([GNUmakefile:GNUmakefile])
 
 AC_CONFIG_FILES([Makefile])
-AC_CONFIG_FILES([lib/version.m4:lib/version.in])
+AC_CONFIG_FILES([lib/autoconf_version.m4:lib/autoconf_version.in])
 
 AC_OUTPUT
 # Report the state of this version of Autoconf if this is a beta.

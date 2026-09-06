@@ -1,7 +1,7 @@
 # This file is part of Autoconf.                          -*- Autoconf -*-
 # M4 macros used in building test suites.
 m4_define([_AT_COPYRIGHT_YEARS], [
-Copyright (C) 2000-2017, 2020-2023 Free Software Foundation, Inc.
+Copyright (C) 2000-2017, 2020-2026 Free Software Foundation, Inc.
 ])
 
 # This file is part of Autoconf.  This program is free
@@ -22,7 +22,8 @@ Copyright (C) 2000-2017, 2020-2023 Free Software Foundation, Inc.
 # You should have received a copy of the GNU General Public License
 # and a copy of the Autoconf Configure Script Exception along with
 # this program; see the files COPYINGv3 and COPYING.EXCEPTION
-# respectively.  If not, see <https://www.gnu.org/licenses/>.
+# respectively.  If not, see <https://www.gnu.org/licenses/> and
+# <https://git.savannah.gnu.org/gitweb/?p=autoconf.git;a=blob_plain;f=COPYING.EXCEPTION>.
 
 
 # _m4_divert(DIVERSION-NAME)
@@ -378,11 +379,13 @@ at_fn_create_debugging_script ()
 {
   {
     echo "#! /bin/sh" &&
-    echo 'test ${ZSH_VERSION+y} dnl
-&& alias -g '\''${1+"$[@]"}'\''='\''"$[@]"'\''' &&
     AS_ECHO(["cd '$at_dir'"]) &&
-    AS_ECHO(["exec \${CONFIG_SHELL-$SHELL} \"$at_myself\" -v -d ]dnl
-[$at_debug_args $at_group \${1+\"\$[@]\"}"]) &&
+    AS_ECHO(['case $[#] in']) &&
+    AS_ECHO(["  0) exec \${CONFIG_SHELL-$SHELL} \"$at_myself\" -v -d ]dnl
+[$at_debug_args $at_group ;;"]) &&
+    AS_ECHO(["  *) exec \${CONFIG_SHELL-$SHELL} \"$at_myself\" -v -d ]dnl
+[$at_debug_args $at_group \"\$[@]\" ;;"]) &&
+    AS_ECHO([esac]) &&
     echo 'exit 1'
   } >"$at_group_dir/run" &&
   chmod +x "$at_group_dir/run"
@@ -516,7 +519,7 @@ do
 	no | never | none) at_color=never ;;
 	auto | tty | if-tty) at_color=auto ;;
 	always | yes | force) at_color=always ;;
-	*) at_optname=`echo " $at_option" | sed 's/^ //; s/=.*//'`
+	*) at_optname=`AS_ECHO([" $at_option"]) | sed 's/^ //; s/=.*//'`
 	   AS_ERROR([unrecognized argument to $at_optname: $at_optarg]) ;;
 	esac
 	;;
@@ -604,7 +607,7 @@ do
 	  at_jobs=`expr X$at_option : 'X-j\(.*\)'`
 	fi
 	case $at_jobs in *[[!0-9]]*)
-	  at_optname=`echo " $at_option" | sed 's/^ //; s/[[0-9=]].*//'`
+	  at_optname=`AS_ECHO([" $at_option"]) | sed 's/^ //; s/[[0-9=]].*//'`
 	  AS_ERROR([non-numeric argument to $at_optname: $at_jobs]) ;;
 	esac
 	;;
