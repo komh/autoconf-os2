@@ -4,7 +4,7 @@
 # Speeds up GNU M4 1.4.x by avoiding quadratic $@ recursion, but penalizes
 # GNU M4 1.6 by requiring more memory and macro expansions.
 #
-# Copyright (C) 2008-2017, 2020-2023 Free Software Foundation, Inc.
+# Copyright (C) 2008-2017, 2020-2026 Free Software Foundation, Inc.
 
 # This file is part of Autoconf.  This program is free
 # software; you can redistribute it and/or modify it under the
@@ -24,7 +24,8 @@
 # You should have received a copy of the GNU General Public License
 # and a copy of the Autoconf Configure Script Exception along with
 # this program; see the files COPYINGv3 and COPYING.EXCEPTION
-# respectively.  If not, see <https://www.gnu.org/licenses/>.
+# respectively.  If not, see <https://www.gnu.org/licenses/> and
+# <https://git.savannah.gnu.org/gitweb/?p=autoconf.git;a=blob_plain;f=COPYING.EXCEPTION>.
 
 # Written by Eric Blake.
 
@@ -292,7 +293,7 @@ m4_define([_m4_join],
 # A bit easier than m4_join.  _m4_foreach to the rescue.
 m4_define([m4_joinall],
 [[$2]m4_if(m4_eval([$# <= 2]), [1], [],
-	   [_m4_foreach([$1], [], m4_shift($@))])])
+	   [_m4_foreach([[$1]], [], m4_shift($@))])])
 
 # m4_list_cmp(A, B)
 # -----------------
@@ -350,13 +351,10 @@ m4_define([_m4_minmax],
 #
 # _m4_foreach to the rescue.  If no deletions have occurred, then
 # avoid the speed penalty of m4_set_add.
-m4_define([m4_set_add_all],
-[m4_if([$#], [0], [], [$#], [1], [],
-       [m4_define([_m4_set_size($1)], m4_eval(m4_set_size([$1])
-	  + m4_len(_m4_foreach(m4_ifdef([_m4_set_cleanup($1)],
-  [[m4_set_add]], [[_$0]])[([$1],], [)], $@))))])])
+m4_define([_m4_set_add_all_clean],
+[m4_if([$#], [2], [],
+ [_m4_foreach([_m4_set_add_clean([$1],], [, [-])], m4_shift($@))])])
 
-m4_define([_m4_set_add_all],
-[m4_ifdef([_m4_set([$1],$2)], [],
-	  [m4_define([_m4_set([$1],$2)],
-		     [1])m4_pushdef([_m4_set([$1])], [$2])-])])
+m4_define([_m4_set_add_all_check],
+[m4_if([$#], [2], [],
+ [_m4_foreach([_m4_set_add([$1],], [, [-])], m4_shift($@))])])

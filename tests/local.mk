@@ -1,6 +1,6 @@
 ## Make Autoconf tests.
 
-# Copyright (C) 2000-2017, 2020-2023 Free Software Foundation, Inc.
+# Copyright (C) 2000-2017, 2020-2026 Free Software Foundation, Inc.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -63,7 +63,7 @@ CLEANFILES += \
   tests/wrapper.in \
   $(wrappers)
 
-tests/wrapper.in: $(srcdir)/tests/wrapper.as $(m4sh_m4f_dependencies)
+tests/wrapper.in: $(srcdir)/tests/wrapper.as lib/m4sugar/m4sh.m4f
 	$(MY_AUTOM4TE) --language=M4sh $(srcdir)/tests/wrapper.as -o $@
 
 edit_wrapper = sed \
@@ -92,6 +92,7 @@ TESTSUITE_GENERATED_AT = \
   tests/acerlang.at \
   tests/acfortran.at \
   tests/acgo.at \
+  tests/aca68.at \
   tests/acgeneral.at \
   tests/acstatus.at \
   tests/acautoheader.at \
@@ -116,6 +117,7 @@ TESTSUITE_HAND_AT = \
   tests/erlang.at \
   tests/fortran.at \
   tests/go.at \
+  tests/a68.at \
   tests/semantics.at \
   tests/autoscan.at \
   tests/foreign.at
@@ -198,6 +200,7 @@ AUTOCONF_FILES = $(autoconfdir)/general.m4 \
 		 $(autoconfdir)/erlang.m4 \
 		 $(autoconfdir)/fortran.m4 \
 		 $(autoconfdir)/go.m4 \
+		 $(autoconfdir)/a68.m4 \
 		 $(autoconfdir)/headers.m4 \
 		 $(autoconfdir)/libs.m4 \
 		 $(autoconfdir)/types.m4 \

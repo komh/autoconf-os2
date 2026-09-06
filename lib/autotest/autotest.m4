@@ -1,6 +1,6 @@
 # This file is part of Autoconf.			-*- Autoconf -*-
 # M4 macros used in building test suites.
-# Copyright (C) 2000-2002, 2009-2017, 2020-2023 Free Software
+# Copyright (C) 2000-2002, 2009-2017, 2020-2026 Free Software
 # Foundation, Inc.
 
 # This file is part of Autoconf.  This program is free
@@ -21,7 +21,8 @@
 # You should have received a copy of the GNU General Public License
 # and a copy of the Autoconf Configure Script Exception along with
 # this program; see the files COPYINGv3 and COPYING.EXCEPTION
-# respectively.  If not, see <https://www.gnu.org/licenses/>.
+# respectively.  If not, see <https://www.gnu.org/licenses/> and
+# <https://git.savannah.gnu.org/gitweb/?p=autoconf.git;a=blob_plain;f=COPYING.EXCEPTION>.
 
 m4_include([autotest/general.m4])
 m4_include([autotest/specific.m4])

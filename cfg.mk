@@ -1,5 +1,5 @@
 # Customize maint.mk for Autoconf.            -*- Makefile -*-
-# Copyright (C) 2003-2004, 2006, 2008-2017, 2020-2023 Free Software
+# Copyright (C) 2003-2004, 2006, 2008-2017, 2020-2026 Free Software
 # Foundation, Inc.
 
 # This program is free software: you can redistribute it and/or modify
@@ -63,6 +63,7 @@ local-checks-to-skip ?= \
   sc_prohibit_always_true_header_tests	\
   sc_prohibit_magic_number_exit		\
   sc_prohibit_stat_st_blocks		\
+  sc_two_space_separator_in_usage	\
   sc_unmarked_diagnostics		\
   sc_unportable_grep_q
 
@@ -84,7 +85,7 @@ update-release-year:
 .PHONY: update-release-year
 
 # Prevent incorrect NEWS edits.
-old_NEWS_hash = 18aef204e16f6fe9487ab79ca2556ab4
+old_NEWS_hash = c296de7779bb03a02df56964aaff051f
 
 # Update autoconf-latest.tar.* symlinks during 'make stable/beta'.
 GNUPLOADFLAGS = --symlink-regex

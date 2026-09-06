@@ -1,6 +1,6 @@
 # This file is part of Autoconf.                       -*- Autoconf -*-
 # Checking for libraries.
-# Copyright (C) 1992-1996, 1998-2006, 2008-2017, 2020-2023 Free Software
+# Copyright (C) 1992-1996, 1998-2006, 2008-2017, 2020-2026 Free Software
 # Foundation, Inc.
 
 # This file is part of Autoconf.  This program is free
@@ -21,7 +21,8 @@
 # You should have received a copy of the GNU General Public License
 # and a copy of the Autoconf Configure Script Exception along with
 # this program; see the files COPYINGv3 and COPYING.EXCEPTION
-# respectively.  If not, see <https://www.gnu.org/licenses/>.
+# respectively.  If not, see <https://www.gnu.org/licenses/> and
+# <https://git.savannah.gnu.org/gitweb/?p=autoconf.git;a=blob_plain;f=COPYING.EXCEPTION>.
 
 # Written by David MacKenzie, with help from
 # François Pinard, Karl Berry, Richard Pixley, Ian Lance Taylor,
@@ -170,11 +171,11 @@ if mkdir conftest.dir; then
   cd conftest.dir
   cat >Imakefile <<'_ACEOF'
 incroot:
-	@echo incroot='${INCROOT}'
+	@printf '%s\n' incroot='${INCROOT}'
 usrlibdir:
-	@echo usrlibdir='${USRLIBDIR}'
+	@printf '%s\n' usrlibdir='${USRLIBDIR}'
 libdir:
-	@echo libdir='${LIBDIR}'
+	@printf '%s\n' libdir='${LIBDIR}'
 _ACEOF
   if (export CC; ${XMKMF-xmkmf}) >/dev/null 2>/dev/null && test -f Makefile; then
     # GNU make sometimes prints "make[1]: Entering ...", which would confuse us.

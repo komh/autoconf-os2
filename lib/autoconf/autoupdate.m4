@@ -2,7 +2,7 @@
 # Interface with autoupdate.
 
 # Copyright (C) 1992-1996, 1998-2001, 2003-2004, 2006, 2009-2017,
-# 2020-2023 Free Software Foundation, Inc.
+# 2020-2026 Free Software Foundation, Inc.
 
 # This file is part of Autoconf.  This program is free
 # software; you can redistribute it and/or modify it under the
@@ -22,7 +22,8 @@
 # You should have received a copy of the GNU General Public License
 # and a copy of the Autoconf Configure Script Exception along with
 # this program; see the files COPYINGv3 and COPYING.EXCEPTION
-# respectively.  If not, see <https://www.gnu.org/licenses/>.
+# respectively.  If not, see <https://www.gnu.org/licenses/> and
+# <https://git.savannah.gnu.org/gitweb/?p=autoconf.git;a=blob_plain;f=COPYING.EXCEPTION>.
 
 # Written by David MacKenzie, with help from
 # François Pinard, Karl Berry, Richard Pixley, Ian Lance Taylor,

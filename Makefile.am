@@ -1,6 +1,6 @@
 # Make Autoconf.
 
-# Copyright (C) 1999-2004, 2006-2017, 2020-2023 Free Software
+# Copyright (C) 1999-2004, 2006-2017, 2020-2026 Free Software
 # Foundation, Inc.
 
 # This program is free software: you can redistribute it and/or modify
@@ -52,7 +52,7 @@ edit = sed \
 	-e 's|@M4_GNU[@]|$(M4_GNU)|g' \
 	-e 's|@AWK[@]|$(AWK)|g' \
 	-e 's|@RELEASE_YEAR[@]|$(RELEASE_YEAR)|g' \
-	-e 's|@VERSION[@]|$(VERSION)|g' \
+	-e 's'\''@VERSION[@]'\''$(VERSION)'\''g' \
 	-e 's|@PACKAGE_NAME[@]|$(PACKAGE_NAME)|g' \
 	-e 's|@configure_input[@]|Generated from $@.in; do not edit by hand.|g'
 
@@ -74,7 +74,8 @@ OMIT_TRAILING_EMPTY_LINES = '/^$$/H; /^$$/d; x; s/\n//p; s/\n*//; x'
 $(srcdir)/INSTALL: $(top_srcdir)/doc/install.texi
 	echo @firstparagraphindent insert				\
 	  | cat - $(top_srcdir)/doc/install.texi > tmp.texi
-	$(MAKEINFO) $(custom_MAKEINFOFLAGS) $(MAKEINFOFLAGS)		\
+	$(MAKEINFO) $(custom_MAKEINFOFLAGS)				\
+	     $(AM_MAKEINFOFLAGS) $(MAKEINFOFLAGS)			\
 	     --plaintext tmp.texi					\
 	  | sed -e $(OMIT_TRAILING_EMPTY_LINES)				\
 	     > $@-t && mv $@-t $@
@@ -115,12 +116,12 @@ ChangeLog:
 #   want to depend on config.h but do want to track version changes.
 BUILT_SOURCES = $(top_srcdir)/.version
 $(top_srcdir)/.version:
-	echo $(VERSION) > $@-t && mv $@-t $@
+	printf '%s\n' '$(VERSION)' > $@-t && mv $@-t $@
 
 # Arrange so that .tarball-version appears only in distribution tarballs,
 # never in a checked-out repository.
 dist-hook: gen-ChangeLog
-	echo $(VERSION) > $(distdir)/.tarball-version
+	printf '%s\n' '$(VERSION)' > $(distdir)/.tarball-version
 
 # Arrange to remove the symlink to GNUmakefile in VPATH builds.
 # TODO remove this once automake vs. AC_CONFIG_LINKS issue is fixed.
@@ -151,8 +152,8 @@ check-coverage-run: all
 
 check-coverage-report:
 	@if test ! -d $(PERL_COVERAGE_DB); then \
-	  echo "No coverage database found in '$(PERL_COVERAGE_DB)'." >&2; \
-	  echo "Please run '$(MAKE) check-coverage' first" >&2; \
+	  printf '%s\n' "No coverage database in '$(PERL_COVERAGE_DB)'." >&2; \
+	  printf '%s\n' "Please run '$(MAKE) check-coverage' first" >&2; \
 	  exit 1; \
 	fi
 	$(PERL_COVER) $(PERL_COVERAGE_DB) $(PERL_COVER_FLAGS)

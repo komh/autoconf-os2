@@ -1,4 +1,4 @@
-;;; autoconf-mode.el --- autoconf code editing commands for Emacs
+;;; autoconf-mode.el - Edit autoconf for Emacs -*- lexical-binding: t -*-
 
 ;; Author: Martin Buchholz (martin@xemacs.org)
 ;; Maintainer: Martin Buchholz
@@ -6,7 +6,7 @@
 
 ;; This file is part of Autoconf
 
-;; Copyright (C) 2001, 2006, 2009-2017, 2020-2023 Free Software
+;; Copyright (C) 2001, 2006, 2009-2017, 2020-2026 Free Software
 ;; Foundation, Inc.
 ;;
 ;; This program is free software: you can redistribute it and/or modify

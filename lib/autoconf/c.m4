@@ -1,6 +1,6 @@
 # This file is part of Autoconf.			-*- Autoconf -*-
 # Programming languages support.
-# Copyright (C) 2001-2017, 2020-2023 Free Software Foundation, Inc.
+# Copyright (C) 2001-2017, 2020-2026 Free Software Foundation, Inc.
 
 # This file is part of Autoconf.  This program is free
 # software; you can redistribute it and/or modify it under the
@@ -20,7 +20,8 @@
 # You should have received a copy of the GNU General Public License
 # and a copy of the Autoconf Configure Script Exception along with
 # this program; see the files COPYINGv3 and COPYING.EXCEPTION
-# respectively.  If not, see <https://www.gnu.org/licenses/>.
+# respectively.  If not, see <https://www.gnu.org/licenses/> and
+# <https://git.savannah.gnu.org/gitweb/?p=autoconf.git;a=blob_plain;f=COPYING.EXCEPTION>.
 
 # Written by David MacKenzie, with help from
 # Akim Demaille, Paul Eggert,
@@ -719,7 +720,6 @@ else
   GXX=
 fi
 _AC_PROG_CXX_G
-_AC_PROG_CXX_STDCXX_EDITION
 AC_LANG_POP(C++)dnl
 ])# AC_PROG_CXX
 
@@ -855,10 +855,13 @@ AC_DEFUN([AC_LANG_COMPILER(Objective C)],
 # search for (if not specified, a default list is used).  This just gives
 # the user an opportunity to specify an alternative search list for the
 # Objective C compiler.
-# objcc StepStone Objective-C compiler (also "standard" name for OBJC)
-# objc  David Stes' POC.  If you installed this, you likely want it.
-# cc    Native C compiler (for instance, Apple).
-# CC    You never know.
+# gobjc  GNU Objective-C compiler packaged in EPEL (for systems where gcc
+#        does not support Objective-C)
+# gcc    GNU Objective-C compiler on most systems
+# objcc  StepStone Objective-C compiler (also "standard" name for OBJC)
+# objc   David Stes' POC.  If you installed this, you likely want it.
+# cc     Native C compiler (for instance, Apple).
+# CC     You never know.
 AN_MAKEVAR([OBJC],  [AC_PROG_OBJC])
 AN_PROGRAM([objcc],  [AC_PROG_OBJC])
 AN_PROGRAM([objc],  [AC_PROG_OBJC])
@@ -871,7 +874,7 @@ _AC_ARG_VAR_LIBS()dnl
 _AC_ARG_VAR_CPPFLAGS()dnl
 _AC_ARG_VAR_PRECIOUS([OBJC])dnl
 AC_CHECK_TOOLS(OBJC,
-	       [m4_default([$1], [gcc objcc objc cc CC clang])],
+	       [m4_default([$1], [gobjc gcc objcc objc cc CC clang])],
 	       gcc)
 # Provide some information about the compiler.
 _AS_ECHO_LOG([checking for _AC_LANG compiler version])
@@ -1103,7 +1106,7 @@ fi[]dnl
 # Warning: each test program may only use the headers required to
 # exist in the relevant standard's *freestanding* environment, in case
 # the C compiler targets such an environment.  (Therefore, almost no
-# features of the C89/C99/C11 standard *library* are probed.  Use
+# features of the C89/C99/C11/C23 standard *library* are probed.  Use
 # AC_CHECK_HEADER, AC_CHECK_FUNC, etc. for that.)  However, these
 # programs are only compiled and not linked, so it is ok to declare
 # external functions and then call them without worrying about whether
@@ -1115,17 +1118,17 @@ fi[]dnl
 #     <iso646.h> <stdbool.h> <stdint.h>
 # C11 adds:
 #     <stdalign.h> <stdnoreturn.h>
+# C23 adds the following.  Do not test it, though, as compiler options like
+# -std=gnu23 are useful even when <stdbit.h> is supplied by a non-C23 library,
+# not by the compiler:
+#     <stdbit.h>
 
 AC_DEFUN([_AC_C_C89_TEST_GLOBALS],
 [m4_divert_text([INIT_PREPARE],
 [[# Test code for whether the C compiler supports C89 (global declarations)
 ac_c_conftest_c89_globals='
-/* Does the compiler advertise C89 conformance?
-   Do not test the value of __STDC__, because some compilers set it to 0
-   while being otherwise adequately conformant. */
-#if !defined __STDC__
-# error "Compiler does not advertise C89 conformance"
-#endif
+/* Do not test the value of __STDC__, because some compilers define it to 0
+   or do not define it, while otherwise adequately conforming.  */
 
 #include <stddef.h>
 #include <stdarg.h>
@@ -1211,7 +1214,8 @@ extern void free (void *);
 
 // Check varargs macros.  These examples are taken from C99 6.10.3.5.
 // dprintf is used instead of fprintf to avoid needing to declare
-// FILE and stderr.
+// FILE and stderr, and "aND" is used instead of "and" to work around
+// GCC bug 40564 which is irrelevant here.
 #define debug(...) dprintf (2, __VA_ARGS__)
 #define showlist(...) puts (#__VA_ARGS__)
 #define report(test,...) ((test) ? puts (#test) : printf (__VA_ARGS__))
@@ -1222,7 +1226,7 @@ test_varargs_macros (void)
   int y = 5678;
   debug ("Flag");
   debug ("X = %d\n", x);
-  showlist (The first, second, and third items.);
+  showlist (The first, second, aND third items.);
   report (x>y, "x is %d but y is %d", x, y);
 }
 
@@ -1313,15 +1317,15 @@ ac_c_conftest_c99_main='
   // Check restrict.
   if (test_restrict ("String literal") == 0)
     success = true;
-  char *restrict newvar = "Another string";
+  const char *restrict newvar = "Another string";
 
   // Check varargs.
   success &= test_varargs ("s, d'\'' f .", "string", 65, 34.234);
   test_varargs_macros ();
 
   // Check flexible array members.
-  struct incomplete_array *ia =
-    malloc (sizeof (struct incomplete_array) + (sizeof (double) * 10));
+  static struct incomplete_array *volatile incomplete_array_pointer;
+  struct incomplete_array *ia = incomplete_array_pointer;
   ia->datasize = 10;
   for (int i = 0; i < ia->datasize; ++i)
     ia->data[i] = i * 1.234;
@@ -1337,13 +1341,12 @@ ac_c_conftest_c99_main='
 
   ni.number = 58;
 
-  int dynamic_array[ni.number];
-  dynamic_array[0] = argv[0][0];
-  dynamic_array[ni.number - 1] = 543;
+  // Do not test for VLAs, as some otherwise-conforming compilers lack them.
+  // C code should instead use __STDC_NO_VLA__; see Autoconf manual.
 
   // work around unused variable warnings
   ok |= (!success || bignum == 0LL || ubignum == 0uLL || newvar[0] == '\''x'\''
-	 || dynamic_array[ni.number - 1] != 543);
+	 || ni.number != 58);
 '
 ]])])
 
@@ -1417,6 +1420,97 @@ ac_c_conftest_c11_main='
 '
 ]])])
 
+AC_DEFUN([_AC_C_C23_TEST_GLOBALS],
+[m4_divert_text([INIT_PREPARE],
+[[# Test code for whether the C compiler supports C23 (global declarations)
+ac_c_conftest_c23_globals='
+/* Does the compiler advertise conformance to C17 or earlier?
+   Although GCC 14 does not do that, even with -std=gnu23,
+   it is close enough, and defines __STDC_VERSION == 202000L.  */
+#if !defined __STDC_VERSION__ || __STDC_VERSION__ <= 201710L
+# error "Compiler advertises conformance to C17 or earlier"
+#endif
+
+// Check alignas.
+char alignas (double) c23_aligned_as_double;
+char alignas (0) c23_no_special_alignment;
+extern char c23_aligned_as_int;
+char alignas (0) alignas (int) c23_aligned_as_int;
+
+// Check alignof.
+enum
+{
+  c23_int_alignment = alignof (int),
+  c23_int_array_alignment = alignof (int[100]),
+  c23_char_alignment = alignof (char)
+};
+static_assert (0 < -alignof (int), "alignof is signed");
+
+int function_with_unnamed_parameter (int) { return 0; }
+
+void c23_noreturn ();
+
+/* Test parsing of string and char UTF-8 literals (including hex escapes).
+   The parens pacify GCC 15.  */
+bool use_u8 = (!sizeof u8"\xFF") == (!u8'\''x'\'');
+
+bool check_that_bool_works = true | false | !nullptr;
+#if !true
+# error "true does not work in #if"
+#endif
+#if false
+#elifdef __STDC_VERSION__
+#else
+# error "#elifdef does not work"
+#endif
+
+#ifndef __has_c_attribute
+# error "__has_c_attribute not defined"
+#endif
+
+#ifndef __has_include
+# error "__has_include not defined"
+#endif
+
+#define LPAREN() (
+#define FORTY_TWO(x) 42
+#define VA_OPT_TEST(r, x, ...) __VA_OPT__ (FORTY_TWO r x))
+static_assert (VA_OPT_TEST (LPAREN (), 0, <:-) == 42);
+
+static_assert (0b101010 == 42);
+static_assert (0B101010 == 42);
+static_assert (0xDEAD'\''BEEF == 3'\''735'\''928'\''559);
+static_assert (0.500'\''000'\''000 == 0.5);
+
+enum unsignedish : unsigned int { uione = 1 };
+static_assert (0 < -uione);
+
+#include <stddef.h>
+constexpr nullptr_t null_pointer = nullptr;
+
+static typeof (1 + 1L) two () { return 2; }
+static long int three () { return 3; }
+'
+]])])
+
+AC_DEFUN([_AC_C_C23_TEST_MAIN],
+[m4_divert_text([INIT_PREPARE],
+[[# Test code for whether the C compiler supports C23 (body of main).
+ac_c_conftest_c23_main='
+  {
+    label_before_declaration:
+      int arr[10] = {};
+      if (arr[0])
+        goto label_before_declaration;
+      if (!arr[0])
+        goto label_at_end_of_block;
+    label_at_end_of_block:
+  }
+  ok |= !null_pointer;
+  ok |= two != three;
+'
+]])])
+
 AC_DEFUN([_AC_C_C89_TEST_PROGRAM],
 [AC_REQUIRE([_AC_C_C89_TEST_GLOBALS])dnl
 AC_REQUIRE([_AC_C_C89_TEST_MAIN])dnl
@@ -1475,6 +1569,23 @@ main (int argc, char **argv)
   ${ac_c_conftest_c89_main}
   ${ac_c_conftest_c99_main}
   ${ac_c_conftest_c11_main}
+  return ok;
+}
+"
+]])])
+
+AC_DEFUN([_AC_C_C23_TEST_PROGRAM],
+[AC_REQUIRE([_AC_C_C23_TEST_GLOBALS])dnl
+AC_REQUIRE([_AC_C_C23_TEST_MAIN])dnl
+m4_divert_text([INIT_PREPARE],
+[[# Test code for whether the C compiler supports C23 (complete).
+ac_c_conftest_c23_program="${ac_c_conftest_c23_globals}
+
+int
+main (int, char **)
+{
+  int ok = 0;
+  ${ac_c_conftest_c23_main}
   return ok;
 }
 "
@@ -1553,6 +1664,7 @@ m4_define([_AC_C_C99_OPTIONS], [
 # shell quotes around the group.
 #
 # GCC, Clang    -std=gnu11
+# MSVC          -std:c11
 #
 # For IBM XL C for AIX V16.1 or later, '-std=gnu11' should work if
 # the user configured with CC='xlclang'.  Otherwise, do not try
@@ -1562,6 +1674,20 @@ m4_define([_AC_C_C99_OPTIONS], [
 # _Noreturn, which is a win.
 m4_define([_AC_C_C11_OPTIONS], [
     -std=gnu11
+    -std:c11
+])
+
+# _AC_C_C23_OPTIONS
+# -----------------
+# Whitespace-separated list of options that might put the C compiler
+# into a mode conforming to ISO C 2023 with extensions.  Do not try
+# "strictly conforming" modes (e.g. gcc's -std=c23); they break some
+# systems' header files.  If more than one option is needed, put
+# shell quotes around the group.
+#
+# GCC, Clang    -std=gnu23
+m4_define([_AC_C_C23_OPTIONS], [
+    -std=gnu23
 ])
 
 
@@ -1570,7 +1696,7 @@ m4_define([_AC_C_C11_OPTIONS], [
 # Subroutine of _AC_PROG_CC_STDC_EDITION.  Not to be called directly.
 #
 # Check whether the C compiler accepts features of EDITION of the
-# C standard.  EDITION should be a two-digit year (e.g. 89, 99, 11).
+# C standard.  EDITION should be a two-digit year (e.g. 89, 99, 11, 23).
 # (FIXME: Switch to four-digit years for futureproofing.)
 # This is done by compiling the test program defined by
 # _AC_C_C{EDITION}_TEST_PROGRAM, first with no additional
@@ -1626,7 +1752,7 @@ AS_IF([test "x$ac_cv_prog_cc_c$1" = xno],
 # variable ac_prog_cc_stdc to indicate the edition.
 AC_DEFUN([_AC_PROG_CC_STDC_EDITION],
 [ac_prog_cc_stdc=no
-m4_map([_AC_PROG_CC_STDC_EDITION_TRY], [[11], [99], [89]])])
+m4_map([_AC_PROG_CC_STDC_EDITION_TRY], [[23], [11], [99], [89]])])
 
 
 # _AC_PROG_CC_C89(ACTION-IF-SUPPORTED, ACTION-IF-NOT-SUPPORTED)
@@ -2012,15 +2138,12 @@ AC_DEFUN([AC_C_CONST],
     *t++ = 0;
     if (s) return 0;
   }
-  { /* Someone thinks the Sun supposedly-ANSI compiler will reject this.  */
+  { /* Derived from code rejected by Sun C 1.0 and similar vintage.  */
     int x[] = {25, 17};
-    const int *foo = &x[0];
+    typedef int const *iptr;
+    iptr foo = &x[0];
     ++foo;
-  }
-  { /* Sun SC1.0 ANSI compiler rejects this -- but not the above. */
-    typedef const int *iptr;
-    iptr p = 0;
-    ++p;
+    if (!*foo) return 0;
   }
   { /* IBM XL C 1.02.0.0 rejects this sort of thing, saying
        "k.c", line 2.27: 1506-025 (S) Operand must be a modifiable lvalue. */
@@ -2422,373 +2545,3 @@ AC_DEFUN([_AC_OPENMP_SAFE_WD],
     [AC@&t@_OPENMP clobbers files named 'mp' and 'penmp'.
      Aborting configure because one of these files already exists.]))
 fi])
-
-
-
-# ---------------------------------- #
-# 4b. C++ compiler characteristics.  #
-# ---------------------------------- #
-
-# See the long comment at the beginning of section 4a for rationale
-# for these macros, and constraints on how the test programs should
-# be written.
-#
-# The C++98 freestanding headers are:
-#     <cstdarg> <cstddef> <cstdlib> <exception> <limits> <new> <typeinfo>
-# C++11 adds:
-#    <atomic> <cfloat> <ciso646> <climits> <cstdalign> <cstdbool>
-#    <cstdint> <initializer_list> <type_traits>
-#
-# No other headers can safely be included.  Therefore, almost no C++
-# standard library features are tested for.  Use AC_CHECK_HEADER, etc.
-# if you need that.
-
-AC_DEFUN([_AC_CXX_CXX98_TEST_GLOBALS],
-[m4_divert_text([INIT_PREPARE],
-[[# Test code for whether the C++ compiler supports C++98 (global declarations)
-ac_cxx_conftest_cxx98_globals='
-// Does the compiler advertise C++98 conformance?
-#if !defined __cplusplus || __cplusplus < 199711L
-# error "Compiler does not advertise C++98 conformance"
-#endif
-
-// These inclusions are to reject old compilers that
-// lack the unsuffixed header files.
-#include <cstdlib>
-#include <exception>
-
-// <cassert> and <cstring> are *not* freestanding headers in C++98.
-extern void assert (int);
-namespace std {
-  extern int strcmp (const char *, const char *);
-}
-
-// Namespaces, exceptions, and templates were all added after "C++ 2.0".
-using std::exception;
-using std::strcmp;
-
-namespace {
-
-void test_exception_syntax()
-{
-  try {
-    throw "test";
-  } catch (const char *s) {
-    // Extra parentheses suppress a warning when building autoconf itself,
-    // due to lint rules shared with more typical C programs.
-    assert (!(strcmp) (s, "test"));
-  }
-}
-
-template <typename T> struct test_template
-{
-  T const val;
-  explicit test_template(T t) : val(t) {}
-  template <typename U> T add(U u) { return static_cast<T>(u) + val; }
-};
-
-} // anonymous namespace
-'
-]])])
-
-AC_DEFUN([_AC_CXX_CXX98_TEST_MAIN],
-[m4_divert_text([INIT_PREPARE],
-[[# Test code for whether the C++ compiler supports C++98 (body of main)
-ac_cxx_conftest_cxx98_main='
-  assert (argc);
-  assert (! argv[0]);
-{
-  test_exception_syntax ();
-  test_template<double> tt (2.0);
-  assert (tt.add (4) == 6.0);
-  assert (true && !false);
-}
-'
-]])])
-
-AC_DEFUN([_AC_CXX_CXX11_TEST_GLOBALS],
-[m4_divert_text([INIT_PREPARE],
-[[# Test code for whether the C++ compiler supports C++11 (global declarations)
-ac_cxx_conftest_cxx11_globals='
-// Does the compiler advertise C++ 2011 conformance?
-#if !defined __cplusplus || __cplusplus < 201103L
-# error "Compiler does not advertise C++11 conformance"
-#endif
-
-namespace cxx11test
-{
-  constexpr int get_val() { return 20; }
-
-  struct testinit
-  {
-    int i;
-    double d;
-  };
-
-  class delegate
-  {
-  public:
-    delegate(int n) : n(n) {}
-    delegate(): delegate(2354) {}
-
-    virtual int getval() { return this->n; };
-  protected:
-    int n;
-  };
-
-  class overridden : public delegate
-  {
-  public:
-    overridden(int n): delegate(n) {}
-    virtual int getval() override final { return this->n * 2; }
-  };
-
-  class nocopy
-  {
-  public:
-    nocopy(int i): i(i) {}
-    nocopy() = default;
-    nocopy(const nocopy&) = delete;
-    nocopy & operator=(const nocopy&) = delete;
-  private:
-    int i;
-  };
-
-  // for testing lambda expressions
-  template <typename Ret, typename Fn> Ret eval(Fn f, Ret v)
-  {
-    return f(v);
-  }
-
-  // for testing variadic templates and trailing return types
-  template <typename V> auto sum(V first) -> V
-  {
-    return first;
-  }
-  template <typename V, typename... Args> auto sum(V first, Args... rest) -> V
-  {
-    return first + sum(rest...);
-  }
-}
-'
-]])])
-
-AC_DEFUN([_AC_CXX_CXX11_TEST_MAIN],
-[m4_divert_text([INIT_PREPARE],
-[[# Test code for whether the C++ compiler supports C++11 (body of main)
-ac_cxx_conftest_cxx11_main='
-{
-  // Test auto and decltype
-  auto a1 = 6538;
-  auto a2 = 48573953.4;
-  auto a3 = "String literal";
-
-  int total = 0;
-  for (auto i = a3; *i; ++i) { total += *i; }
-
-  decltype(a2) a4 = 34895.034;
-}
-{
-  // Test constexpr
-  short sa[cxx11test::get_val()] = { 0 };
-}
-{
-  // Test initializer lists
-  cxx11test::testinit il = { 4323, 435234.23544 };
-}
-{
-  // Test range-based for
-  int array[] = {9, 7, 13, 15, 4, 18, 12, 10, 5, 3,
-                 14, 19, 17, 8, 6, 20, 16, 2, 11, 1};
-  for (auto &x : array) { x += 23; }
-}
-{
-  // Test lambda expressions
-  using cxx11test::eval;
-  assert (eval ([](int x) { return x*2; }, 21) == 42);
-  double d = 2.0;
-  assert (eval ([&](double x) { return d += x; }, 3.0) == 5.0);
-  assert (d == 5.0);
-  assert (eval ([=](double x) mutable { return d += x; }, 4.0) == 9.0);
-  assert (d == 5.0);
-}
-{
-  // Test use of variadic templates
-  using cxx11test::sum;
-  auto a = sum(1);
-  auto b = sum(1, 2);
-  auto c = sum(1.0, 2.0, 3.0);
-}
-{
-  // Test constructor delegation
-  cxx11test::delegate d1;
-  cxx11test::delegate d2();
-  cxx11test::delegate d3(45);
-}
-{
-  // Test override and final
-  cxx11test::overridden o1(55464);
-}
-{
-  // Test nullptr
-  char *c = nullptr;
-}
-{
-  // Test template brackets
-  test_template<::test_template<int>> v(test_template<int>(12));
-}
-{
-  // Unicode literals
-  char const *utf8 = u8"UTF-8 string \u2500";
-  char16_t const *utf16 = u"UTF-8 string \u2500";
-  char32_t const *utf32 = U"UTF-32 string \u2500";
-}
-'
-]])])
-
-AC_DEFUN([_AC_CXX_CXX98_TEST_PROGRAM],
-[AC_REQUIRE([_AC_CXX_CXX98_TEST_GLOBALS])dnl
-AC_REQUIRE([_AC_CXX_CXX98_TEST_MAIN])dnl
-m4_divert_text([INIT_PREPARE],
-[[# Test code for whether the C compiler supports C++98 (complete).
-ac_cxx_conftest_cxx98_program="${ac_cxx_conftest_cxx98_globals}
-int
-main (int argc, char **argv)
-{
-  int ok = 0;
-  ${ac_cxx_conftest_cxx98_main}
-  return ok;
-}
-"
-]])])
-
-AC_DEFUN([_AC_CXX_CXX11_TEST_PROGRAM],
-[AC_REQUIRE([_AC_CXX_CXX98_TEST_GLOBALS])dnl
-AC_REQUIRE([_AC_CXX_CXX98_TEST_MAIN])dnl
-AC_REQUIRE([_AC_CXX_CXX11_TEST_GLOBALS])dnl
-AC_REQUIRE([_AC_CXX_CXX11_TEST_MAIN])dnl
-m4_divert_text([INIT_PREPARE],
-[[# Test code for whether the C compiler supports C++11 (complete).
-ac_cxx_conftest_cxx11_program="${ac_cxx_conftest_cxx98_globals}
-${ac_cxx_conftest_cxx11_globals}
-
-int
-main (int argc, char **argv)
-{
-  int ok = 0;
-  ${ac_cxx_conftest_cxx98_main}
-  ${ac_cxx_conftest_cxx11_main}
-  return ok;
-}
-"
-]])])
-
-# _AC_CXX_CXX98_OPTIONS
-# ---------------------
-# Whitespace-separated list of options that might put the C++ compiler
-# into a mode conforming to ISO C++ 1998 with extensions.  Do not try
-# "strictly conforming" modes (e.g. gcc's -std=c++98); they break some
-# systems' header files.  If more than one option is needed, put
-# shell quotes around the group.
-#
-# GCC           -std=gnu++98
-# Intel ICC     -std=c++98
-#   Note: because -std=c++98 puts GCC in strictly conforming mode,
-#   this option must be tested *after* -std=gnu++98.
-# IBM XL C      -qlanglvl=extended
-# HP aC++       -AA
-# Solaris       N/A (default)
-# Tru64         N/A (default, but -std gnu could be used)
-m4_define([_AC_CXX_CXX98_OPTIONS], [
-    -std=gnu++98
-    -std=c++98
-    -qlanglvl=extended
-    -AA
-])
-
-# _AC_CXX_CXX11_OPTIONS
-# ---------------------
-# Whitespace-separated list of options that might put the C++ compiler
-# into a mode conforming to ISO C++ 2011 with extensions.  Do not try
-# "strictly conforming" modes (e.g. gcc's -std=c++11); they break some
-# systems' header files.  If more than one option is needed, put
-# shell quotes around the group.
-#
-# GCC           -std=gnu++11, -std=gnu++0x
-# Intel ICC     -std=c++11, -std=c++0x
-#   Note: because -std=c++11 puts GCC in strictly conforming mode,
-#   these options must be tested *after* -std=gnu++11.
-# IBM XL C      -qlanglvl=extended0x (pre-V12.1)
-# HP aC++       -AA
-# Solaris       N/A (no support)
-# Tru64         N/A (no support)
-m4_define([_AC_CXX_CXX11_OPTIONS], [
-    -std=gnu++11
-    -std=gnu++0x
-    -std=c++11
-    -std=c++0x
-    -qlanglvl=extended0x
-    -AA
-])
-
-# _AC_PROG_CXX_STDCXX_EDITION_TRY(EDITION)
-# ----------------------------------------
-# Subroutine of _AC_PROG_CXX_STDCXX_EDITION.  Not to be called directly.
-#
-# Check whether the C++ compiler accepts features of EDITION of the
-# C++ standard.  EDITION should be a two-digit year (e.g. 98, 11).
-# (FIXME: Switch to four-digit years for futureproofing.)
-# This is done by compiling the test program defined by
-# _AC_C_CXX{EDITION}_TEST_PROGRAM, first with no additional
-# command-line options, and then with each of the options
-# in the space-separated list defined by _AC_C_CXX{EDITION}_OPTIONS.
-#
-# If we find a way to make the test program compile, set cache variable
-# ac_cv_prog_cxx_cxxEDITION to the options required (if any), and add those
-# options to $CXX.  Set shell variable ac_prog_cxx_stdcxx to 'cxxEDITION',
-# and set shell variable ac_cv_prog_cxx_stdcxx to the options required.
-# (Neither of these variables is AC_SUBSTed.  ac_cv_prog_cxx_stdcxx used
-# to be a cache variable and is preserved with this name for backward
-# compatibility.)  Otherwise, ac_cv_prog_cxx_cxxEDITION is set to 'no'
-# and the other variables are not changed.
-#
-# If ac_prog_cxx_stdcxx is already set to a value other than 'no',
-# the shell code produced by this macro does nothing.  This is so
-# _AC_PROG_CXX_STDCXX_EDITION can use m4_map to iterate through
-# all the editions.
-AC_DEFUN([_AC_PROG_CXX_STDCXX_EDITION_TRY],
-[AC_LANG_ASSERT([C++])]dnl
-[AC_REQUIRE([_AC_CXX_CXX$1_TEST_PROGRAM])]dnl
-[AS_IF([test x$ac_prog_cxx_stdcxx = xno],
-[AC_MSG_CHECKING([for $CXX option to enable C++$1 features])
-AC_CACHE_VAL(ac_cv_prog_cxx_cxx$1,
-[ac_cv_prog_cxx_cxx$1=no
-ac_save_CXX=$CXX
-AC_LANG_CONFTEST([AC_LANG_DEFINES_PROVIDED][$][ac_cxx_conftest_cxx$1_program])
-for ac_arg in '' m4_normalize(m4_defn([_AC_CXX_CXX$1_OPTIONS]))
-do
-  CXX="$ac_save_CXX $ac_arg"
-  _AC_COMPILE_IFELSE([], [ac_cv_prog_cxx_cxx$1=$ac_arg])
-  test "x$ac_cv_prog_cxx_cxx$1" != "xno" && break
-done
-rm -f conftest.$ac_ext
-CXX=$ac_save_CXX])
-AS_IF([test "x$ac_cv_prog_cxx_cxx$1" = xno],
-  [AC_MSG_RESULT([unsupported])],
-  [AS_IF([test "x$ac_cv_prog_cxx_cxx$1" = x],
-    [AC_MSG_RESULT([none needed])],
-    [AC_MSG_RESULT([$ac_cv_prog_cxx_cxx$1])
-     CXX="$CXX $ac_cv_prog_cxx_cxx$1"])
-  ac_cv_prog_cxx_stdcxx=$ac_cv_prog_cxx_cxx$1
-  ac_prog_cxx_stdcxx=cxx$1])])
-])
-
-# _AC_PROG_CXX_STDCXX_EDITION
-# ---------------------------
-# Detect the most recent edition of the ISO C++ standard that is
-# supported by the C++ compiler.  Add command-line options to $CXX,
-# if necessary, to enable support for this edition.  Set the shell
-# variable ac_prog_cxx_stdcxx to indicate the edition.
-AC_DEFUN([_AC_PROG_CXX_STDCXX_EDITION],
-[ac_prog_cxx_stdcxx=no
-m4_map([_AC_PROG_CXX_STDCXX_EDITION_TRY], [[11], [98]])])

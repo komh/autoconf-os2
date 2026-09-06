@@ -1,6 +1,6 @@
 # Make Autoconf-related libraries.
 
-# Copyright (C) 2001-2005, 2009-2017, 2020-2023 Free Software
+# Copyright (C) 2001-2005, 2009-2017, 2020-2026 Free Software
 # Foundation, Inc.
 
 # This program is free software: you can redistribute it and/or modify
@@ -95,6 +95,7 @@ dist_autoconflib_DATA = \
   lib/autoconf/fortran.m4 \
   lib/autoconf/functions.m4 \
   lib/autoconf/go.m4 \
+  lib/autoconf/a68.m4 \
   lib/autoconf/headers.m4 \
   lib/autoconf/types.m4 \
   lib/autoconf/libs.m4 \
@@ -130,7 +131,7 @@ lib/autoscan/autoscan.list: $(srcdir)/lib/autoscan/autoscan.pre
 	    -t'AN_OUTPUT:$$1: $$2		$$3' \
 	) | LC_ALL=C sort >>$@
 
-lib/autoscan/autoscan.list: $(autoconf_m4f_dependencies) Makefile
+lib/autoscan/autoscan.list: lib/autoconf/autoconf.m4f Makefile
 
 ## ----------------------------------- ##
 ## Make Autoconf library for M4sugar.  ##
@@ -148,7 +149,7 @@ nodist_m4sugarlib_DATA = \
   lib/m4sugar/m4sh.m4f
 
 nodist_pkgdata_DATA += \
-  lib/version.m4
+  lib/autoconf_version.m4
 
 CLEANFILES += $(nodist_m4sugarlib_DATA) $(nodist_pkgdata_DATA)
 TAGS_FILES += $(dist_m4sugarlib_DATA)

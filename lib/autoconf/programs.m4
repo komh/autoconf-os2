@@ -1,7 +1,7 @@
 # This file is part of Autoconf.                       -*- Autoconf -*-
 # Checking for programs.
 
-# Copyright (C) 1992-1996, 1998-2017, 2020-2023 Free Software
+# Copyright (C) 1992-1996, 1998-2017, 2020-2026 Free Software
 # Foundation, Inc.
 
 # This file is part of Autoconf.  This program is free
@@ -22,7 +22,8 @@
 # You should have received a copy of the GNU General Public License
 # and a copy of the Autoconf Configure Script Exception along with
 # this program; see the files COPYINGv3 and COPYING.EXCEPTION
-# respectively.  If not, see <https://www.gnu.org/licenses/>.
+# respectively.  If not, see <https://www.gnu.org/licenses/> and
+# <https://git.savannah.gnu.org/gitweb/?p=autoconf.git;a=blob_plain;f=COPYING.EXCEPTION>.
 
 # Written by David MacKenzie, with help from
 # François Pinard, Karl Berry, Richard Pixley, Ian Lance Taylor,
@@ -356,7 +357,7 @@ AN_PROGRAM([gawk], [AC_PROG_AWK])
 AN_PROGRAM([mawk], [AC_PROG_AWK])
 AN_PROGRAM([nawk], [AC_PROG_AWK])
 AC_DEFUN([AC_PROG_AWK],
-[AC_CHECK_PROGS(AWK, gawk mawk nawk awk, )])
+[AC_CHECK_PROGS([AWK], [gawk mawk nawk awk 'busybox awk'])])
 
 
 # AC_PROG_EGREP
@@ -585,8 +586,8 @@ case $as_dir in @%:@((
   ?:[\\/]os2[\\/]install[\\/]* | ?:[\\/]OS2[\\/]INSTALL[\\/]* | \
   /usr/ucb/* ) ;;
   *)]
-    # OSF1 and SCO ODT 3.0 have their own names for install.
-    # Don't use installbsd from OSF since it installs stuff as root
+    # OSF/1 and SCO ODT 3.0 have their own names for install.
+    # Don't use installbsd from OSF/1 since it installs stuff as root
     # by default.
     for ac_prog in ginstall scoinst install; do
       for ac_exec_ext in '' $ac_executable_extensions; do
@@ -821,6 +822,14 @@ AS_IF([test "$ac_cv_prog_lex_root" = unknown],
    LEX=: LEXLIB=])
 AC_SUBST([LEX_OUTPUT_ROOT], [$ac_cv_prog_lex_root])dnl
 
+# When compiled as C++, the test lexer declares yywrap with extern "C".
+# Solaris 10 lex (Software Generation Utilities (SGU) Solaris-ELF (4.0))'s
+# scanner skeleton will provide a conflicting declaration of yywrap,
+# *without* extern "C", unless we define this macro on the command line.
+# The %{ %} block is not early enough for the definition to be effective.
+ac_save_CPPFLAGS="$CPPFLAGS"
+CPPFLAGS="$CPPFLAGS -D__EXTERN_C__=1"
+
 AS_VAR_SET_IF([LEXLIB], [], [
   AC_CACHE_CHECK([for lex library], [ac_cv_lib_lex], [
     ac_save_LIBS="$LIBS"
@@ -897,6 +906,7 @@ if test $ac_cv_prog_lex_yytext_pointer = yes; then
 	     not a 'char[]'.])
 fi
 ])
+CPPFLAGS="$ac_save_CPPFLAGS"
 rm -f conftest.l $LEX_OUTPUT_ROOT.c
 ])# _AC_PROG_LEX_YYTEXT_DECL
 
@@ -936,7 +946,7 @@ AC_CACHE_VAL(ac_cv_prog_make_${ac_make}_set,
 [cat >conftest.make <<\_ACEOF
 SHELL = /bin/sh
 all:
-	@echo '@@@%%%=$(MAKE)=@@@%%%'
+	@printf '%s\n' '@@@%%%=$(MAKE)=@@@%%%'
 _ACEOF
 # GNU make sometimes prints "make[1]: Entering ...", which would confuse us.
 case `${MAKE-make} -f conftest.make 2>/dev/null` in

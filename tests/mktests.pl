@@ -2,7 +2,7 @@
 
 # Build some of the Autoconf test files.
 
-# Copyright (C) 2000-2017, 2020-2023 Free Software Foundation, Inc.
+# Copyright (C) 2000-2017, 2020-2026 Free Software Foundation, Inc.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -188,6 +188,10 @@ my %test_parameters = (
     test_parameters => ('[cxx_define_varies:HAVE_C_VARARRAYS' .
                         ' cxx_define_varies:__STDC_NO_VLA__' .
                         ' cxx_cv_varies:cxx_vararrays]')
+  },
+  AC_C_FLEXIBLE_ARRAY_MEMBER => {
+    test_parameters => ('[cxx_define_varies:FLEXIBLE_ARRAY_MEMBER' .
+                        ' cxx_cv_varies:cxx_flexmember]')
   },
 
   # stdbool.h is supposed to be includable from C++, per C++2011

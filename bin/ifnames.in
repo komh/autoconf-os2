@@ -7,7 +7,7 @@ eval 'case $# in 0) exec @PERL@ -S "$0";; *) exec @PERL@ -S "$0" "$@";; esac'
 
 # ifnames - print the identifiers used in C preprocessor conditionals
 
-# Copyright (C) 1994-1995, 1999-2003, 2005-2017, 2020-2023 Free Software
+# Copyright (C) 1994-1995, 1999-2003, 2005-2017, 2020-2026 Free Software
 # Foundation, Inc.
 
 # This program is free software: you can redistribute it and/or modify
@@ -55,14 +55,16 @@ $help = "Usage: $0 [OPTION]... [FILE]...
 
 Scan all of the C source FILES (or the standard input, if none are
 given) and write to the standard output a sorted list of all the
-identifiers that appear in those files in '#if', '#elif', '#ifdef', or
-'#ifndef' directives.  Print each identifier on a line, followed by a
-space-separated list of the files in which that identifier occurs.
+identifiers that appear in those files in '#if', '#ifdef', '#ifndef',
+'#elif', '#elifdef', or '#elifndef' directives.  Print each identifier
+on a line, followed by a space-separated list of the files in which
+that identifier occurs.
 
   -h, --help      print this help, then exit
   -V, --version   print version number, then exit
 
-Report bugs to <bug-autoconf\@gnu.org>.
+Report bugs in the tracker at <https://savannah.gnu.org/projects/autoconf>
+or by email to <bug-autoconf\@gnu.org>.
 
 The full documentation for Autoconf can be read via 'info autoconf',
 or on the Web at <https://www.gnu.org/software/autoconf/manual/>.
@@ -109,7 +111,7 @@ sub scan_file ($)
 	while (s/\\$//);
 
       # Preprocessor directives.
-      if (s/^\s*\#\s*(if|ifdef|ifndef|elif)\s+//)
+      if (s/^\s*\#\s*(el)?if(n?def)?\s+//)
 	{
 	  # Remove comments.  Not perfect, but close enough.
 	  s(/\*.*?\*/)();

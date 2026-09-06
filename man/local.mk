@@ -1,6 +1,6 @@
 # Make Autoconf man pages.
 
-# Copyright (C) 2001, 2004-2017, 2020-2023 Free Software Foundation,
+# Copyright (C) 2001, 2004-2017, 2020-2026 Free Software Foundation,
 # Inc.
 
 # This program is free software: you can redistribute it and/or modify
@@ -79,7 +79,7 @@ SUFFIXES += .w .1
 	PATH="$(top_srcdir)/man$(PATH_SEPARATOR)$$PATH"; \
 	PERL="$(PERL)"; \
 	PACKAGE_NAME="$(PACKAGE_NAME)"; \
-	VERSION="$(VERSION)"; \
+	VERSION='$(VERSION)'; \
 	RELEASE_YEAR="$(RELEASE_YEAR)"; \
 	top_srcdir="$(top_srcdir)"; \
 	channeldefs_pm="$(channeldefs_pm)"; \

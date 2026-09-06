@@ -1,6 +1,6 @@
 # This file is part of Autoconf.			-*- Autoconf -*-
 # Checking for functions.
-# Copyright (C) 2000-2017, 2020-2023 Free Software Foundation, Inc.
+# Copyright (C) 2000-2017, 2020-2026 Free Software Foundation, Inc.
 
 # This file is part of Autoconf.  This program is free
 # software; you can redistribute it and/or modify it under the
@@ -20,7 +20,8 @@
 # You should have received a copy of the GNU General Public License
 # and a copy of the Autoconf Configure Script Exception along with
 # this program; see the files COPYINGv3 and COPYING.EXCEPTION
-# respectively.  If not, see <https://www.gnu.org/licenses/>.
+# respectively.  If not, see <https://www.gnu.org/licenses/> and
+# <https://git.savannah.gnu.org/gitweb/?p=autoconf.git;a=blob_plain;f=COPYING.EXCEPTION>.
 
 # Written by David MacKenzie, with help from
 # François Pinard, Karl Berry, Richard Pixley, Ian Lance Taylor,
@@ -557,7 +558,7 @@ AC_DEFUN([_AC_FUNC_FNMATCH_IF],
 [AC_CACHE_CHECK(
    [for working $1 fnmatch],
    [$2],
-  [# Some versions of Solaris, SCO, and the GNU C Library
+  [# Some versions of Solaris and the GNU C Library
    # have a broken or incompatible fnmatch.
    # So we run a test program.  If we are cross-compiling, take no chance.
    # Thanks to John Oleynick, François Pinard, and Paul Eggert for this test.
@@ -668,7 +669,7 @@ m4_define([_AC_FUNC_FSEEKO_TEST_PROGRAM],
 # Check for correctly prototyped declarations of fseeko and ftello;
 # define HAVE_FSEEKO if they are available.  If it is necessary to
 # define _LARGEFILE_SOURCE=1 to make these declarations available,
-# do that (this is needed on 32-bit HP/UX).  We used to try defining
+# do that (this is needed on 32-bit HP-UX).  We used to try defining
 # _XOPEN_SOURCE=500 too, to work around a bug in glibc 2.1.3, but that
 # breaks too many other things.  If you want fseeko and ftello with
 # glibc, upgrade to a fixed glibc.
@@ -967,30 +968,37 @@ fi
 ])
 
 
-# _AC_FUNC_MALLOC_IF(IF-WORKS, IF-NOT)
-# ------------------------------------
-# If 'malloc (0)' properly handled, run IF-WORKS, otherwise, IF-NOT.
+# _AC_FUNC_MALLOC_IF(IF-WORKS, IF-NOT[, UNKNOWN-ASSUME])
+# ------------------------------------------------------
+# If 'malloc (0)' returns nonnull, run IF-WORKS, otherwise, IF-NOT.
+# If it is not known whether it works, assume the shell word UNKNOWN-ASSUME,
+# which should end in "yes" or in something else (the latter is the default).
 AC_DEFUN([_AC_FUNC_MALLOC_IF],
-[AC_REQUIRE([AC_CANONICAL_HOST])dnl for cross-compiles
-AC_CACHE_CHECK([for GNU libc compatible malloc], ac_cv_func_malloc_0_nonnull,
-[AC_RUN_IFELSE(
-[AC_LANG_PROGRAM([[#include <stdlib.h>
-                 ]],
-		 [[void *p = malloc (0);
-		   int result = !p;
-		   free (p);
-		   return result;]])],
-	       [ac_cv_func_malloc_0_nonnull=yes],
-	       [ac_cv_func_malloc_0_nonnull=no],
-	       [case "$host_os" in # ((
-		  # Guess yes on platforms where we know the result.
-		  *-gnu* | freebsd* | netbsd* | openbsd* | bitrig* \
-		  | hpux* | solaris* | cygwin* | mingw* | windows* | msys* )
-		    ac_cv_func_malloc_0_nonnull=yes ;;
-		  # If we don't know, assume the worst.
-		  *) ac_cv_func_malloc_0_nonnull=no ;;
-		esac])])
-AS_IF([test $ac_cv_func_malloc_0_nonnull = yes], [$1], [$2])
+[
+  AC_REQUIRE([AC_CANONICAL_HOST])dnl for cross-compiles
+  AC_CACHE_CHECK([whether malloc (0) returns nonnull],
+    [ac_cv_func_malloc_0_nonnull],
+    [AC_RUN_IFELSE(
+       [AC_LANG_PROGRAM(
+          [[#include <stdlib.h>
+            /* Use pmalloc to test; 'volatile' prevents the compiler
+               from optimizing the malloc call away.  */
+            void *(*volatile pmalloc) (size_t) = malloc;]],
+          [[void *p = pmalloc (0);
+            int result = !p;
+            free (p);
+            return result;]])],
+       [ac_cv_func_malloc_0_nonnull=yes],
+       [ac_cv_func_malloc_0_nonnull=no],
+       [AS_CASE([$host_os],
+          [# Guess yes on platforms where we know the result.
+           *-gnu* | freebsd* | netbsd* | openbsd* | bitrig* \
+           | gnu* | *-musl* | midipix* | midnightbsd* \
+           | hpux* | solaris* | cygwin* | mingw* | windows* | msys*],
+            [ac_cv_func_malloc_0_nonnull="guessing yes"],
+          [# Guess as follows if we don't know.
+           ac_cv_func_malloc_0_nonnull=m4_default([$3], ["guessing no"])])])])
+  AS_CASE([$ac_cv_func_malloc_0_nonnull], [*yes], [$1], [$2])
 ])# _AC_FUNC_MALLOC_IF
 
 
@@ -1007,7 +1015,8 @@ AC_DEFUN([AC_FUNC_MALLOC],
   [AC_DEFINE([HAVE_MALLOC], 0)
    AC_LIBOBJ(malloc)
    AC_DEFINE([malloc], [rpl_malloc],
-      [Define to rpl_malloc if the replacement function should be used.])])
+      [Define to rpl_malloc if the replacement function should be used.])],
+  ["guessing yes"])
 ])# AC_FUNC_MALLOC
 
 
@@ -1471,30 +1480,37 @@ AU_ALIAS([AM_FUNC_OBSTACK], [AC_FUNC_OBSTACK])
 
 
 
-# _AC_FUNC_REALLOC_IF(IF-WORKS, IF-NOT)
-# -------------------------------------
-# If 'realloc (0, 0)' is properly handled, run IF-WORKS, otherwise, IF-NOT.
+# _AC_FUNC_REALLOC_IF(IF-WORKS, IF-NOT[, UNKNOWN-ASSUME])
+# -------------------------------------------------------
+# If 'realloc (0, 0)' returns nonnull, run IF-WORKS, otherwise, IF-NOT.
+# If it is not known whether it works, assume the shell word UNKNOWN-ASSUME,
+# which should end in "yes" or in something else (the latter is the default).
 AC_DEFUN([_AC_FUNC_REALLOC_IF],
-[AC_REQUIRE([AC_CANONICAL_HOST])dnl for cross-compiles
-AC_CACHE_CHECK([for GNU libc compatible realloc], ac_cv_func_realloc_0_nonnull,
-[AC_RUN_IFELSE(
-[AC_LANG_PROGRAM([[#include <stdlib.h>
-                 ]],
-		 [[void *p = realloc (0, 0);
-		   int result = !p;
-		   free (p);
-		   return result;]])],
-	       [ac_cv_func_realloc_0_nonnull=yes],
-	       [ac_cv_func_realloc_0_nonnull=no],
-	       [case "$host_os" in # ((
-		  # Guess yes on platforms where we know the result.
-		  *-gnu* | freebsd* | netbsd* | openbsd* | bitrig* \
-		  | hpux* | solaris* | cygwin* | mingw* | windows* | msys* )
-		    ac_cv_func_realloc_0_nonnull=yes ;;
-		  # If we don't know, assume the worst.
-		  *) ac_cv_func_realloc_0_nonnull=no ;;
-		esac])])
-AS_IF([test $ac_cv_func_realloc_0_nonnull = yes], [$1], [$2])
+[
+  AC_REQUIRE([AC_CANONICAL_HOST])dnl for cross-compiles
+  AC_CACHE_CHECK([whether realloc (0, 0) returns nonnull],
+    [ac_cv_func_realloc_0_nonnull],
+    [AC_RUN_IFELSE(
+       [AC_LANG_PROGRAM(
+          [[#include <stdlib.h>
+            /* Use prealloc to test; 'volatile' prevents the compiler
+               from optimizing the realloc call away.  */
+            void *(*volatile prealloc) (void *, size_t) = realloc;]],
+          [[void *p = prealloc (0, 0);
+            int result = !p;
+            free (p);
+            return result;]])],
+       [ac_cv_func_realloc_0_nonnull=yes],
+       [ac_cv_func_realloc_0_nonnull=no],
+       [AS_CASE([$host_os],
+          [# Guess yes on platforms where we know the result.
+           *-gnu* | freebsd* | netbsd* | openbsd* | bitrig* \
+           | gnu* | *-musl* | midipix* | midnightbsd* \
+           | hpux* | solaris* | cygwin* | mingw* | windows* | msys*],
+            [ac_cv_func_realloc_0_nonnull="guessing yes"],
+          [# Guess as follows if we don't know.
+           ac_cv_func_realloc_0_nonnull=m4_default([$3], ["guessing no"])])])])
+  AS_CASE([$ac_cv_func_realloc_0_nonnull], [*yes], [$1], [$2])
 ])# _AC_FUNC_REALLOC_IF
 
 
@@ -1511,7 +1527,8 @@ AC_DEFUN([AC_FUNC_REALLOC],
   [AC_DEFINE([HAVE_REALLOC], 0)
    AC_LIBOBJ([realloc])
    AC_DEFINE([realloc], [rpl_realloc],
-      [Define to rpl_realloc if the replacement function should be used.])])
+      [Define to rpl_realloc if the replacement function should be used.])],
+  ["guessing no"])
 ])# AC_FUNC_REALLOC
 
 
@@ -1547,7 +1564,7 @@ for ac_arg234 in 'fd_set *' 'int *' 'void *'; do
 done
 ])
 ac_save_IFS=$IFS; IFS=','
-set dummy `echo "$ac_cv_func_select_args" | sed 's/\*/\*/g'`
+set x $ac_cv_func_select_args
 IFS=$ac_save_IFS
 shift
 AC_DEFINE_UNQUOTED(SELECT_TYPE_ARG1, $[1],
@@ -1751,31 +1768,45 @@ LIBS="-lintl $LIBS"])])dnl
 AN_FUNCTION([strnlen], [AC_FUNC_STRNLEN])
 AC_DEFUN([AC_FUNC_STRNLEN],
 [AC_REQUIRE([AC_USE_SYSTEM_EXTENSIONS])dnl
-AC_REQUIRE([AC_CANONICAL_HOST]) dnl for cross-compiles
-AC_CACHE_CHECK([for working strnlen], ac_cv_func_strnlen_working,
-[AC_RUN_IFELSE([AC_LANG_PROGRAM([AC_INCLUDES_DEFAULT], [[
-#define S "foobar"
-#define S_LEN (sizeof S - 1)
+AC_CACHE_CHECK([for working strnlen], [ac_cv_func_strnlen_working],
+[AC_RUN_IFELSE(
+   [AC_LANG_PROGRAM(
+      [AC_INCLUDES_DEFAULT
+       [/* Use pstrnlen to test; 'volatile' prevents the compiler
+	   from optimizing the strnlen calls away.  */
+	size_t (*volatile pstrnlen) (char const *, size_t) = strnlen;
+	char const s[] = "foobar";
+	int s_len = sizeof s - 1;
+       ]],
+      [[
+	/* AIX 4.3 is buggy: strnlen (S, 1) == 3.  */
+	int i;
+	for (i = 0; i < s_len + 1; ++i)
+	  {
+	    int expected = i <= s_len ? i : s_len;
+	    if (pstrnlen (s, i) != expected)
+	      return 1;
+	  }
 
-  /* At least one implementation is buggy: that of AIX 4.3 would
-     give strnlen (S, 1) == 3.  */
-
-  int i;
-  for (i = 0; i < S_LEN + 1; ++i)
-    {
-      int expected = i <= S_LEN ? i : S_LEN;
-      if (strnlen (S, i) != expected)
-	return 1;
-    }
-  return 0;
-]])],
-	       [ac_cv_func_strnlen_working=yes],
-	       [ac_cv_func_strnlen_working=no],
-	       [# Guess no on AIX systems, yes otherwise.
-		case "$host_os" in
-		  aix*) ac_cv_func_strnlen_working=no;;
-		  *)    ac_cv_func_strnlen_working=yes;;
-		esac])])
+	/* Android 5.0 (API 21) strnlen ("", SIZE_MAX) incorrectly crashes.  */
+	if (pstrnlen ("", -1) != 0)
+	  return 1;]])],
+   [ac_cv_func_strnlen_working=yes],
+   [ac_cv_func_strnlen_working=no],
+   [AC_COMPILE_IFELSE(
+      [AC_LANG_PROGRAM([AC_INCLUDES_DEFAULT],
+	 [[#if defined _AIX && !defined _AIX51
+	    #error "AIX pre 5.1 is buggy"
+	   #endif
+	   #ifdef __ANDROID__
+	    #include <android/api-level.h>
+	    #if __ANDROID_API__ < 22
+	     #error "Android API < 22 is buggy"
+	    #endif
+	   #endif
+	 ]])],
+      [ac_cv_func_strnlen_working=yes],
+      [ac_cv_func_strnlen_working=no])])])
 test $ac_cv_func_strnlen_working = no && AC_LIBOBJ([strnlen])
 ])# AC_FUNC_STRNLEN
 

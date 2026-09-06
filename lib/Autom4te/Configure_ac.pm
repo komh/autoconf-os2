@@ -1,4 +1,4 @@
-# Copyright (C) 2003-2023 Free Software Foundation, Inc.
+# Copyright (C) 2003-2025 Free Software Foundation, Inc.
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -13,16 +13,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-###############################################################
-# The main copy of this file is in Automake's git repository. #
-# Updates should be sent to automake-patches@gnu.org.         #
-###############################################################
+##################################################################
+# The master copy of this file is in Automake's source repository.
+# Please send updates to automake-patches@gnu.org.
+##################################################################
 
 package Autom4te::Configure_ac;
 
-use 5.006;
-use strict;
-use warnings FATAL => 'all';
+use 5.006; use strict; use warnings;
 
 use Exporter;
 
